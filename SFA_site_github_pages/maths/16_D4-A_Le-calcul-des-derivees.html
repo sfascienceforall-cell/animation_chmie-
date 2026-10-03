@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule D4-A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#1D4ED8;          /* bleu SFA */
+  --deep:#0A2A6E;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#E9EEFC;         /* bleu 8 % */
+  --tint2:#D3DEFA;        /* bleu 18 % */
+  --surface:#F4F6FA;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-D4-01 ==================== -->
+  <section class="slide" data-ref="ANIM-D4-01" data-title="Le coureur : la vitesse moyenne" data-sub="Une question à laquelle la moyenne ne répond pas" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="450" height="302">
+          <defs><marker id="b1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <g stroke="#E3E7EE" stroke-width="1">
+              <line x1="136" y1="25" x2="136" y2="300"/><line x1="212" y1="25" x2="212" y2="300"/>
+              <line x1="288" y1="25" x2="288" y2="300"/><line x1="364" y1="25" x2="364" y2="300"/>
+              <line x1="440" y1="25" x2="440" y2="300"/>
+              <line x1="48" y1="230" x2="455" y2="230"/><line x1="48" y1="170" x2="455" y2="170"/>
+              <line x1="48" y1="110" x2="455" y2="110"/><line x1="48" y1="50" x2="455" y2="50"/>
+            </g>
+            <line x1="45" y1="290" x2="458" y2="290" stroke="#8A8F98" stroke-width="1.6"/>
+            <line x1="60" y1="22" x2="60" y2="305" stroke="#8A8F98" stroke-width="1.6"/>
+            <g font-size="12" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">
+              <text x="136" y="307" text-anchor="middle">1</text><text x="212" y="307" text-anchor="middle">2</text>
+              <text x="288" y="307" text-anchor="middle">3</text><text x="364" y="307" text-anchor="middle">4</text>
+              <text x="440" y="307" text-anchor="middle">5</text>
+              <text x="52" y="234" text-anchor="end">200</text><text x="52" y="114" text-anchor="end">600</text>
+              <text x="52" y="54" text-anchor="end">800</text>
+              <text x="458" y="276" text-anchor="end">t (min)</text><text x="70" y="34">distance (m)</text>
+            </g>
+          </g>
+          <g class="step s1">
+            <path d="M 60.0,290.0 L 61.5,288.0 L 62.9,286.1 L 64.4,284.2 L 65.8,282.2 L 67.3,280.3 L 68.8,278.4 L 70.2,276.5 L 71.7,274.6 L 73.2,272.8 L 74.6,270.9 L 76.1,269.0 L 77.5,267.2 L 79.0,265.4 L 80.5,263.5 L 81.9,261.7 L 83.4,259.9 L 84.8,258.1 L 86.3,256.3 L 87.8,254.5 L 89.2,252.8 L 90.7,251.0 L 92.2,249.3 L 93.6,247.5 L 95.1,245.8 L 96.5,244.1 L 98.0,242.4 L 99.5,240.7 L 100.9,239.0 L 102.4,237.3 L 103.8,235.6 L 105.3,234.0 L 106.8,232.3 L 108.2,230.7 L 109.7,229.0 L 111.2,227.4 L 112.6,225.8 L 114.1,224.2 L 115.5,222.6 L 117.0,221.0 L 118.5,219.4 L 119.9,217.9 L 121.4,216.3 L 122.8,214.8 L 124.3,213.2 L 125.8,211.7 L 127.2,210.2 L 128.7,208.6 L 130.2,207.1 L 131.6,205.6 L 133.1,204.1 L 134.5,202.7 L 136.0,201.2 L 137.5,199.7 L 138.9,198.3 L 140.4,196.8 L 141.8,195.4 L 143.3,194.0 L 144.8,192.6 L 146.2,191.2 L 147.7,189.8 L 149.2,188.4 L 150.6,187.0 L 152.1,185.6 L 153.5,184.2 L 155.0,182.9 L 156.5,181.5 L 157.9,180.2 L 159.4,178.9 L 160.8,177.6 L 162.3,176.2 L 163.8,174.9 L 165.2,173.6 L 166.7,172.3 L 168.2,171.1 L 169.6,169.8 L 171.1,168.5 L 172.5,167.3 L 174.0,166.0 L 175.5,164.8 L 176.9,163.6 L 178.4,162.3 L 179.8,161.1 L 181.3,159.9 L 182.8,158.7 L 184.2,157.5 L 185.7,156.3 L 187.2,155.2 L 188.6,154.0 L 190.1,152.8 L 191.5,151.7 L 193.0,150.5 L 194.5,149.4 L 195.9,148.3 L 197.4,147.2 L 198.8,146.1 L 200.3,145.0 L 201.8,143.9 L 203.2,142.8 L 204.7,141.7 L 206.2,140.6 L 207.6,139.5 L 209.1,138.5 L 210.5,137.4 L 212.0,136.4 L 213.5,135.4 L 214.9,134.3 L 216.4,133.3 L 217.8,132.3 L 219.3,131.3 L 220.8,130.3 L 222.2,129.3 L 223.7,128.3 L 225.2,127.4 L 226.6,126.4 L 228.1,125.4 L 229.5,124.5 L 231.0,123.5 L 232.5,122.6 L 233.9,121.7 L 235.4,120.7 L 236.8,119.8 L 238.3,118.9 L 239.8,118.0 L 241.2,117.1 L 242.7,116.2 L 244.2,115.3 L 245.6,114.5 L 247.1,113.6 L 248.5,112.7 L 250.0,111.9 L 251.5,111.0 L 252.9,110.2 L 254.4,109.4 L 255.8,108.5 L 257.3,107.7 L 258.8,106.9 L 260.2,106.1 L 261.7,105.3 L 263.2,104.5 L 264.6,103.7 L 266.1,102.9 L 267.5,102.2 L 269.0,101.4 L 270.5,100.6 L 271.9,99.9 L 273.4,99.1 L 274.8,98.4 L 276.3,97.6 L 277.8,96.9 L 279.2,96.2 L 280.7,95.5 L 282.2,94.8 L 283.6,94.1 L 285.1,93.4 L 286.5,92.7 L 288.0,92.0 L 289.5,91.3 L 290.9,90.7 L 292.4,90.0 L 293.8,89.3 L 295.3,88.7 L 296.8,88.0 L 298.2,87.4 L 299.7,86.8 L 301.2,86.1 L 302.6,85.5 L 304.1,84.9 L 305.5,84.3 L 307.0,83.7 L 308.5,83.1 L 309.9,82.5 L 311.4,81.9 L 312.8,81.3 L 314.3,80.7 L 315.8,80.2 L 317.2,79.6 L 318.7,79.0 L 320.2,78.5 L 321.6,77.9 L 323.1,77.4 L 324.5,76.9 L 326.0,76.3 L 327.5,75.8 L 328.9,75.3 L 330.4,74.8 L 331.8,74.3 L 333.3,73.8 L 334.8,73.3 L 336.2,72.8 L 337.7,72.3 L 339.2,71.8 L 340.6,71.3 L 342.1,70.8 L 343.5,70.4 L 345.0,69.9 L 346.5,69.5 L 347.9,69.0 L 349.4,68.6 L 350.8,68.1 L 352.3,67.7 L 353.8,67.3 L 355.2,66.8 L 356.7,66.4 L 358.2,66.0 L 359.6,65.6 L 361.1,65.2 L 362.5,64.8 L 364.0,64.4 L 365.5,64.0 L 366.9,63.6 L 368.4,63.2 L 369.8,62.9 L 371.3,62.5 L 372.8,62.1 L 374.2,61.8 L 375.7,61.4 L 377.2,61.1 L 378.6,60.7 L 380.1,60.4 L 381.5,60.0 L 383.0,59.7 L 384.5,59.4 L 385.9,59.1 L 387.4,58.7 L 388.8,58.4 L 390.3,58.1 L 391.8,57.8 L 393.2,57.5 L 394.7,57.2 L 396.2,56.9 L 397.6,56.6 L 399.1,56.3 L 400.5,56.1 L 402.0,55.8 L 403.5,55.5 L 404.9,55.2 L 406.4,55.0 L 407.8,54.7 L 409.3,54.5 L 410.8,54.2 L 412.2,54.0 L 413.7,53.7 L 415.2,53.5 L 416.6,53.2 L 418.1,53.0 L 419.5,52.8 L 421.0,52.6 L 422.5,52.3 L 423.9,52.1 L 425.4,51.9 L 426.8,51.7 L 428.3,51.5 L 429.8,51.3 L 431.2,51.1 L 432.7,50.9 L 434.2,50.7 L 435.6,50.5 L 437.1,50.4 L 438.5,50.2 L 440.0,50.0" fill="none" stroke="#1D4ED8" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <g class="step s2">
+            <circle cx="60" cy="290" r="7" fill="#0A2A6E"/><circle cx="440" cy="50" r="7" fill="#0A2A6E"/>
+            <line x1="60" y1="290" x2="440" y2="50" stroke="#0A2A6E" stroke-width="3.4" stroke-dasharray="9 6"/>
+            <text x="452" y="214" text-anchor="end" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">800 m ÷ 5 min = 160 m/min</text>
+          </g>
+          <g class="step s3">
+            <line x1="212" y1="136.4" x2="212" y2="290" stroke="#1D4ED8" stroke-width="2.2" stroke-dasharray="6 5"/>
+            <circle cx="212" cy="136.4" r="9" fill="#1D4ED8"/>
+            <text x="196" y="110" text-anchor="end" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">et à 2 min pile ?</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1 h3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce que raconte la courbe</h3>
+          <p style="font-size:17px">La distance parcourue par un coureur, minute par minute. Elle n'augmente <b>pas régulièrement</b> : il part trop vite et s'essouffle. La courbe s'aplatit.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La vitesse moyenne, c'est une pente</h3>
+          <div class="expr" style="font-size:22px;text-align:left;line-height:1.3">800 ÷ 5 = <b style="color:var(--sfa)">160 m/min</b></div>
+          <p style="font-size:17px;margin-top:4px">On relie le départ à l'arrivée : la <b>pente de cette corde</b> est la vitesse moyenne. C'est une division, rien de plus.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Mais la question était autre</h3>
+          <p style="font-size:17px">« <b>À la 2<sup>e</sup> minute exactement, à quelle vitesse court-il ?</b> »<br>160 m/min est sa moyenne sur cinq minutes. À la 2<sup>e</sup> minute il allait plus vite — la moyenne <b>écrase</b> ce qui se passe à un instant donné.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Tout le chapitre part de là</h3>
+          <p style="font-size:17px">Une moyenne décrit un <b>intervalle</b>. La question porte sur un <b>instant</b>.<br><br>Passer de l'un à l'autre, c'est exactement ce que fait la <b>dérivée</b> — et on va la construire, pas la recevoir toute faite.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "La distance parcourue par un coureur sur cinq minutes. Il part vite, puis s'essouffle : la courbe s'aplatit.",
+      "Sa vitesse moyenne : 800 mètres en 5 minutes, soit 160 m/min. Sur le graphique, c'est la <b>pente de la corde</b>.",
+      "Mais la vraie question est ailleurs : <b>à la 2<sup>e</sup> minute exactement, il court à combien ?</b>",
+      "La moyenne ne répond pas. Elle décrit cinq minutes entières, pas un instant.",
+      "<em>C'est tout le chapitre :</em> passer d'une variation moyenne à une variation instantanée."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-D4-02 ==================== -->
+  <section class="slide" data-ref="ANIM-D4-02" data-title="On resserre : la sécante devient tangente" data-sub="La valeur converge, et la droite se stabilise" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="450" height="302">
+          <defs><marker id="b2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <g stroke="#E3E7EE" stroke-width="1">
+              <line x1="136" y1="25" x2="136" y2="300"/><line x1="212" y1="25" x2="212" y2="300"/>
+              <line x1="288" y1="25" x2="288" y2="300"/><line x1="364" y1="25" x2="364" y2="300"/>
+              <line x1="440" y1="25" x2="440" y2="300"/>
+              <line x1="48" y1="230" x2="455" y2="230"/><line x1="48" y1="170" x2="455" y2="170"/>
+              <line x1="48" y1="110" x2="455" y2="110"/><line x1="48" y1="50" x2="455" y2="50"/>
+            </g>
+            <line x1="45" y1="290" x2="458" y2="290" stroke="#8A8F98" stroke-width="1.6"/>
+            <line x1="60" y1="22" x2="60" y2="305" stroke="#8A8F98" stroke-width="1.6"/>
+            <g font-size="12" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">
+              <text x="136" y="307" text-anchor="middle">1</text><text x="212" y="307" text-anchor="middle">2</text>
+              <text x="288" y="307" text-anchor="middle">3</text><text x="364" y="307" text-anchor="middle">4</text>
+              <text x="440" y="307" text-anchor="middle">5</text>
+              <text x="52" y="234" text-anchor="end">200</text><text x="52" y="114" text-anchor="end">600</text>
+              <text x="52" y="54" text-anchor="end">800</text>
+              <text x="458" y="276" text-anchor="end">t (min)</text><text x="70" y="34">distance (m)</text>
+            </g>
+          </g>
+          <g class="step s1">
+            <path d="M 60.0,290.0 L 61.5,288.0 L 62.9,286.1 L 64.4,284.2 L 65.8,282.2 L 67.3,280.3 L 68.8,278.4 L 70.2,276.5 L 71.7,274.6 L 73.2,272.8 L 74.6,270.9 L 76.1,269.0 L 77.5,267.2 L 79.0,265.4 L 80.5,263.5 L 81.9,261.7 L 83.4,259.9 L 84.8,258.1 L 86.3,256.3 L 87.8,254.5 L 89.2,252.8 L 90.7,251.0 L 92.2,249.3 L 93.6,247.5 L 95.1,245.8 L 96.5,244.1 L 98.0,242.4 L 99.5,240.7 L 100.9,239.0 L 102.4,237.3 L 103.8,235.6 L 105.3,234.0 L 106.8,232.3 L 108.2,230.7 L 109.7,229.0 L 111.2,227.4 L 112.6,225.8 L 114.1,224.2 L 115.5,222.6 L 117.0,221.0 L 118.5,219.4 L 119.9,217.9 L 121.4,216.3 L 122.8,214.8 L 124.3,213.2 L 125.8,211.7 L 127.2,210.2 L 128.7,208.6 L 130.2,207.1 L 131.6,205.6 L 133.1,204.1 L 134.5,202.7 L 136.0,201.2 L 137.5,199.7 L 138.9,198.3 L 140.4,196.8 L 141.8,195.4 L 143.3,194.0 L 144.8,192.6 L 146.2,191.2 L 147.7,189.8 L 149.2,188.4 L 150.6,187.0 L 152.1,185.6 L 153.5,184.2 L 155.0,182.9 L 156.5,181.5 L 157.9,180.2 L 159.4,178.9 L 160.8,177.6 L 162.3,176.2 L 163.8,174.9 L 165.2,173.6 L 166.7,172.3 L 168.2,171.1 L 169.6,169.8 L 171.1,168.5 L 172.5,167.3 L 174.0,166.0 L 175.5,164.8 L 176.9,163.6 L 178.4,162.3 L 179.8,161.1 L 181.3,159.9 L 182.8,158.7 L 184.2,157.5 L 185.7,156.3 L 187.2,155.2 L 188.6,154.0 L 190.1,152.8 L 191.5,151.7 L 193.0,150.5 L 194.5,149.4 L 195.9,148.3 L 197.4,147.2 L 198.8,146.1 L 200.3,145.0 L 201.8,143.9 L 203.2,142.8 L 204.7,141.7 L 206.2,140.6 L 207.6,139.5 L 209.1,138.5 L 210.5,137.4 L 212.0,136.4 L 213.5,135.4 L 214.9,134.3 L 216.4,133.3 L 217.8,132.3 L 219.3,131.3 L 220.8,130.3 L 222.2,129.3 L 223.7,128.3 L 225.2,127.4 L 226.6,126.4 L 228.1,125.4 L 229.5,124.5 L 231.0,123.5 L 232.5,122.6 L 233.9,121.7 L 235.4,120.7 L 236.8,119.8 L 238.3,118.9 L 239.8,118.0 L 241.2,117.1 L 242.7,116.2 L 244.2,115.3 L 245.6,114.5 L 247.1,113.6 L 248.5,112.7 L 250.0,111.9 L 251.5,111.0 L 252.9,110.2 L 254.4,109.4 L 255.8,108.5 L 257.3,107.7 L 258.8,106.9 L 260.2,106.1 L 261.7,105.3 L 263.2,104.5 L 264.6,103.7 L 266.1,102.9 L 267.5,102.2 L 269.0,101.4 L 270.5,100.6 L 271.9,99.9 L 273.4,99.1 L 274.8,98.4 L 276.3,97.6 L 277.8,96.9 L 279.2,96.2 L 280.7,95.5 L 282.2,94.8 L 283.6,94.1 L 285.1,93.4 L 286.5,92.7 L 288.0,92.0 L 289.5,91.3 L 290.9,90.7 L 292.4,90.0 L 293.8,89.3 L 295.3,88.7 L 296.8,88.0 L 298.2,87.4 L 299.7,86.8 L 301.2,86.1 L 302.6,85.5 L 304.1,84.9 L 305.5,84.3 L 307.0,83.7 L 308.5,83.1 L 309.9,82.5 L 311.4,81.9 L 312.8,81.3 L 314.3,80.7 L 315.8,80.2 L 317.2,79.6 L 318.7,79.0 L 320.2,78.5 L 321.6,77.9 L 323.1,77.4 L 324.5,76.9 L 326.0,76.3 L 327.5,75.8 L 328.9,75.3 L 330.4,74.8 L 331.8,74.3 L 333.3,73.8 L 334.8,73.3 L 336.2,72.8 L 337.7,72.3 L 339.2,71.8 L 340.6,71.3 L 342.1,70.8 L 343.5,70.4 L 345.0,69.9 L 346.5,69.5 L 347.9,69.0 L 349.4,68.6 L 350.8,68.1 L 352.3,67.7 L 353.8,67.3 L 355.2,66.8 L 356.7,66.4 L 358.2,66.0 L 359.6,65.6 L 361.1,65.2 L 362.5,64.8 L 364.0,64.4 L 365.5,64.0 L 366.9,63.6 L 368.4,63.2 L 369.8,62.9 L 371.3,62.5 L 372.8,62.1 L 374.2,61.8 L 375.7,61.4 L 377.2,61.1 L 378.6,60.7 L 380.1,60.4 L 381.5,60.0 L 383.0,59.7 L 384.5,59.4 L 385.9,59.1 L 387.4,58.7 L 388.8,58.4 L 390.3,58.1 L 391.8,57.8 L 393.2,57.5 L 394.7,57.2 L 396.2,56.9 L 397.6,56.6 L 399.1,56.3 L 400.5,56.1 L 402.0,55.8 L 403.5,55.5 L 404.9,55.2 L 406.4,55.0 L 407.8,54.7 L 409.3,54.5 L 410.8,54.2 L 412.2,54.0 L 413.7,53.7 L 415.2,53.5 L 416.6,53.2 L 418.1,53.0 L 419.5,52.8 L 421.0,52.6 L 422.5,52.3 L 423.9,52.1 L 425.4,51.9 L 426.8,51.7 L 428.3,51.5 L 429.8,51.3 L 431.2,51.1 L 432.7,50.9 L 434.2,50.7 L 435.6,50.5 L 437.1,50.4 L 438.5,50.2 L 440.0,50.0" fill="none" stroke="#1D4ED8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="212" cy="136.4" r="9" fill="#1D4ED8"/>
+            <text x="200" y="128" text-anchor="end" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">A (2 min)</text>
+          </g>
+          <g class="step s1 h2">
+            <circle cx="364" cy="64.4" r="8" fill="#8A8F98"/>
+            <line x1="185" y1="146" x2="392" y2="55" stroke="#8A8F98" stroke-width="3"/>
+            <text x="376" y="96" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="700">120</text>
+          </g>
+          <g class="step s2 h3">
+            <circle cx="288" cy="92" r="8" fill="#8A8F98"/>
+            <line x1="185" y1="152" x2="316" y2="75" stroke="#8A8F98" stroke-width="3"/>
+            <text x="300" y="118" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="700">148</text>
+          </g>
+          <g class="step s3 h4">
+            <circle cx="250" cy="111.9" r="8" fill="#8A8F98"/>
+            <line x1="185" y1="152" x2="278" y2="94" stroke="#8A8F98" stroke-width="3"/>
+            <text x="262" y="136" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="700">163,5</text>
+          </g>
+          <g class="step s4">
+            <line x1="140" y1="187" x2="330" y2="52" stroke="#0A2A6E" stroke-width="4.5" stroke-linecap="round"/>
+            <text x="340" y="42" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">180 m/min</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:12px">
+        <div class="card step s1 h4" style="padding:13px 22px"><h3 style="margin-bottom:4px;font-size:18px">On garde A et on rapproche le second point</h3>
+          <p style="font-size:17px">Chaque corde donne une vitesse moyenne sur un intervalle de plus en plus court. La droite <b>pivote</b> autour de A.</p></div>
+        <div class="card acc step s4" style="padding:13px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les valeurs convergent</h3>
+          <div class="expr" style="font-size:18px;text-align:left;line-height:1.55">sur [2 ; 4] → 120 m/min<br>sur [2 ; 3] → 148<br>sur [2 ; 2,5] → 163,5<br>sur [2 ; 2,1] → 176,6<br>→ <b style="color:var(--sfa)">180 m/min</b></div></div>
+        <div class="card step s5" style="padding:13px 22px"><h3 style="margin-bottom:4px;font-size:18px">La droite limite a un nom</h3>
+          <p style="font-size:17px">Quand l'intervalle se réduit à un point, la sécante devient la <b>tangente</b> en A. Sa pente est la vitesse <b>à l'instant</b> t = 2 : 180 m/min.</p></div>
+        <div class="card deep step s5 rise" style="padding:13px 22px"><h3 style="margin-bottom:4px;font-size:18px">Et seulement maintenant, le mot</h3>
+          <div class="expr" style="font-size:20px;text-align:left;line-height:1.3;color:#fff">f′(2) = 180</div>
+          <p style="font-size:17px;margin-top:6px">Cette limite du taux d'accroissement s'appelle le <b>nombre dérivé</b>. La définition est la <b>conclusion</b> du raisonnement, pas son point de départ — et l'étudiant vient de la construire lui-même.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "On fixe le point A à 2 minutes, et on prend la moyenne jusqu'à la 4<sup>e</sup> minute : 120 m/min.",
+      "On rapproche : jusqu'à la 3<sup>e</sup> minute, 148 m/min. La corde a pivoté.",
+      "Encore : jusqu'à 2 min 30, 163,5 m/min.",
+      "La droite se stabilise et les valeurs convergent vers <b>180</b>. Cette droite limite est la <b>tangente</b>.",
+      "<em>Le mot arrive en dernier :</em> cette limite s'appelle le nombre dérivé, f′(2)."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-D4-03 ==================== -->
+  <section class="slide" data-ref="ANIM-D4-03" data-title="Les dérivées à connaître" data-sub="Six usuelles, quatre raccourcies — et rien d'autre à mémoriser" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="450" height="302">
+          <defs><marker id="b3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <rect x="18" y="20" width="434" height="130" rx="14" fill="#E9EEFC" stroke="#1D4ED8" stroke-width="2.5"/>
+            <text x="36" y="46" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">LES SIX USUELLES</text>
+            <g font-size="17" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="600">
+              <text x="36" y="80">k → 0</text>
+              <text x="170" y="80">xⁿ → n xⁿ⁻¹</text>
+              <text x="320" y="80">eˣ → eˣ</text>
+              <text x="36" y="114">ln x → 1 ÷ x</text>
+              <text x="170" y="114">sin x → cos x</text>
+              <text x="320" y="114">cos x → −sin x</text>
+            </g>
+            <text x="36" y="139" font-size="12" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="600">√x = x^½ : sa dérivée sort de la règle des puissances</text>
+          </g>
+          <g class="step s2">
+            <rect x="18" y="164" width="434" height="128" rx="14" fill="#F4F6FA" stroke="#0A2A6E" stroke-width="2.5"/>
+            <text x="36" y="190" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">LES QUATRE RACCOURCIES — LE GAIN DE TEMPS</text>
+            <g font-size="16" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="600">
+              <text x="36" y="224">e^(ax+b) → a e^(ax+b)</text>
+              <text x="240" y="224">ln(ax+b) → a ÷ (ax+b)</text>
+              <text x="36" y="258">sin(ax+b) → a cos(ax+b)</text>
+              <text x="240" y="258">cos(ax+b) → −a sin(ax+b)</text>
+            </g>
+            <text x="36" y="282" font-size="12" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="600">le facteur a est la dérivée de l'intérieur</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les bases non naturelles</h3>
+          <div class="expr" style="font-size:19px;text-align:left;line-height:1.4">(a<sup>x</sup>)′ = ln(a) · a<sup>x</sup><br>(log<sub>a</sub> x)′ = 1 ÷ (x · ln a)</div>
+          <p style="font-size:17px;margin-top:4px">Elles ne s'apprennent pas : elles se <b>retrouvent</b> en repassant par e et ln.</p></div>
+        <div class="card acc step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le cas de la racine, pour l'exemple</h3>
+          <div class="expr" style="font-size:19px;text-align:left;line-height:1.4">√x = x<sup>1/2</sup> → (√x)′ = ½ x<sup>−1/2</sup> = <b style="color:var(--sfa)">1 ÷ (2√x)</b></div>
+          <p style="font-size:17px;margin-top:4px">Aucune formule nouvelle. On réécrit, et la règle des puissances fait le travail.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce qu'il faut vraiment retenir</h3>
+          <p style="font-size:17px">Le tableau est court : <b>six lignes</b>. Tout le reste du chapitre consiste à <b>combiner</b> ces six résultats avec cinq règles.<br><br>Un étudiant qui hésite sur (ln x)′ perdra le chapitre entier. Ces six-là se sachent <b>instantanément</b>, sans réfléchir.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Les six dérivées usuelles. C'est tout ce qu'il y a à mémoriser dans ce chapitre.",
+      "Les quatre raccourcies : elles traitent d'un coup les composées les plus fréquentes, où l'intérieur est du premier degré.",
+      "Les bases non naturelles ne s'apprennent pas, elles se retrouvent en repassant par e et ln.",
+      "Et la racine n'est pas un cas à part : c'est une puissance déguisée.",
+      "<em>Le vrai enjeu :</em> ces six-là doivent venir sans réfléchir. Tout le reste se construit dessus."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-D4-04 ==================== -->
+  <section class="slide" data-ref="ANIM-D4-04" data-title="L'arbre de décomposition" data-sub="On ne dérive jamais une expression entière d'un coup" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="450" height="302">
+          <defs><marker id="b4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <rect x="110" y="18" width="250" height="46" rx="12" fill="#0A2A6E"/>
+            <text x="235" y="48" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#fff" font-weight="700">f(x) = ln(x² + 1)</text>
+          </g>
+          <g class="step s2">
+            <line x1="235" y1="66" x2="122" y2="98" stroke="#8A8F98" stroke-width="2.6"/>
+            <line x1="235" y1="66" x2="348" y2="98" stroke="#8A8F98" stroke-width="2.6"/>
+            <rect x="30" y="100" width="184" height="46" rx="11" fill="#E9EEFC" stroke="#1D4ED8" stroke-width="2.4"/>
+            <text x="122" y="129" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">extérieur : ln</text>
+            <rect x="256" y="100" width="184" height="46" rx="11" fill="#E9EEFC" stroke="#1D4ED8" stroke-width="2.4"/>
+            <text x="348" y="129" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">intérieur : u = x² + 1</text>
+          </g>
+          <g class="step s3">
+            <line x1="122" y1="148" x2="122" y2="176" stroke="#8A8F98" stroke-width="2.6"/>
+            <line x1="348" y1="148" x2="348" y2="176" stroke="#8A8F98" stroke-width="2.6"/>
+            <rect x="30" y="178" width="184" height="44" rx="11" fill="#F4F6FA" stroke="#0A2A6E" stroke-width="2.4"/>
+            <text x="122" y="206" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">(ln u)′ = 1 ÷ u</text>
+            <rect x="256" y="178" width="184" height="44" rx="11" fill="#F4F6FA" stroke="#0A2A6E" stroke-width="2.4"/>
+            <text x="348" y="206" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">u′ = 2x</text>
+          </g>
+          <g class="step s4">
+            <line x1="122" y1="224" x2="235" y2="252" stroke="#1D4ED8" stroke-width="3"/>
+            <line x1="348" y1="224" x2="235" y2="252" stroke="#1D4ED8" stroke-width="3"/>
+            <rect x="96" y="254" width="278" height="48" rx="12" fill="#1D4ED8"/>
+            <text x="235" y="285" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#fff" font-weight="700">f′(x) = 2x ÷ (x² + 1)</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:12px">
+        <div class="card step s2 h4" style="padding:13px 22px"><h3 style="margin-bottom:4px;font-size:18px">Toujours la même méthode</h3>
+          <p style="font-size:17px">On identifie l'<b>extérieur</b> et l'<b>intérieur</b>, on dérive chacun <b>séparément</b>, puis on recombine. Jamais de tête.</p></div>
+        <div class="card acc step s4" style="padding:13px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les cinq règles, dans l'ordre d'usage</h3>
+          <div class="expr" style="font-size:17px;text-align:left;line-height:1.55">facteur constant : il sort<br>somme : terme à terme<br>produit : (uv)′ = u′v + uv′<br>quotient : (u/v)′ = (u′v − uv′) ÷ v²<br>composition : extérieur × dérivée de l'intérieur</div></div>
+        <div class="card step s5" style="padding:13px 22px"><h3 style="margin-bottom:4px;font-size:18px">Les deux pièges de calcul</h3>
+          <p style="font-size:17px"><b>(uv)′ n'est pas u′v′</b> : à vérifier sur x × x, dont la dérivée vaut 2x.<br><b>L'ordre du quotient n'est pas commutatif</b> : l'inverser change le signe de la dérivée, donc les variations.</p></div>
+        <div class="card deep step s5 rise" style="padding:13px 22px"><h3 style="margin-bottom:4px;font-size:18px">L'oubli le plus coûteux du chapitre</h3>
+          <div class="expr" style="font-size:21px;text-align:left;line-height:1.3;color:#fff">(e<sup>3x</sup>)′ = 3e<sup>3x</sup>, pas e<sup>3x</sup></div>
+          <p style="font-size:17px;margin-top:6px">On <b>n'oublie jamais la dérivée de l'intérieur</b>. C'est la faute qui coûte le plus de points du chapitre, et elle vient toujours d'une dérivation faite de tête.<br><br>La discipline : poser u, u′, v, v′ sur quatre lignes avant d'écrire quoi que ce soit.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une fonction composée. On ne la dérive pas d'un bloc.",
+      "On la décompose : un extérieur — le logarithme — et un intérieur — x² + 1.",
+      "Chaque brique est dérivée <b>séparément</b>. Deux résultats simples.",
+      "La règle de composition les recombine : dérivée de l'extérieur, multipliée par la dérivée de l'intérieur.",
+      "<em>Et le piège :</em> la dérivée de l'intérieur ne s'oublie jamais. C'est la faute la plus coûteuse du chapitre."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule D4-A — Le calcul des dérivées · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

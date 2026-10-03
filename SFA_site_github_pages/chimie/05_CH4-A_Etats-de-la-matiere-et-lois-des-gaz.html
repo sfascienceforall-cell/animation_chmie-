@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule CH4-A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#0F7A4F;          /* bleu SFA */
+  --deep:#08402A;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#E4F2EA;         /* bleu 8 % */
+  --tint2:#C2E0D0;        /* bleu 18 % */
+  --surface:#F2F7F4;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-CH4-01 ==================== -->
+  <section class="slide" data-ref="ANIM-CH4-01" data-title="Corps pur, mélange, phase" data-sub="Trois mots, et le test qui les distingue" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <text x="83" y="32" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">corps pur</text>
+            <rect x="12" y="48" width="142" height="212" rx="12" fill="#E4F2EA" stroke="#08402A" stroke-width="2.6"/>
+            <circle cx="50" cy="104" r="13" fill="#0F7A4F"/><circle cx="116" cy="104" r="13" fill="#0F7A4F"/>
+            <circle cx="83" cy="154" r="13" fill="#0F7A4F"/>
+            <circle cx="50" cy="204" r="13" fill="#0F7A4F"/><circle cx="116" cy="204" r="13" fill="#0F7A4F"/>
+            <text x="83" y="292" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">une seule espèce</text>
+          </g>
+          <g class="step s2">
+            <text x="235" y="32" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">homogène</text>
+            <rect x="164" y="48" width="142" height="212" rx="12" fill="#E4F2EA" stroke="#08402A" stroke-width="2.6"/>
+            <circle cx="202" cy="104" r="13" fill="#0F7A4F"/><circle cx="268" cy="104" r="13" fill="#08402A"/>
+            <circle cx="235" cy="154" r="13" fill="#08402A"/>
+            <circle cx="202" cy="204" r="13" fill="#08402A"/><circle cx="268" cy="204" r="13" fill="#0F7A4F"/>
+            <text x="235" y="292" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">une seule phase</text>
+          </g>
+          <g class="step s3">
+            <text x="387" y="32" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">hétérogène</text>
+            <rect x="316" y="48" width="142" height="212" rx="12" fill="#E4F2EA" stroke="#08402A" stroke-width="2.6"/>
+            <path d="M318 154 L318 248 Q318 260 330 260 L444 260 Q456 260 456 248 L456 154 Z" fill="#C2E0D0"/>
+            <circle cx="354" cy="98" r="13" fill="#0F7A4F"/><circle cx="420" cy="98" r="13" fill="#0F7A4F"/>
+            <circle cx="387" cy="126" r="13" fill="#0F7A4F"/>
+            <circle cx="354" cy="196" r="13" fill="#08402A"/><circle cx="420" cy="196" r="13" fill="#08402A"/>
+            <circle cx="387" cy="226" r="13" fill="#08402A"/>
+            <line x1="318" y1="154" x2="456" y2="154" stroke="#C02A20" stroke-width="3"/>
+            <text x="387" y="292" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">deux phases</text>
+          </g>
+          <g class="step s4">
+            <rect x="12" y="330" width="446" height="104" rx="14" fill="#C2E0D0"/>
+            <text x="235" y="372" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">on distingue les constituants ?</text>
+            <text x="235" y="408" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">alors c'est hétérogène</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Un corps pur</h3>
+          <p style="font-size:17px">Il ne contient qu'<b>une seule espèce chimique</b>. L'eau distillée est un corps pur ; l'eau du robinet ne l'est pas.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Une phase</h3>
+          <p style="font-size:17px">C'est une région d'aspect et de composition <b>uniformes</b>. Un mélange homogène n'en présente qu'une ; un mélange hétérogène en présente plusieurs.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le test, et il est visuel</h3>
+          <p style="font-size:17px">Si on <b>distingue</b> les constituants — à l'œil ou au microscope — le mélange est hétérogène. Sinon il est homogène.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège de vocabulaire</h3>
+          <p style="font-size:17px"><b>« Homogène » ne veut pas dire « pur ».</b> L'eau salée est parfaitement homogène — une seule phase, aucune séparation visible — et ce n'est pourtant pas un corps pur : elle contient deux espèces.<br><br>Les deux mots répondent à deux questions différentes : <b>combien d'espèces</b>, et <b>combien de phases</b>.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un corps pur : une seule espèce chimique, rien d'autre.",
+      "Un mélange homogène : plusieurs espèces, mais une seule phase — on ne les distingue pas.",
+      "Un mélange hétérogène : on voit la séparation, il y a deux phases.",
+      "Le test tient en une question : distingue-t-on les constituants ?",
+      "<em>Et le piège :</em> homogène ne veut pas dire pur. L'eau salée en est la preuve."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-CH4-02 ==================== -->
+  <section class="slide" data-ref="ANIM-CH4-02" data-title="Les trois états, vus par les liaisons" data-sub="Ce que CH3 vient d'expliquer, appliqué" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <text x="83" y="32" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">SOLIDE</text>
+            <rect x="12" y="46" width="142" height="180" rx="12" fill="#FFFFFF" stroke="#08402A" stroke-width="2.6"/>
+            <circle cx="38.0" cy="91.0" r="10" fill="#0F7A4F"/><circle cx="38.0" cy="121.0" r="10" fill="#0F7A4F"/><circle cx="38.0" cy="151.0" r="10" fill="#0F7A4F"/><circle cx="38.0" cy="181.0" r="10" fill="#0F7A4F"/><circle cx="68.0" cy="91.0" r="10" fill="#0F7A4F"/><circle cx="68.0" cy="121.0" r="10" fill="#0F7A4F"/><circle cx="68.0" cy="151.0" r="10" fill="#0F7A4F"/><circle cx="68.0" cy="181.0" r="10" fill="#0F7A4F"/><circle cx="98.0" cy="91.0" r="10" fill="#0F7A4F"/><circle cx="98.0" cy="121.0" r="10" fill="#0F7A4F"/><circle cx="98.0" cy="151.0" r="10" fill="#0F7A4F"/><circle cx="98.0" cy="181.0" r="10" fill="#0F7A4F"/><circle cx="128.0" cy="91.0" r="10" fill="#0F7A4F"/><circle cx="128.0" cy="121.0" r="10" fill="#0F7A4F"/><circle cx="128.0" cy="151.0" r="10" fill="#0F7A4F"/><circle cx="128.0" cy="181.0" r="10" fill="#0F7A4F"/>
+            <text x="83" y="262" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">forces dominantes</text>
+            <text x="83" y="288" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">ordonné, figé</text>
+            <text x="83" y="330" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">forme et volume</text>
+            <text x="83" y="352" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">propres</text>
+          </g>
+          <g class="step s2">
+            <text x="235" y="32" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">LIQUIDE</text>
+            <rect x="164" y="46" width="142" height="180" rx="12" fill="#FFFFFF" stroke="#08402A" stroke-width="2.6"/>
+            <circle cx="187.9" cy="87.5" r="10" fill="#0F7A4F"/><circle cx="191.8" cy="116.7" r="10" fill="#0F7A4F"/><circle cx="190.4" cy="149.7" r="10" fill="#0F7A4F"/><circle cx="184.7" cy="181.1" r="10" fill="#0F7A4F"/><circle cx="214.4" cy="90.3" r="10" fill="#0F7A4F"/><circle cx="214.8" cy="116.9" r="10" fill="#0F7A4F"/><circle cx="219.1" cy="154.3" r="10" fill="#0F7A4F"/><circle cx="215.5" cy="178.2" r="10" fill="#0F7A4F"/><circle cx="251.5" cy="95.5" r="10" fill="#0F7A4F"/><circle cx="250.9" cy="120.0" r="10" fill="#0F7A4F"/><circle cx="255.7" cy="146.5" r="10" fill="#0F7A4F"/><circle cx="254.3" cy="178.9" r="10" fill="#0F7A4F"/><circle cx="275.7" cy="87.2" r="10" fill="#0F7A4F"/><circle cx="277.7" cy="124.2" r="10" fill="#0F7A4F"/><circle cx="276.2" cy="151.8" r="10" fill="#0F7A4F"/><circle cx="281.7" cy="179.7" r="10" fill="#0F7A4F"/>
+            <text x="235" y="262" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">forces présentes</text>
+            <text x="235" y="288" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">mobile mais serré</text>
+            <text x="235" y="330" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">volume propre</text>
+            <text x="235" y="352" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">seulement</text>
+          </g>
+          <g class="step s3">
+            <text x="387" y="32" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">GAZ</text>
+            <rect x="316" y="46" width="142" height="180" rx="12" fill="#FFFFFF" stroke="#08402A" stroke-width="2.6"/>
+            <circle cx="359.2" cy="142.4" r="10" fill="#0F7A4F"/><circle cx="373.2" cy="151.0" r="10" fill="#0F7A4F"/><circle cx="400.3" cy="73.4" r="10" fill="#0F7A4F"/><circle cx="335.4" cy="184.6" r="10" fill="#0F7A4F"/><circle cx="361.5" cy="97.7" r="10" fill="#0F7A4F"/><circle cx="439.5" cy="131.7" r="10" fill="#0F7A4F"/>
+            <text x="387" y="262" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">forces faibles</text>
+            <text x="387" y="288" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">libre et espacé</text>
+            <text x="387" y="330" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">ni forme</text>
+            <text x="387" y="352" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">ni volume</text>
+          </g>
+          <g class="step s4">
+            <rect x="12" y="382" width="446" height="76" rx="14" fill="#C2E0D0"/>
+            <text x="235" y="412" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">solide et liquide : incompressibles</text>
+            <text x="235" y="440" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">gaz : surtout du vide, donc compressible</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Une seule grandeur explique les trois</h3>
+          <p style="font-size:17px">C'est le rapport entre les <b>forces intermoléculaires</b> — vues en CH3 — et l'<b>agitation thermique</b>. Chauffer, c'est augmenter la seconde.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce que « volume propre » signifie</h3>
+          <p style="font-size:17px">Dans un solide et un liquide, les particules se <b>touchent déjà</b> : on ne peut plus les rapprocher. C'est pourquoi ils sont pratiquement <b>incompressibles</b>.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Un gaz est surtout du vide</h3>
+          <p style="font-size:17px">Ses particules sont très éloignées les unes des autres. Il est donc <b>fortement compressible</b>, et occupe tout le volume qu'on lui offre.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce que ce tableau permet de prédire</h3>
+          <p style="font-size:17px">Une substance à fortes liaisons intermoléculaires — l'eau, avec ses liaisons hydrogène — sera <b>liquide</b> là où une substance apolaire de masse comparable sera <b>gazeuse</b>.<br><br>L'état d'un corps à température ambiante n'est donc pas une donnée à apprendre : il se <b>déduit</b> de la nature de ses liaisons. C'est le lien direct avec la capsule précédente.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Dans un solide, les forces l'emportent : les particules sont ordonnées et fixes.",
+      "Dans un liquide, elles se touchent encore mais peuvent glisser les unes sur les autres.",
+      "Dans un gaz, elles sont libres et très espacées — le gaz est surtout du vide.",
+      "D'où l'incompressibilité des deux premiers, et la compressibilité du troisième.",
+      "<em>Et l'état se déduit :</em> fortes liaisons intermoléculaires, donc liquide plutôt que gaz."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-CH4-03 ==================== -->
+  <section class="slide" data-ref="ANIM-CH4-03" data-title="PV = nRT, et les trois lois qu'elle contient" data-sub="Boyle, Charles, Gay-Lussac en une seule équation" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <line x1="46" y1="360" x2="458" y2="360" stroke="#8A8F98" stroke-width="1.8"/>
+            <line x1="64" y1="36" x2="64" y2="378" stroke="#8A8F98" stroke-width="1.8"/>
+            <text x="456" y="384" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">volume V</text>
+            <text x="76" y="50" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">pression P</text>
+          </g>
+          <g class="step s2">
+            <path d="M 126.0,72.0 L 127.3,77.9 L 128.6,83.5 L 129.9,88.9 L 131.2,94.2 L 132.5,99.2 L 133.8,104.0 L 135.0,108.7 L 136.3,113.1 L 137.6,117.5 L 138.9,121.7 L 140.2,125.7 L 141.5,129.6 L 142.8,133.4 L 144.1,137.0 L 145.4,140.6 L 146.7,144.0 L 148.0,147.3 L 149.2,150.5 L 150.5,153.7 L 151.8,156.7 L 153.1,159.7 L 154.4,162.5 L 155.7,165.3 L 157.0,168.0 L 158.3,170.6 L 159.6,173.2 L 160.9,175.7 L 162.2,178.1 L 163.5,180.5 L 164.8,182.8 L 166.0,185.0 L 167.3,187.2 L 168.6,189.3 L 169.9,191.4 L 171.2,193.4 L 172.5,195.4 L 173.8,197.4 L 175.1,199.3 L 176.4,201.1 L 177.7,202.9 L 179.0,204.7 L 180.2,206.4 L 181.5,208.1 L 182.8,209.7 L 184.1,211.4 L 185.4,212.9 L 186.7,214.5 L 188.0,216.0 L 189.3,217.5 L 190.6,218.9 L 191.9,220.4 L 193.2,221.8 L 194.5,223.1 L 195.8,224.5 L 197.0,225.8 L 198.3,227.1 L 199.6,228.3 L 200.9,229.6 L 202.2,230.8 L 203.5,232.0 L 204.8,233.2 L 206.1,234.3 L 207.4,235.5 L 208.7,236.6 L 210.0,237.7 L 211.2,238.7 L 212.5,239.8 L 213.8,240.8 L 215.1,241.8 L 216.4,242.8 L 217.7,243.8 L 219.0,244.8 L 220.3,245.8 L 221.6,246.7 L 222.9,247.6 L 224.2,248.5 L 225.5,249.4 L 226.8,250.3 L 228.0,251.1 L 229.3,252.0 L 230.6,252.8 L 231.9,253.7 L 233.2,254.5 L 234.5,255.3 L 235.8,256.1 L 237.1,256.8 L 238.4,257.6 L 239.7,258.4 L 241.0,259.1 L 242.2,259.8 L 243.5,260.5 L 244.8,261.3 L 246.1,262.0 L 247.4,262.6 L 248.7,263.3 L 250.0,264.0 L 251.3,264.7 L 252.6,265.3 L 253.9,266.0 L 255.2,266.6 L 256.5,267.2 L 257.8,267.8 L 259.0,268.5 L 260.3,269.1 L 261.6,269.6 L 262.9,270.2 L 264.2,270.8 L 265.5,271.4 L 266.8,271.9 L 268.1,272.5 L 269.4,273.1 L 270.7,273.6 L 272.0,274.1 L 273.2,274.7 L 274.5,275.2 L 275.8,275.7 L 277.1,276.2 L 278.4,276.7 L 279.7,277.2 L 281.0,277.7 L 282.3,278.2 L 283.6,278.7 L 284.9,279.2 L 286.2,279.6 L 287.5,280.1 L 288.8,280.6 L 290.0,281.0 L 291.3,281.5 L 292.6,281.9 L 293.9,282.3 L 295.2,282.8 L 296.5,283.2 L 297.8,283.6 L 299.1,284.0 L 300.4,284.5 L 301.7,284.9 L 303.0,285.3 L 304.2,285.7 L 305.5,286.1 L 306.8,286.5 L 308.1,286.9 L 309.4,287.2 L 310.7,287.6 L 312.0,288.0 L 313.3,288.4 L 314.6,288.7 L 315.9,289.1 L 317.2,289.5 L 318.5,289.8 L 319.8,290.2 L 321.0,290.5 L 322.3,290.9 L 323.6,291.2 L 324.9,291.6 L 326.2,291.9 L 327.5,292.2 L 328.8,292.6 L 330.1,292.9 L 331.4,293.2 L 332.7,293.5 L 334.0,293.9 L 335.2,294.2 L 336.5,294.5 L 337.8,294.8 L 339.1,295.1 L 340.4,295.4 L 341.7,295.7 L 343.0,296.0 L 344.3,296.3 L 345.6,296.6 L 346.9,296.9 L 348.2,297.2 L 349.5,297.4 L 350.8,297.7 L 352.0,298.0 L 353.3,298.3 L 354.6,298.6 L 355.9,298.8 L 357.2,299.1 L 358.5,299.4 L 359.8,299.6 L 361.1,299.9 L 362.4,300.2 L 363.7,300.4 L 365.0,300.7 L 366.2,300.9 L 367.5,301.2 L 368.8,301.4 L 370.1,301.7 L 371.4,301.9 L 372.7,302.2 L 374.0,302.4 L 375.3,302.6 L 376.6,302.9 L 377.9,303.1 L 379.2,303.3 L 380.5,303.6 L 381.8,303.8 L 383.0,304.0 L 384.3,304.3 L 385.6,304.5 L 386.9,304.7 L 388.2,304.9 L 389.5,305.1 L 390.8,305.4 L 392.1,305.6 L 393.4,305.8 L 394.7,306.0 L 396.0,306.2 L 397.2,306.4 L 398.5,306.6 L 399.8,306.8 L 401.1,307.0 L 402.4,307.2 L 403.7,307.4 L 405.0,307.6 L 406.3,307.8 L 407.6,308.0 L 408.9,308.2 L 410.2,308.4 L 411.5,308.6 L 412.8,308.8 L 414.0,309.0 L 415.3,309.2 L 416.6,309.4 L 417.9,309.5 L 419.2,309.7 L 420.5,309.9 L 421.8,310.1 L 423.1,310.3 L 424.4,310.5 L 425.7,310.6 L 427.0,310.8 L 428.2,311.0 L 429.5,311.2 L 430.8,311.3 L 432.1,311.5 L 433.4,311.7 L 434.7,311.8 L 436.0,312.0" fill="none" stroke="#0F7A4F" stroke-width="4.5" stroke-linecap="round"/>
+            <text x="248" y="148" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">P × V = constante</text>
+            <text x="248" y="176" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">à température constante</text>
+          </g>
+          <g class="step s3">
+            <circle cx="126.0" cy="72.0" r="9" fill="#08402A"/>
+            <circle cx="188.0" cy="216.0" r="9" fill="#08402A"/>
+            <line x1="126.0" y1="72.0" x2="188.0" y2="216.0" stroke="#08402A" stroke-width="2.2" stroke-dasharray="6 5"/>
+            <text x="206" y="304" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">V doublé → P divisée par 2</text>
+          </g>
+          <g class="step s4">
+            <rect x="44" y="402" width="382" height="58" rx="12" fill="#C2E0D0"/>
+            <text x="235" y="426" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">T toujours en kelvins</text>
+            <text x="235" y="450" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">T(K) = θ(°C) + 273</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Une seule équation</h3>
+          <div class="expr" style="font-size:26px;text-align:left;line-height:1.25">P V = n R T</div>
+          <p style="font-size:17px;margin-top:4px">Elle relie les quatre grandeurs d'un gaz. Les trois lois historiques n'en sont que des cas particuliers.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">À température constante : Boyle</h3>
+          <p style="font-size:17px">P × V reste constant. Comprimer, c'est faire monter la pression <b>en proportion inverse</b> — d'où cette courbe, qui est une hyperbole.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">À pression constante : Charles</h3>
+          <p style="font-size:17px">V / T reste constant : le volume est <b>proportionnel à la température absolue</b>. Et c'est là que le piège se referme.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La méthode la plus rapide, et le piège à éviter</h3>
+          <p style="font-size:17px">Quand on <b>compare deux états</b>, on n'utilise jamais PV = nRT directement. On écrit <b>P₁V₁ / T₁ = P₂V₂ / T₂</b> et on simplifie ce qui ne change pas : ni R ni n n'apparaissent.<br><br><b>Le piège :</b> travailler en degrés Celsius. Passer de 20 à 40 °C ne double pas le volume — en kelvins, on passe de 293 à 313, soit <b>7 % de plus</b> seulement.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Deux axes : le volume d'un gaz, et sa pression.",
+      "À température constante, leur produit reste constant — c'est la loi de Boyle.",
+      "Doubler le volume divise donc la pression par deux, exactement.",
+      "Et la température, elle, entre toujours en <b>kelvins</b>. Jamais en degrés Celsius.",
+      "<em>Pour comparer deux états :</em> P₁V₁/T₁ = P₂V₂/T₂, et on simplifie."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-CH4-04 ==================== -->
+  <section class="slide" data-ref="ANIM-CH4-04" data-title="Le volume molaire, et les conditions qui le fixent" data-sub="22,4 L, mais à quelles conditions" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <text x="88" y="34" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">H₂</text>
+            <text x="235" y="34" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">O₂</text>
+            <text x="382" y="34" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">CO₂</text>
+            <rect x="26" y="52" width="124" height="230" rx="12" fill="#E4F2EA" stroke="#08402A" stroke-width="2.6"/>
+            <rect x="173" y="52" width="124" height="230" rx="12" fill="#E4F2EA" stroke="#08402A" stroke-width="2.6"/>
+            <rect x="320" y="52" width="124" height="230" rx="12" fill="#E4F2EA" stroke="#08402A" stroke-width="2.6"/>
+            <text x="88" y="176" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">1 mol</text>
+            <text x="235" y="176" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">1 mol</text>
+            <text x="382" y="176" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">1 mol</text>
+          </g>
+          <g class="step s2">
+            <line x1="88" y1="294" x2="88" y2="322" stroke="#8A8F98" stroke-width="2.4" marker-end="url(#d4)"/>
+            <line x1="235" y1="294" x2="235" y2="322" stroke="#8A8F98" stroke-width="2.4" marker-end="url(#d4)"/>
+            <line x1="382" y1="294" x2="382" y2="322" stroke="#8A8F98" stroke-width="2.4" marker-end="url(#d4)"/>
+            <text x="235" y="374" text-anchor="middle" font-size="40" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">22,4 L chacun</text>
+          </g>
+          <g class="step s3">
+            <rect x="46" y="400" width="378" height="56" rx="12" fill="#FFFFFF" stroke="#C02A20" stroke-width="2.6"/>
+            <text x="235" y="435" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">à 0 °C et 1 atm — et seulement là</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La nature du gaz n'intervient pas</h3>
+          <p style="font-size:17px">Dans PV = nRT, <b>aucun terme ne dépend du gaz</b>. Une mole de dihydrogène et une mole de dioxyde de carbone occupent donc le même volume.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Mais la valeur dépend des conditions</h3>
+          <p style="font-size:17px">22,4 L/mol vaut aux <b>conditions normales</b> : 0 °C et 1 atm. À 25 °C, le volume molaire vaut environ <b>24,5 L/mol</b>.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Citer 22,4 sans vérifier est une faute</h3>
+          <p style="font-size:17px">L'énoncé précise toujours les conditions, ou donne directement la valeur à utiliser. <b>On la lit, on ne la suppose pas.</b></p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce que cela change pour tout le chapitre CH9</h3>
+          <p style="font-size:17px">Pour un solide ou un liquide, on passe de la masse aux moles par la <b>masse molaire</b>. Pour un gaz, on passe du volume aux moles par le <b>volume molaire</b>.<br><br>C'est le <b>seul</b> changement entre un problème de gravimétrie et un problème de volumétrie. La chaîne de conversion, elle, ne bouge pas : on remplace une case, pas la méthode.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Trois gaz différents, une mole de chacun.",
+      "Ils occupent <b>exactement le même volume</b> : 22,4 litres.",
+      "Mais seulement à 0 °C et 1 atm — à 25 °C, ce serait 24,5 litres.",
+      "La valeur n'est donc pas une constante universelle : elle dépend des conditions.",
+      "<em>Et c'est le seul changement</em> entre gravimétrie et volumétrie, au chapitre CH9."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule CH4-A — États de la matière et lois des gaz · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

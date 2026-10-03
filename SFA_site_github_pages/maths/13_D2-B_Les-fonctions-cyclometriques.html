@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule D2-B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#1D4ED8;          /* bleu SFA */
+  --deep:#0A2A6E;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#E9EEFC;         /* bleu 8 % */
+  --tint2:#D3DEFA;        /* bleu 18 % */
+  --surface:#F4F6FA;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-D2-05 ==================== -->
+  <section class="slide" data-ref="ANIM-D2-05" data-title="Restreindre pour pouvoir inverser" data-sub="Le sinus n'est pas monotone : il faut choisir un morceau" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="450" height="302">
+          <defs><marker id="b1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <line x1="40" y1="150" x2="455" y2="150" stroke="#8A8F98" stroke-width="1.6"/>
+            <line x1="245" y1="55" x2="245" y2="214" stroke="#8A8F98" stroke-width="1.6"/>
+            <path d="M 40.2,150.0 L 42.0,146.6 L 43.9,143.2 L 45.8,139.8 L 47.6,136.4 L 49.5,133.1 L 51.3,129.8 L 53.2,126.6 L 55.1,123.5 L 56.9,120.5 L 58.8,117.6 L 60.7,114.7 L 62.5,112.0 L 64.4,109.4 L 66.2,107.0 L 68.1,104.7 L 70.0,102.5 L 71.8,100.5 L 73.7,98.6 L 75.5,96.9 L 77.4,95.4 L 79.3,94.1 L 81.1,92.9 L 83.0,92.0 L 84.9,91.2 L 86.7,90.6 L 88.6,90.2 L 90.4,90.0 L 92.3,90.0 L 94.2,90.2 L 96.0,90.6 L 97.9,91.2 L 99.8,92.0 L 101.6,92.9 L 103.5,94.1 L 105.3,95.4 L 107.2,96.9 L 109.1,98.6 L 110.9,100.5 L 112.8,102.5 L 114.7,104.7 L 116.5,107.0 L 118.4,109.4 L 120.2,112.0 L 122.1,114.7 L 124.0,117.6 L 125.8,120.5 L 127.7,123.5 L 129.5,126.6 L 131.4,129.8 L 133.3,133.1 L 135.1,136.4 L 137.0,139.8 L 138.9,143.2 L 140.7,146.6 L 142.6,150.0 L 144.4,153.4 L 146.3,156.8 L 148.2,160.2 L 150.0,163.6 L 151.9,166.9 L 153.8,170.2 L 155.6,173.4 L 157.5,176.5 L 159.3,179.5 L 161.2,182.4 L 163.1,185.3 L 164.9,188.0 L 166.8,190.6 L 168.7,193.0 L 170.5,195.3 L 172.4,197.5 L 174.2,199.5 L 176.1,201.4 L 178.0,203.1 L 179.8,204.6 L 181.7,205.9 L 183.6,207.1 L 185.4,208.0 L 187.3,208.8 L 189.1,209.4 L 191.0,209.8 L 192.9,210.0 L 194.7,210.0 L 196.6,209.8 L 198.4,209.4 L 200.3,208.8 L 202.2,208.0 L 204.0,207.1 L 205.9,205.9 L 207.8,204.6 L 209.6,203.1 L 211.5,201.4 L 213.3,199.5 L 215.2,197.5 L 217.1,195.3 L 218.9,193.0 L 220.8,190.6 L 222.7,188.0 L 224.5,185.3 L 226.4,182.4 L 228.2,179.5 L 230.1,176.5 L 232.0,173.4 L 233.8,170.2 L 235.7,166.9 L 237.6,163.6 L 239.4,160.2 L 241.3,156.8 L 243.1,153.4 L 245.0,150.0 L 246.9,146.6 L 248.7,143.2 L 250.6,139.8 L 252.4,136.4 L 254.3,133.1 L 256.2,129.8 L 258.0,126.6 L 259.9,123.5 L 261.8,120.5 L 263.6,117.6 L 265.5,114.7 L 267.3,112.0 L 269.2,109.4 L 271.1,107.0 L 272.9,104.7 L 274.8,102.5 L 276.7,100.5 L 278.5,98.6 L 280.4,96.9 L 282.2,95.4 L 284.1,94.1 L 286.0,92.9 L 287.8,92.0 L 289.7,91.2 L 291.6,90.6 L 293.4,90.2 L 295.3,90.0 L 297.1,90.0 L 299.0,90.2 L 300.9,90.6 L 302.7,91.2 L 304.6,92.0 L 306.4,92.9 L 308.3,94.1 L 310.2,95.4 L 312.0,96.9 L 313.9,98.6 L 315.8,100.5 L 317.6,102.5 L 319.5,104.7 L 321.3,107.0 L 323.2,109.4 L 325.1,112.0 L 326.9,114.7 L 328.8,117.6 L 330.7,120.5 L 332.5,123.5 L 334.4,126.6 L 336.2,129.8 L 338.1,133.1 L 340.0,136.4 L 341.8,139.8 L 343.7,143.2 L 345.6,146.6 L 347.4,150.0 L 349.3,153.4 L 351.1,156.8 L 353.0,160.2 L 354.9,163.6 L 356.7,166.9 L 358.6,170.2 L 360.5,173.4 L 362.3,176.5 L 364.2,179.5 L 366.0,182.4 L 367.9,185.3 L 369.8,188.0 L 371.6,190.6 L 373.5,193.0 L 375.3,195.3 L 377.2,197.5 L 379.1,199.5 L 380.9,201.4 L 382.8,203.1 L 384.7,204.6 L 386.5,205.9 L 388.4,207.1 L 390.2,208.0 L 392.1,208.8 L 394.0,209.4 L 395.8,209.8 L 397.7,210.0 L 399.6,210.0 L 401.4,209.8 L 403.3,209.4 L 405.1,208.8 L 407.0,208.0 L 408.9,207.1 L 410.7,205.9 L 412.6,204.6 L 414.5,203.1 L 416.3,201.4 L 418.2,199.5 L 420.0,197.5 L 421.9,195.3 L 423.8,193.0 L 425.6,190.6 L 427.5,188.0 L 429.3,185.3 L 431.2,182.4 L 433.1,179.5 L 434.9,176.5 L 436.8,173.4 L 438.7,170.2 L 440.5,166.9 L 442.4,163.6 L 444.2,160.2 L 446.1,156.8 L 448.0,153.4 L 449.8,150.0" fill="none" stroke="#8A8F98" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <g font-size="12" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">
+              <text x="193.8" y="168" text-anchor="middle">−π/2</text><text x="296.2" y="168" text-anchor="middle">π/2</text>
+            </g>
+          </g>
+          <g class="step s2 h3">
+            <line x1="40" y1="120" x2="455" y2="120" stroke="#0A2A6E" stroke-width="2.4" stroke-dasharray="8 5"/>
+            <circle cx="57.2" cy="120" r="7" fill="#0A2A6E"/><circle cx="125.5" cy="120" r="7" fill="#0A2A6E"/>
+            <circle cx="262.1" cy="120" r="7" fill="#0A2A6E"/><circle cx="330.3" cy="120" r="7" fill="#0A2A6E"/>
+            <text x="455" y="104" text-anchor="end" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">quatre angles pour un seul sinus</text>
+          </g>
+          <g class="step s3">
+            <path d="M 193.8,210.0 L 194.3,210.0 L 194.7,210.0 L 195.2,209.9 L 195.7,209.9 L 196.1,209.8 L 196.6,209.8 L 197.1,209.7 L 197.5,209.6 L 198.0,209.5 L 198.4,209.4 L 198.9,209.3 L 199.4,209.1 L 199.8,209.0 L 200.3,208.8 L 200.8,208.6 L 201.2,208.4 L 201.7,208.2 L 202.2,208.0 L 202.6,207.8 L 203.1,207.6 L 203.6,207.3 L 204.0,207.1 L 204.5,206.8 L 205.0,206.5 L 205.4,206.2 L 205.9,205.9 L 206.4,205.6 L 206.8,205.3 L 207.3,204.9 L 207.8,204.6 L 208.2,204.2 L 208.7,203.8 L 209.2,203.5 L 209.6,203.1 L 210.1,202.7 L 210.6,202.2 L 211.0,201.8 L 211.5,201.4 L 211.9,200.9 L 212.4,200.5 L 212.9,200.0 L 213.3,199.5 L 213.8,199.0 L 214.3,198.5 L 214.7,198.0 L 215.2,197.5 L 215.7,197.0 L 216.1,196.4 L 216.6,195.9 L 217.1,195.3 L 217.5,194.8 L 218.0,194.2 L 218.5,193.6 L 218.9,193.0 L 219.4,192.4 L 219.9,191.8 L 220.3,191.2 L 220.8,190.6 L 221.3,189.9 L 221.7,189.3 L 222.2,188.6 L 222.7,188.0 L 223.1,187.3 L 223.6,186.6 L 224.1,186.0 L 224.5,185.3 L 225.0,184.6 L 225.4,183.9 L 225.9,183.2 L 226.4,182.4 L 226.8,181.7 L 227.3,181.0 L 227.8,180.2 L 228.2,179.5 L 228.7,178.8 L 229.2,178.0 L 229.6,177.2 L 230.1,176.5 L 230.6,175.7 L 231.0,174.9 L 231.5,174.1 L 232.0,173.4 L 232.4,172.6 L 232.9,171.8 L 233.4,171.0 L 233.8,170.2 L 234.3,169.4 L 234.8,168.5 L 235.2,167.7 L 235.7,166.9 L 236.2,166.1 L 236.6,165.3 L 237.1,164.4 L 237.6,163.6 L 238.0,162.8 L 238.5,161.9 L 238.9,161.1 L 239.4,160.2 L 239.9,159.4 L 240.3,158.5 L 240.8,157.7 L 241.3,156.8 L 241.7,156.0 L 242.2,155.1 L 242.7,154.3 L 243.1,153.4 L 243.6,152.6 L 244.1,151.7 L 244.5,150.9 L 245.0,150.0 L 245.5,149.1 L 245.9,148.3 L 246.4,147.4 L 246.9,146.6 L 247.3,145.7 L 247.8,144.9 L 248.3,144.0 L 248.7,143.2 L 249.2,142.3 L 249.7,141.5 L 250.1,140.6 L 250.6,139.8 L 251.1,138.9 L 251.5,138.1 L 252.0,137.2 L 252.4,136.4 L 252.9,135.6 L 253.4,134.7 L 253.8,133.9 L 254.3,133.1 L 254.8,132.3 L 255.2,131.5 L 255.7,130.6 L 256.2,129.8 L 256.6,129.0 L 257.1,128.2 L 257.6,127.4 L 258.0,126.6 L 258.5,125.9 L 259.0,125.1 L 259.4,124.3 L 259.9,123.5 L 260.4,122.8 L 260.8,122.0 L 261.3,121.2 L 261.8,120.5 L 262.2,119.8 L 262.7,119.0 L 263.2,118.3 L 263.6,117.6 L 264.1,116.8 L 264.6,116.1 L 265.0,115.4 L 265.5,114.7 L 265.9,114.0 L 266.4,113.4 L 266.9,112.7 L 267.3,112.0 L 267.8,111.4 L 268.3,110.7 L 268.7,110.1 L 269.2,109.4 L 269.7,108.8 L 270.1,108.2 L 270.6,107.6 L 271.1,107.0 L 271.5,106.4 L 272.0,105.8 L 272.5,105.2 L 272.9,104.7 L 273.4,104.1 L 273.9,103.6 L 274.3,103.0 L 274.8,102.5 L 275.3,102.0 L 275.7,101.5 L 276.2,101.0 L 276.7,100.5 L 277.1,100.0 L 277.6,99.5 L 278.1,99.1 L 278.5,98.6 L 279.0,98.2 L 279.4,97.8 L 279.9,97.3 L 280.4,96.9 L 280.8,96.5 L 281.3,96.2 L 281.8,95.8 L 282.2,95.4 L 282.7,95.1 L 283.2,94.7 L 283.6,94.4 L 284.1,94.1 L 284.6,93.8 L 285.0,93.5 L 285.5,93.2 L 286.0,92.9 L 286.4,92.7 L 286.9,92.4 L 287.4,92.2 L 287.8,92.0 L 288.3,91.8 L 288.8,91.6 L 289.2,91.4 L 289.7,91.2 L 290.2,91.0 L 290.6,90.9 L 291.1,90.7 L 291.6,90.6 L 292.0,90.5 L 292.5,90.4 L 292.9,90.3 L 293.4,90.2 L 293.9,90.2 L 294.3,90.1 L 294.8,90.1 L 295.3,90.0 L 295.7,90.0 L 296.2,90.0" fill="none" stroke="#1D4ED8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="193.8" y1="230" x2="296.2" y2="230" stroke="#1D4ED8" stroke-width="6" stroke-linecap="round"/>
+            <text x="245" y="256" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">[ −π/2 ; π/2 ]</text>
+            <line x1="40" y1="120" x2="455" y2="120" stroke="#0A2A6E" stroke-width="2.4" stroke-dasharray="8 5"/>
+            <circle cx="262.1" cy="120" r="8" fill="#1D4ED8"/>
+            <text x="250" y="102" text-anchor="end" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">un seul point</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2 h3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le problème, posé en une image</h3>
+          <p style="font-size:17px">Une même valeur de sinus correspond à une <b>infinité</b> d'angles. Impossible de dire lequel est « le » bon : sur ℝ, le sinus n'a pas de réciproque.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le rappel de D1-A</h3>
+          <p style="font-size:17px">Une fonction n'admet de réciproque que si elle est <b>strictement monotone</b>. Le sinus monte, redescend, remonte : il ne l'est pas.</p></div>
+        <div class="card acc step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La solution : on choisit un morceau</h3>
+          <div class="expr" style="font-size:18px;text-align:left;line-height:1.5">sinus → [ −π/2 ; π/2 ]<br>cosinus → [ 0 ; π ]<br>tangente → ] −π/2 ; π/2 [</div>
+          <p style="font-size:17px;margin-top:4px">Sur ces intervalles, chacune est strictement monotone — donc inversible.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La conséquence, à énoncer clairement</h3>
+          <p style="font-size:17px"><b>Arcsin(x) ne donne qu'un seul angle</b>, celui de l'intervalle choisi. Les autres angles de même sinus ne disparaissent pas : on les retrouve ensuite par les <b>symétries du cercle</b>.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "La sinusoïde complète. On voudrait pouvoir répondre à la question inverse : quel angle a ce sinus ?",
+      "On trace une horizontale : elle coupe la courbe en une <b>infinité</b> de points. La question n'a pas une seule réponse.",
+      "On isole alors l'intervalle [−π/2 ; π/2] : sur ce morceau, l'horizontale ne coupe qu'<b>une fois</b>.",
+      "Sur cet intervalle le sinus est strictement croissant, donc inversible. C'est ce qui définit Arcsin.",
+      "<em>À dire clairement :</em> Arcsin ne rend qu'un angle. Les autres se retrouvent par le cercle."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-D2-06 ==================== -->
+  <section class="slide" data-ref="ANIM-D2-06" data-title="Arcsin, reflet du sinus restreint" data-sub="Encore le miroir y = x" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="450" height="302">
+          <defs><marker id="b2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <g stroke="#E3E7EE" stroke-width="1">
+              <line x1="170" y1="30" x2="170" y2="292"/><line x1="300" y1="30" x2="300" y2="292"/>
+              <line x1="105" y1="95" x2="368" y2="95"/><line x1="105" y1="225" x2="368" y2="225"/>
+            </g>
+            <line x1="100" y1="160" x2="375" y2="160" stroke="#8A8F98" stroke-width="1.6"/>
+            <line x1="235" y1="26" x2="235" y2="296" stroke="#8A8F98" stroke-width="1.6"/>
+            <g font-size="12" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">
+              <text x="300" y="178" text-anchor="middle">1</text><text x="170" y="178" text-anchor="middle">−1</text>
+              <text x="227" y="99" text-anchor="end">1</text>
+            </g>
+            <path d="M 132.9,225.0 L 133.8,225.0 L 134.8,225.0 L 135.7,224.9 L 136.6,224.9 L 137.5,224.8 L 138.5,224.8 L 139.4,224.7 L 140.3,224.6 L 141.3,224.5 L 142.2,224.3 L 143.1,224.2 L 144.0,224.0 L 145.0,223.9 L 145.9,223.7 L 146.8,223.5 L 147.7,223.3 L 148.7,223.1 L 149.6,222.9 L 150.5,222.6 L 151.5,222.4 L 152.4,222.1 L 153.3,221.8 L 154.2,221.5 L 155.2,221.2 L 156.1,220.9 L 157.0,220.6 L 158.0,220.2 L 158.9,219.9 L 159.8,219.5 L 160.7,219.1 L 161.7,218.7 L 162.6,218.3 L 163.5,217.9 L 164.5,217.5 L 165.4,217.0 L 166.3,216.6 L 167.2,216.1 L 168.2,215.7 L 169.1,215.2 L 170.0,214.7 L 171.0,214.2 L 171.9,213.7 L 172.8,213.1 L 173.7,212.6 L 174.7,212.0 L 175.6,211.5 L 176.5,210.9 L 177.5,210.3 L 178.4,209.7 L 179.3,209.1 L 180.2,208.5 L 181.2,207.9 L 182.1,207.3 L 183.0,206.6 L 183.9,206.0 L 184.9,205.3 L 185.8,204.6 L 186.7,204.0 L 187.7,203.3 L 188.6,202.6 L 189.5,201.9 L 190.4,201.1 L 191.4,200.4 L 192.3,199.7 L 193.2,199.0 L 194.2,198.2 L 195.1,197.5 L 196.0,196.7 L 196.9,195.9 L 197.9,195.1 L 198.8,194.4 L 199.7,193.6 L 200.7,192.8 L 201.6,192.0 L 202.5,191.2 L 203.4,190.3 L 204.4,189.5 L 205.3,188.7 L 206.2,187.8 L 207.2,187.0 L 208.1,186.2 L 209.0,185.3 L 209.9,184.4 L 210.9,183.6 L 211.8,182.7 L 212.7,181.8 L 213.7,181.0 L 214.6,180.1 L 215.5,179.2 L 216.4,178.3 L 217.4,177.4 L 218.3,176.5 L 219.2,175.6 L 220.1,174.7 L 221.1,173.8 L 222.0,172.9 L 222.9,172.0 L 223.9,171.1 L 224.8,170.2 L 225.7,169.3 L 226.6,168.3 L 227.6,167.4 L 228.5,166.5 L 229.4,165.6 L 230.4,164.6 L 231.3,163.7 L 232.2,162.8 L 233.1,161.9 L 234.1,160.9 L 235.0,160.0 L 235.9,159.1 L 236.9,158.1 L 237.8,157.2 L 238.7,156.3 L 239.6,155.4 L 240.6,154.4 L 241.5,153.5 L 242.4,152.6 L 243.4,151.7 L 244.3,150.7 L 245.2,149.8 L 246.1,148.9 L 247.1,148.0 L 248.0,147.1 L 248.9,146.2 L 249.9,145.3 L 250.8,144.4 L 251.7,143.5 L 252.6,142.6 L 253.6,141.7 L 254.5,140.8 L 255.4,139.9 L 256.3,139.0 L 257.3,138.2 L 258.2,137.3 L 259.1,136.4 L 260.1,135.6 L 261.0,134.7 L 261.9,133.8 L 262.8,133.0 L 263.8,132.2 L 264.7,131.3 L 265.6,130.5 L 266.6,129.7 L 267.5,128.8 L 268.4,128.0 L 269.3,127.2 L 270.3,126.4 L 271.2,125.6 L 272.1,124.9 L 273.1,124.1 L 274.0,123.3 L 274.9,122.5 L 275.8,121.8 L 276.8,121.0 L 277.7,120.3 L 278.6,119.6 L 279.6,118.9 L 280.5,118.1 L 281.4,117.4 L 282.3,116.7 L 283.3,116.0 L 284.2,115.4 L 285.1,114.7 L 286.1,114.0 L 287.0,113.4 L 287.9,112.7 L 288.8,112.1 L 289.8,111.5 L 290.7,110.9 L 291.6,110.3 L 292.5,109.7 L 293.5,109.1 L 294.4,108.5 L 295.3,108.0 L 296.3,107.4 L 297.2,106.9 L 298.1,106.3 L 299.0,105.8 L 300.0,105.3 L 300.9,104.8 L 301.8,104.3 L 302.8,103.9 L 303.7,103.4 L 304.6,103.0 L 305.5,102.5 L 306.5,102.1 L 307.4,101.7 L 308.3,101.3 L 309.3,100.9 L 310.2,100.5 L 311.1,100.1 L 312.0,99.8 L 313.0,99.4 L 313.9,99.1 L 314.8,98.8 L 315.8,98.5 L 316.7,98.2 L 317.6,97.9 L 318.5,97.6 L 319.5,97.4 L 320.4,97.1 L 321.3,96.9 L 322.3,96.7 L 323.2,96.5 L 324.1,96.3 L 325.0,96.1 L 326.0,96.0 L 326.9,95.8 L 327.8,95.7 L 328.7,95.5 L 329.7,95.4 L 330.6,95.3 L 331.5,95.2 L 332.5,95.2 L 333.4,95.1 L 334.3,95.1 L 335.2,95.0 L 336.2,95.0 L 337.1,95.0" fill="none" stroke="#8A8F98" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="350" y="70" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="700">sinus restreint</text>
+          </g>
+          <g class="step s2">
+            <line x1="105" y1="290" x2="368" y2="27" stroke="#8A8F98" stroke-width="2.2" stroke-dasharray="8 6"/>
+            <text x="378" y="36" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="700">y = x</text>
+          </g>
+          <g class="step s3">
+            <path d="M 170.0,262.1 L 170.6,253.3 L 171.2,249.7 L 171.8,246.9 L 172.4,244.5 L 173.0,242.4 L 173.5,240.5 L 174.1,238.8 L 174.7,237.2 L 175.3,235.6 L 175.9,234.2 L 176.5,232.8 L 177.1,231.5 L 177.7,230.2 L 178.3,228.9 L 178.9,227.8 L 179.5,226.6 L 180.0,225.5 L 180.6,224.4 L 181.2,223.3 L 181.8,222.3 L 182.4,221.3 L 183.0,220.3 L 183.6,219.3 L 184.2,218.3 L 184.8,217.4 L 185.4,216.5 L 186.0,215.6 L 186.5,214.7 L 187.1,213.8 L 187.7,212.9 L 188.3,212.1 L 188.9,211.2 L 189.5,210.4 L 190.1,209.6 L 190.7,208.8 L 191.3,208.0 L 191.9,207.2 L 192.5,206.4 L 193.0,205.6 L 193.6,204.8 L 194.2,204.1 L 194.8,203.3 L 195.4,202.6 L 196.0,201.8 L 196.6,201.1 L 197.2,200.4 L 197.8,199.6 L 198.4,198.9 L 199.0,198.2 L 199.5,197.5 L 200.1,196.8 L 200.7,196.1 L 201.3,195.4 L 201.9,194.7 L 202.5,194.0 L 203.1,193.4 L 203.7,192.7 L 204.3,192.0 L 204.9,191.3 L 205.5,190.7 L 206.0,190.0 L 206.6,189.4 L 207.2,188.7 L 207.8,188.0 L 208.4,187.4 L 209.0,186.7 L 209.6,186.1 L 210.2,185.5 L 210.8,184.8 L 211.4,184.2 L 212.0,183.6 L 212.5,182.9 L 213.1,182.3 L 213.7,181.7 L 214.3,181.0 L 214.9,180.4 L 215.5,179.8 L 216.1,179.2 L 216.7,178.6 L 217.3,178.0 L 217.9,177.3 L 218.5,176.7 L 219.0,176.1 L 219.6,175.5 L 220.2,174.9 L 220.8,174.3 L 221.4,173.7 L 222.0,173.1 L 222.6,172.5 L 223.2,171.9 L 223.8,171.3 L 224.4,170.7 L 225.0,170.1 L 225.5,169.5 L 226.1,168.9 L 226.7,168.3 L 227.3,167.7 L 227.9,167.1 L 228.5,166.5 L 229.1,165.9 L 229.7,165.3 L 230.3,164.7 L 230.9,164.1 L 231.5,163.5 L 232.0,163.0 L 232.6,162.4 L 233.2,161.8 L 233.8,161.2 L 234.4,160.6 L 235.0,160.0 L 235.6,159.4 L 236.2,158.8 L 236.8,158.2 L 237.4,157.6 L 238.0,157.0 L 238.5,156.5 L 239.1,155.9 L 239.7,155.3 L 240.3,154.7 L 240.9,154.1 L 241.5,153.5 L 242.1,152.9 L 242.7,152.3 L 243.3,151.7 L 243.9,151.1 L 244.5,150.5 L 245.0,149.9 L 245.6,149.3 L 246.2,148.7 L 246.8,148.1 L 247.4,147.5 L 248.0,146.9 L 248.6,146.3 L 249.2,145.7 L 249.8,145.1 L 250.4,144.5 L 251.0,143.9 L 251.5,143.3 L 252.1,142.7 L 252.7,142.0 L 253.3,141.4 L 253.9,140.8 L 254.5,140.2 L 255.1,139.6 L 255.7,139.0 L 256.3,138.3 L 256.9,137.7 L 257.5,137.1 L 258.0,136.4 L 258.6,135.8 L 259.2,135.2 L 259.8,134.5 L 260.4,133.9 L 261.0,133.3 L 261.6,132.6 L 262.2,132.0 L 262.8,131.3 L 263.4,130.6 L 264.0,130.0 L 264.5,129.3 L 265.1,128.7 L 265.7,128.0 L 266.3,127.3 L 266.9,126.6 L 267.5,126.0 L 268.1,125.3 L 268.7,124.6 L 269.3,123.9 L 269.9,123.2 L 270.5,122.5 L 271.0,121.8 L 271.6,121.1 L 272.2,120.4 L 272.8,119.6 L 273.4,118.9 L 274.0,118.2 L 274.6,117.4 L 275.2,116.7 L 275.8,115.9 L 276.4,115.2 L 277.0,114.4 L 277.5,113.6 L 278.1,112.8 L 278.7,112.0 L 279.3,111.2 L 279.9,110.4 L 280.5,109.6 L 281.1,108.8 L 281.7,107.9 L 282.3,107.1 L 282.9,106.2 L 283.5,105.3 L 284.0,104.4 L 284.6,103.5 L 285.2,102.6 L 285.8,101.7 L 286.4,100.7 L 287.0,99.7 L 287.6,98.7 L 288.2,97.7 L 288.8,96.7 L 289.4,95.6 L 290.0,94.5 L 290.5,93.4 L 291.1,92.2 L 291.7,91.1 L 292.3,89.8 L 292.9,88.5 L 293.5,87.2 L 294.1,85.8 L 294.7,84.4 L 295.3,82.8 L 295.9,81.2 L 296.5,79.5 L 297.0,77.6 L 297.6,75.5 L 298.2,73.1 L 298.8,70.3 L 299.4,66.7 L 300.0,57.9" fill="none" stroke="#1D4ED8" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="306" y="88" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">Arcsin</text>
+          </g>
+          <g class="step s4">
+            <line x1="170" y1="160" x2="300" y2="160" stroke="#1D4ED8" stroke-width="7" stroke-linecap="round"/>
+            <line x1="300" y1="168" x2="322" y2="196" stroke="#8A8F98" stroke-width="1.4"/>
+            <text x="326" y="202" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">domaine [ −1 ; 1 ]</text>
+            <line x1="235" y1="57.9" x2="235" y2="262.1" stroke="#0A2A6E" stroke-width="7" stroke-linecap="round"/>
+            <line x1="228" y1="118" x2="196" y2="130" stroke="#8A8F98" stroke-width="1.4"/>
+            <text x="190" y="124" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">image</text>
+            <text x="190" y="146" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">[ −π/2 ; π/2 ]</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2 h4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Rien de nouveau : c'est le miroir de D1-A</h3>
+          <p style="font-size:17px">Arcsin n'est pas une fonction à découvrir, c'est le <b>sinus restreint vu de l'autre côté</b> de la droite y = x.</p></div>
+        <div class="card acc step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce que le miroir échange</h3>
+          <div class="expr" style="font-size:19px;text-align:left;line-height:1.45">domaine <b style="color:var(--sfa)">[ −1 ; 1 ]</b><br>image <b style="color:var(--deep)">[ −π/2 ; π/2 ]</b></div>
+          <p style="font-size:17px;margin-top:4px">L'un entre des <b>nombres</b> et sort des <b>angles</b> ; l'autre fait l'inverse.</p></div>
+        <div class="card step s5" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les valeurs se lisent à l'envers</h3>
+          <div class="expr" style="font-size:20px;text-align:left;line-height:1.35">sin(π/6) = ½ &nbsp;⟹&nbsp; Arcsin(½) = <b style="color:var(--sfa)">π/6</b></div>
+          <p style="font-size:17px;margin-top:4px"><b>Aucun nouveau tableau à apprendre :</b> c'est celui de C1-A, lu dans l'autre sens.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le seul travail réel</h3>
+          <p style="font-size:17px">Choisir l'angle qui tombe dans le <b>bon intervalle</b>. Arcsin(½) vaut π/6 et non 5π/6, parce que seul π/6 appartient à [−π/2 ; π/2].</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Le sinus, restreint à l'intervalle où il est strictement croissant.",
+      "On replace le miroir y = x.",
+      "Son reflet est la courbe d'<b>Arcsin</b>. La construction est exactement celle du chapitre D1-A.",
+      "Les rôles s'échangent : le domaine devient [−1 ; 1], l'image devient [−π/2 ; π/2].",
+      "<em>Conséquence pratique :</em> les valeurs usuelles se lisent dans le tableau de trigonométrie, à l'envers."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-D2-07 ==================== -->
+  <section class="slide" data-ref="ANIM-D2-07" data-title="Les trois courbes et leurs domaines" data-sub="Une seule décroît, une seule accepte tout" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="450" height="302">
+          <defs><marker id="b3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <line x1="20" y1="160" x2="150" y2="160" stroke="#8A8F98" stroke-width="1.5"/>
+            <line x1="85" y1="42" x2="85" y2="240" stroke="#8A8F98" stroke-width="1.5"/>
+            <path d="M 55.0,210.4 L 55.3,207.1 L 55.6,205.4 L 55.8,204.0 L 56.1,202.8 L 56.4,201.7 L 56.7,200.8 L 56.9,199.9 L 57.2,199.1 L 57.5,198.3 L 57.8,197.6 L 58.0,196.9 L 58.3,196.2 L 58.6,195.6 L 58.8,194.9 L 59.1,194.3 L 59.4,193.8 L 59.7,193.2 L 59.9,192.6 L 60.2,192.1 L 60.5,191.6 L 60.8,191.1 L 61.0,190.6 L 61.3,190.1 L 61.6,189.6 L 61.8,189.1 L 62.1,188.6 L 62.4,188.2 L 62.7,187.7 L 62.9,187.3 L 63.2,186.8 L 63.5,186.4 L 63.7,186.0 L 64.0,185.6 L 64.3,185.1 L 64.6,184.7 L 64.8,184.3 L 65.1,183.9 L 65.4,183.5 L 65.7,183.1 L 65.9,182.7 L 66.2,182.3 L 66.5,182.0 L 66.7,181.6 L 67.0,181.2 L 67.3,180.8 L 67.6,180.5 L 67.8,180.1 L 68.1,179.7 L 68.4,179.4 L 68.7,179.0 L 68.9,178.7 L 69.2,178.3 L 69.5,178.0 L 69.7,177.6 L 70.0,177.3 L 70.3,176.9 L 70.6,176.6 L 70.8,176.2 L 71.1,175.9 L 71.4,175.6 L 71.6,175.2 L 71.9,174.9 L 72.2,174.6 L 72.5,174.2 L 72.7,173.9 L 73.0,173.6 L 73.3,173.2 L 73.6,172.9 L 73.8,172.6 L 74.1,172.3 L 74.4,171.9 L 74.6,171.6 L 74.9,171.3 L 75.2,171.0 L 75.5,170.7 L 75.7,170.4 L 76.0,170.0 L 76.3,169.7 L 76.6,169.4 L 76.8,169.1 L 77.1,168.8 L 77.4,168.5 L 77.6,168.2 L 77.9,167.9 L 78.2,167.6 L 78.5,167.3 L 78.7,166.9 L 79.0,166.6 L 79.3,166.3 L 79.6,166.0 L 79.8,165.7 L 80.1,165.4 L 80.4,165.1 L 80.6,164.8 L 80.9,164.5 L 81.2,164.2 L 81.5,163.9 L 81.7,163.6 L 82.0,163.3 L 82.3,163.0 L 82.5,162.7 L 82.8,162.4 L 83.1,162.1 L 83.4,161.8 L 83.6,161.5 L 83.9,161.2 L 84.2,160.9 L 84.5,160.6 L 84.7,160.3 L 85.0,160.0 L 85.3,159.7 L 85.5,159.4 L 85.8,159.1 L 86.1,158.8 L 86.4,158.5 L 86.6,158.2 L 86.9,157.9 L 87.2,157.6 L 87.5,157.3 L 87.7,157.0 L 88.0,156.7 L 88.3,156.4 L 88.5,156.1 L 88.8,155.8 L 89.1,155.5 L 89.4,155.2 L 89.6,154.9 L 89.9,154.6 L 90.2,154.3 L 90.4,154.0 L 90.7,153.7 L 91.0,153.4 L 91.3,153.1 L 91.5,152.7 L 91.8,152.4 L 92.1,152.1 L 92.4,151.8 L 92.6,151.5 L 92.9,151.2 L 93.2,150.9 L 93.4,150.6 L 93.7,150.3 L 94.0,150.0 L 94.3,149.6 L 94.5,149.3 L 94.8,149.0 L 95.1,148.7 L 95.4,148.4 L 95.6,148.1 L 95.9,147.7 L 96.2,147.4 L 96.4,147.1 L 96.7,146.8 L 97.0,146.4 L 97.3,146.1 L 97.5,145.8 L 97.8,145.4 L 98.1,145.1 L 98.4,144.8 L 98.6,144.4 L 98.9,144.1 L 99.2,143.8 L 99.4,143.4 L 99.7,143.1 L 100.0,142.7 L 100.3,142.4 L 100.5,142.0 L 100.8,141.7 L 101.1,141.3 L 101.3,141.0 L 101.6,140.6 L 101.9,140.3 L 102.2,139.9 L 102.4,139.5 L 102.7,139.2 L 103.0,138.8 L 103.3,138.4 L 103.5,138.0 L 103.8,137.7 L 104.1,137.3 L 104.3,136.9 L 104.6,136.5 L 104.9,136.1 L 105.2,135.7 L 105.4,135.3 L 105.7,134.9 L 106.0,134.4 L 106.3,134.0 L 106.5,133.6 L 106.8,133.2 L 107.1,132.7 L 107.3,132.3 L 107.6,131.8 L 107.9,131.4 L 108.2,130.9 L 108.4,130.4 L 108.7,129.9 L 109.0,129.4 L 109.2,128.9 L 109.5,128.4 L 109.8,127.9 L 110.1,127.4 L 110.3,126.8 L 110.6,126.2 L 110.9,125.7 L 111.2,125.1 L 111.4,124.4 L 111.7,123.8 L 112.0,123.1 L 112.2,122.4 L 112.5,121.7 L 112.8,120.9 L 113.1,120.1 L 113.3,119.2 L 113.6,118.3 L 113.9,117.2 L 114.2,116.0 L 114.4,114.6 L 114.7,112.9 L 115.0,109.6" fill="none" stroke="#1D4ED8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="55" y1="160" x2="115" y2="160" stroke="#1D4ED8" stroke-width="6" stroke-linecap="round"/>
+            <text x="85" y="66" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">Arcsin</text>
+            <text x="85" y="264" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">D = [ −1 ; 1 ]</text>
+            <text x="85" y="286" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="700">Im = [ −π/2 ; π/2 ]</text>
+          </g>
+          <g class="step s2">
+            <line x1="170" y1="160" x2="300" y2="160" stroke="#8A8F98" stroke-width="1.5"/>
+            <line x1="235" y1="42" x2="235" y2="240" stroke="#8A8F98" stroke-width="1.5"/>
+            <path d="M 205.0,57.8 L 205.3,61.0 L 205.6,62.8 L 205.8,64.2 L 206.1,65.4 L 206.4,66.4 L 206.7,67.4 L 206.9,68.3 L 207.2,69.1 L 207.5,69.8 L 207.8,70.6 L 208.0,71.3 L 208.3,72.0 L 208.6,72.6 L 208.8,73.2 L 209.1,73.8 L 209.4,74.4 L 209.7,75.0 L 209.9,75.5 L 210.2,76.1 L 210.5,76.6 L 210.8,77.1 L 211.0,77.6 L 211.3,78.1 L 211.6,78.6 L 211.8,79.1 L 212.1,79.5 L 212.4,80.0 L 212.7,80.4 L 212.9,80.9 L 213.2,81.3 L 213.5,81.8 L 213.7,82.2 L 214.0,82.6 L 214.3,83.0 L 214.6,83.4 L 214.8,83.8 L 215.1,84.2 L 215.4,84.6 L 215.7,85.0 L 215.9,85.4 L 216.2,85.8 L 216.5,86.2 L 216.7,86.6 L 217.0,87.0 L 217.3,87.3 L 217.6,87.7 L 217.8,88.1 L 218.1,88.4 L 218.4,88.8 L 218.7,89.1 L 218.9,89.5 L 219.2,89.9 L 219.5,90.2 L 219.7,90.6 L 220.0,90.9 L 220.3,91.2 L 220.6,91.6 L 220.8,91.9 L 221.1,92.3 L 221.4,92.6 L 221.6,92.9 L 221.9,93.3 L 222.2,93.6 L 222.5,93.9 L 222.7,94.3 L 223.0,94.6 L 223.3,94.9 L 223.6,95.2 L 223.8,95.6 L 224.1,95.9 L 224.4,96.2 L 224.6,96.5 L 224.9,96.9 L 225.2,97.2 L 225.5,97.5 L 225.7,97.8 L 226.0,98.1 L 226.3,98.4 L 226.6,98.7 L 226.8,99.1 L 227.1,99.4 L 227.4,99.7 L 227.6,100.0 L 227.9,100.3 L 228.2,100.6 L 228.5,100.9 L 228.7,101.2 L 229.0,101.5 L 229.3,101.8 L 229.6,102.1 L 229.8,102.4 L 230.1,102.7 L 230.4,103.0 L 230.6,103.4 L 230.9,103.7 L 231.2,104.0 L 231.5,104.3 L 231.7,104.6 L 232.0,104.9 L 232.3,105.2 L 232.5,105.5 L 232.8,105.8 L 233.1,106.1 L 233.4,106.4 L 233.6,106.7 L 233.9,107.0 L 234.2,107.3 L 234.5,107.6 L 234.7,107.9 L 235.0,108.2 L 235.3,108.5 L 235.5,108.8 L 235.8,109.1 L 236.1,109.4 L 236.4,109.7 L 236.6,110.0 L 236.9,110.3 L 237.2,110.6 L 237.5,110.9 L 237.7,111.2 L 238.0,111.5 L 238.3,111.8 L 238.5,112.1 L 238.8,112.4 L 239.1,112.7 L 239.4,113.0 L 239.6,113.3 L 239.9,113.6 L 240.2,113.9 L 240.4,114.2 L 240.7,114.5 L 241.0,114.8 L 241.3,115.1 L 241.5,115.4 L 241.8,115.7 L 242.1,116.0 L 242.4,116.3 L 242.6,116.6 L 242.9,117.0 L 243.2,117.3 L 243.4,117.6 L 243.7,117.9 L 244.0,118.2 L 244.3,118.5 L 244.5,118.8 L 244.8,119.2 L 245.1,119.5 L 245.4,119.8 L 245.6,120.1 L 245.9,120.4 L 246.2,120.8 L 246.4,121.1 L 246.7,121.4 L 247.0,121.7 L 247.3,122.1 L 247.5,122.4 L 247.8,122.7 L 248.1,123.0 L 248.4,123.4 L 248.6,123.7 L 248.9,124.1 L 249.2,124.4 L 249.4,124.7 L 249.7,125.1 L 250.0,125.4 L 250.3,125.8 L 250.5,126.1 L 250.8,126.5 L 251.1,126.8 L 251.3,127.2 L 251.6,127.5 L 251.9,127.9 L 252.2,128.3 L 252.4,128.6 L 252.7,129.0 L 253.0,129.4 L 253.3,129.8 L 253.5,130.1 L 253.8,130.5 L 254.1,130.9 L 254.3,131.3 L 254.6,131.7 L 254.9,132.1 L 255.2,132.5 L 255.4,132.9 L 255.7,133.3 L 256.0,133.7 L 256.3,134.1 L 256.5,134.6 L 256.8,135.0 L 257.1,135.4 L 257.3,135.9 L 257.6,136.3 L 257.9,136.8 L 258.2,137.3 L 258.4,137.7 L 258.7,138.2 L 259.0,138.7 L 259.2,139.2 L 259.5,139.7 L 259.8,140.3 L 260.1,140.8 L 260.3,141.4 L 260.6,141.9 L 260.9,142.5 L 261.2,143.1 L 261.4,143.7 L 261.7,144.4 L 262.0,145.0 L 262.2,145.7 L 262.5,146.5 L 262.8,147.3 L 263.1,148.1 L 263.3,149.0 L 263.6,149.9 L 263.9,151.0 L 264.2,152.1 L 264.4,153.5 L 264.7,155.3 L 265.0,158.5" fill="none" stroke="#0A2A6E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="205" y1="160" x2="265" y2="160" stroke="#0A2A6E" stroke-width="6" stroke-linecap="round"/>
+            <text x="235" y="36" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">Arccos</text>
+            <text x="235" y="264" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">D = [ −1 ; 1 ]</text>
+            <text x="235" y="286" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="700">Im = [ 0 ; π ]</text>
+          </g>
+          <g class="step s3">
+            <line x1="315" y1="160" x2="455" y2="160" stroke="#8A8F98" stroke-width="1.5"/>
+            <line x1="385" y1="42" x2="385" y2="240" stroke="#8A8F98" stroke-width="1.5"/>
+            <line x1="318" y1="108.2" x2="452" y2="108.2" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="6 5"/>
+            <line x1="318" y1="211.8" x2="452" y2="211.8" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="6 5"/>
+            <path d="M 319.0,197.8 L 319.6,197.6 L 320.2,197.5 L 320.8,197.4 L 321.4,197.3 L 322.0,197.2 L 322.6,197.0 L 323.2,196.9 L 323.8,196.8 L 324.4,196.7 L 325.0,196.5 L 325.6,196.4 L 326.2,196.3 L 326.8,196.1 L 327.4,196.0 L 328.0,195.8 L 328.6,195.7 L 329.2,195.6 L 329.8,195.4 L 330.4,195.3 L 331.0,195.1 L 331.6,194.9 L 332.2,194.8 L 332.8,194.6 L 333.4,194.5 L 334.0,194.3 L 334.6,194.1 L 335.2,193.9 L 335.8,193.8 L 336.4,193.6 L 337.0,193.4 L 337.6,193.2 L 338.2,193.0 L 338.8,192.8 L 339.4,192.6 L 340.0,192.4 L 340.6,192.2 L 341.2,192.0 L 341.8,191.8 L 342.4,191.6 L 343.0,191.4 L 343.6,191.1 L 344.2,190.9 L 344.8,190.7 L 345.4,190.4 L 346.0,190.2 L 346.6,190.0 L 347.2,189.7 L 347.8,189.4 L 348.4,189.2 L 349.0,188.9 L 349.6,188.6 L 350.2,188.4 L 350.8,188.1 L 351.4,187.8 L 352.0,187.5 L 352.6,187.2 L 353.2,186.9 L 353.8,186.6 L 354.4,186.2 L 355.0,185.9 L 355.6,185.6 L 356.2,185.2 L 356.8,184.9 L 357.4,184.5 L 358.0,184.2 L 358.6,183.8 L 359.2,183.4 L 359.8,183.1 L 360.4,182.7 L 361.0,182.3 L 361.6,181.9 L 362.2,181.4 L 362.8,181.0 L 363.4,180.6 L 364.0,180.2 L 364.6,179.7 L 365.2,179.3 L 365.8,178.8 L 366.4,178.3 L 367.0,177.8 L 367.6,177.3 L 368.2,176.8 L 368.8,176.3 L 369.4,175.8 L 370.0,175.3 L 370.6,174.8 L 371.2,174.2 L 371.8,173.7 L 372.4,173.1 L 373.0,172.6 L 373.6,172.0 L 374.2,171.4 L 374.8,170.8 L 375.4,170.2 L 376.0,169.6 L 376.6,169.0 L 377.2,168.4 L 377.8,167.8 L 378.4,167.1 L 379.0,166.5 L 379.6,165.9 L 380.2,165.2 L 380.8,164.6 L 381.4,163.9 L 382.0,163.3 L 382.6,162.6 L 383.2,162.0 L 383.8,161.3 L 384.4,160.7 L 385.0,160.0 L 385.6,159.3 L 386.2,158.7 L 386.8,158.0 L 387.4,157.4 L 388.0,156.7 L 388.6,156.1 L 389.2,155.4 L 389.8,154.8 L 390.4,154.1 L 391.0,153.5 L 391.6,152.9 L 392.2,152.2 L 392.8,151.6 L 393.4,151.0 L 394.0,150.4 L 394.6,149.8 L 395.2,149.2 L 395.8,148.6 L 396.4,148.0 L 397.0,147.4 L 397.6,146.9 L 398.2,146.3 L 398.8,145.8 L 399.4,145.2 L 400.0,144.7 L 400.6,144.2 L 401.2,143.7 L 401.8,143.2 L 402.4,142.7 L 403.0,142.2 L 403.6,141.7 L 404.2,141.2 L 404.8,140.7 L 405.4,140.3 L 406.0,139.8 L 406.6,139.4 L 407.2,139.0 L 407.8,138.6 L 408.4,138.1 L 409.0,137.7 L 409.6,137.3 L 410.2,136.9 L 410.8,136.6 L 411.4,136.2 L 412.0,135.8 L 412.6,135.5 L 413.2,135.1 L 413.8,134.8 L 414.4,134.4 L 415.0,134.1 L 415.6,133.8 L 416.2,133.4 L 416.8,133.1 L 417.4,132.8 L 418.0,132.5 L 418.6,132.2 L 419.2,131.9 L 419.8,131.6 L 420.4,131.4 L 421.0,131.1 L 421.6,130.8 L 422.2,130.6 L 422.8,130.3 L 423.4,130.0 L 424.0,129.8 L 424.6,129.6 L 425.2,129.3 L 425.8,129.1 L 426.4,128.9 L 427.0,128.6 L 427.6,128.4 L 428.2,128.2 L 428.8,128.0 L 429.4,127.8 L 430.0,127.6 L 430.6,127.4 L 431.2,127.2 L 431.8,127.0 L 432.4,126.8 L 433.0,126.6 L 433.6,126.4 L 434.2,126.2 L 434.8,126.1 L 435.4,125.9 L 436.0,125.7 L 436.6,125.5 L 437.2,125.4 L 437.8,125.2 L 438.4,125.1 L 439.0,124.9 L 439.6,124.7 L 440.2,124.6 L 440.8,124.4 L 441.4,124.3 L 442.0,124.2 L 442.6,124.0 L 443.2,123.9 L 443.8,123.7 L 444.4,123.6 L 445.0,123.5 L 445.6,123.3 L 446.2,123.2 L 446.8,123.1 L 447.4,123.0 L 448.0,122.8 L 448.6,122.7 L 449.2,122.6 L 449.8,122.5 L 450.4,122.4 L 451.0,122.2" fill="none" stroke="#1D4ED8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="318" y1="160" x2="452" y2="160" stroke="#1D4ED8" stroke-width="6" stroke-linecap="round"/>
+            <text x="385" y="66" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">Arctan</text>
+            <text x="385" y="264" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">D = ℝ</text>
+            <text x="385" y="286" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="700">Im = ] −π/2 ; π/2 [</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2 h4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Arccos est la seule décroissante</h3>
+          <p style="font-size:17px">Et ça se voit sur la courbe, sans rien apprendre : quand le nombre augmente, l'angle diminue. Son image part de <b>0</b> et monte jusqu'à <b>π</b>.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Arctan est la seule à tout accepter</h3>
+          <p style="font-size:17px">Son domaine est <b>ℝ tout entier</b>, et elle s'aplatit sur deux <b>asymptotes horizontales</b> en ±π/2 — elle s'en approche sans jamais les atteindre.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Où ça sert vraiment</h3>
+          <p style="font-size:17px"><b>1.</b> Poser une <b>condition d'existence</b> dans un domaine de définition.<br><b>2.</b> Retrouver un angle à partir d'un rapport — la direction d'un vecteur à partir de ses composantes (B2).</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège du chapitre</h3>
+          <div class="expr" style="font-size:20px;text-align:left;line-height:1.3;color:#fff">Arcsin(2) n'existe pas</div>
+          <p style="font-size:17px;margin-top:6px">Arcsin et Arccos n'acceptent qu'entre <b>−1 et 1</b> — un sinus ne dépasse jamais 1. Arctan, lui, accepte tout. <b>C'est la différence à retenir.</b></p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Arcsin : elle entre des nombres de [−1 ; 1] et sort des angles de [−π/2 ; π/2]. Croissante.",
+      "Arccos : même domaine, mais image [0 ; π] — et c'est la seule des trois qui <b>décroît</b>.",
+      "Arctan : elle accepte <b>tout</b>, et s'aplatit sur deux asymptotes en ±π/2.",
+      "Deux usages au concours : les conditions d'existence, et la direction d'un vecteur.",
+      "<em>La différence à retenir :</em> Arcsin et Arccos refusent au-delà de 1. Arctan, jamais."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-D2-08 ==================== -->
+  <section class="slide" data-ref="ANIM-D2-08" data-title="Le piège d'Arcsin(sin x)" data-sub="La composition ne redonne pas toujours l'angle de départ" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="450" height="302">
+          <defs><marker id="b4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <line x1="40" y1="150" x2="455" y2="150" stroke="#8A8F98" stroke-width="1.6"/>
+            <line x1="245" y1="55" x2="245" y2="208" stroke="#8A8F98" stroke-width="1.6"/>
+            <path d="M 40.2,150.0 L 42.0,146.6 L 43.9,143.2 L 45.8,139.8 L 47.6,136.4 L 49.5,133.1 L 51.3,129.8 L 53.2,126.6 L 55.1,123.5 L 56.9,120.5 L 58.8,117.6 L 60.7,114.7 L 62.5,112.0 L 64.4,109.4 L 66.2,107.0 L 68.1,104.7 L 70.0,102.5 L 71.8,100.5 L 73.7,98.6 L 75.5,96.9 L 77.4,95.4 L 79.3,94.1 L 81.1,92.9 L 83.0,92.0 L 84.9,91.2 L 86.7,90.6 L 88.6,90.2 L 90.4,90.0 L 92.3,90.0 L 94.2,90.2 L 96.0,90.6 L 97.9,91.2 L 99.8,92.0 L 101.6,92.9 L 103.5,94.1 L 105.3,95.4 L 107.2,96.9 L 109.1,98.6 L 110.9,100.5 L 112.8,102.5 L 114.7,104.7 L 116.5,107.0 L 118.4,109.4 L 120.2,112.0 L 122.1,114.7 L 124.0,117.6 L 125.8,120.5 L 127.7,123.5 L 129.5,126.6 L 131.4,129.8 L 133.3,133.1 L 135.1,136.4 L 137.0,139.8 L 138.9,143.2 L 140.7,146.6 L 142.6,150.0 L 144.4,153.4 L 146.3,156.8 L 148.2,160.2 L 150.0,163.6 L 151.9,166.9 L 153.8,170.2 L 155.6,173.4 L 157.5,176.5 L 159.3,179.5 L 161.2,182.4 L 163.1,185.3 L 164.9,188.0 L 166.8,190.6 L 168.7,193.0 L 170.5,195.3 L 172.4,197.5 L 174.2,199.5 L 176.1,201.4 L 178.0,203.1 L 179.8,204.6 L 181.7,205.9 L 183.6,207.1 L 185.4,208.0 L 187.3,208.8 L 189.1,209.4 L 191.0,209.8 L 192.9,210.0 L 194.7,210.0 L 196.6,209.8 L 198.4,209.4 L 200.3,208.8 L 202.2,208.0 L 204.0,207.1 L 205.9,205.9 L 207.8,204.6 L 209.6,203.1 L 211.5,201.4 L 213.3,199.5 L 215.2,197.5 L 217.1,195.3 L 218.9,193.0 L 220.8,190.6 L 222.7,188.0 L 224.5,185.3 L 226.4,182.4 L 228.2,179.5 L 230.1,176.5 L 232.0,173.4 L 233.8,170.2 L 235.7,166.9 L 237.6,163.6 L 239.4,160.2 L 241.3,156.8 L 243.1,153.4 L 245.0,150.0 L 246.9,146.6 L 248.7,143.2 L 250.6,139.8 L 252.4,136.4 L 254.3,133.1 L 256.2,129.8 L 258.0,126.6 L 259.9,123.5 L 261.8,120.5 L 263.6,117.6 L 265.5,114.7 L 267.3,112.0 L 269.2,109.4 L 271.1,107.0 L 272.9,104.7 L 274.8,102.5 L 276.7,100.5 L 278.5,98.6 L 280.4,96.9 L 282.2,95.4 L 284.1,94.1 L 286.0,92.9 L 287.8,92.0 L 289.7,91.2 L 291.6,90.6 L 293.4,90.2 L 295.3,90.0 L 297.1,90.0 L 299.0,90.2 L 300.9,90.6 L 302.7,91.2 L 304.6,92.0 L 306.4,92.9 L 308.3,94.1 L 310.2,95.4 L 312.0,96.9 L 313.9,98.6 L 315.8,100.5 L 317.6,102.5 L 319.5,104.7 L 321.3,107.0 L 323.2,109.4 L 325.1,112.0 L 326.9,114.7 L 328.8,117.6 L 330.7,120.5 L 332.5,123.5 L 334.4,126.6 L 336.2,129.8 L 338.1,133.1 L 340.0,136.4 L 341.8,139.8 L 343.7,143.2 L 345.6,146.6 L 347.4,150.0 L 349.3,153.4 L 351.1,156.8 L 353.0,160.2 L 354.9,163.6 L 356.7,166.9 L 358.6,170.2 L 360.5,173.4 L 362.3,176.5 L 364.2,179.5 L 366.0,182.4 L 367.9,185.3 L 369.8,188.0 L 371.6,190.6 L 373.5,193.0 L 375.3,195.3 L 377.2,197.5 L 379.1,199.5 L 380.9,201.4 L 382.8,203.1 L 384.7,204.6 L 386.5,205.9 L 388.4,207.1 L 390.2,208.0 L 392.1,208.8 L 394.0,209.4 L 395.8,209.8 L 397.7,210.0 L 399.6,210.0 L 401.4,209.8 L 403.3,209.4 L 405.1,208.8 L 407.0,208.0 L 408.9,207.1 L 410.7,205.9 L 412.6,204.6 L 414.5,203.1 L 416.3,201.4 L 418.2,199.5 L 420.0,197.5 L 421.9,195.3 L 423.8,193.0 L 425.6,190.6 L 427.5,188.0 L 429.3,185.3 L 431.2,182.4 L 433.1,179.5 L 434.9,176.5 L 436.8,173.4 L 438.7,170.2 L 440.5,166.9 L 442.4,163.6 L 444.2,160.2 L 446.1,156.8 L 448.0,153.4 L 449.8,150.0" fill="none" stroke="#8A8F98" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 193.8,210.0 L 194.3,210.0 L 194.7,210.0 L 195.2,209.9 L 195.7,209.9 L 196.1,209.8 L 196.6,209.8 L 197.1,209.7 L 197.5,209.6 L 198.0,209.5 L 198.4,209.4 L 198.9,209.3 L 199.4,209.1 L 199.8,209.0 L 200.3,208.8 L 200.8,208.6 L 201.2,208.4 L 201.7,208.2 L 202.2,208.0 L 202.6,207.8 L 203.1,207.6 L 203.6,207.3 L 204.0,207.1 L 204.5,206.8 L 205.0,206.5 L 205.4,206.2 L 205.9,205.9 L 206.4,205.6 L 206.8,205.3 L 207.3,204.9 L 207.8,204.6 L 208.2,204.2 L 208.7,203.8 L 209.2,203.5 L 209.6,203.1 L 210.1,202.7 L 210.6,202.2 L 211.0,201.8 L 211.5,201.4 L 211.9,200.9 L 212.4,200.5 L 212.9,200.0 L 213.3,199.5 L 213.8,199.0 L 214.3,198.5 L 214.7,198.0 L 215.2,197.5 L 215.7,197.0 L 216.1,196.4 L 216.6,195.9 L 217.1,195.3 L 217.5,194.8 L 218.0,194.2 L 218.5,193.6 L 218.9,193.0 L 219.4,192.4 L 219.9,191.8 L 220.3,191.2 L 220.8,190.6 L 221.3,189.9 L 221.7,189.3 L 222.2,188.6 L 222.7,188.0 L 223.1,187.3 L 223.6,186.6 L 224.1,186.0 L 224.5,185.3 L 225.0,184.6 L 225.4,183.9 L 225.9,183.2 L 226.4,182.4 L 226.8,181.7 L 227.3,181.0 L 227.8,180.2 L 228.2,179.5 L 228.7,178.8 L 229.2,178.0 L 229.6,177.2 L 230.1,176.5 L 230.6,175.7 L 231.0,174.9 L 231.5,174.1 L 232.0,173.4 L 232.4,172.6 L 232.9,171.8 L 233.4,171.0 L 233.8,170.2 L 234.3,169.4 L 234.8,168.5 L 235.2,167.7 L 235.7,166.9 L 236.2,166.1 L 236.6,165.3 L 237.1,164.4 L 237.6,163.6 L 238.0,162.8 L 238.5,161.9 L 238.9,161.1 L 239.4,160.2 L 239.9,159.4 L 240.3,158.5 L 240.8,157.7 L 241.3,156.8 L 241.7,156.0 L 242.2,155.1 L 242.7,154.3 L 243.1,153.4 L 243.6,152.6 L 244.1,151.7 L 244.5,150.9 L 245.0,150.0 L 245.5,149.1 L 245.9,148.3 L 246.4,147.4 L 246.9,146.6 L 247.3,145.7 L 247.8,144.9 L 248.3,144.0 L 248.7,143.2 L 249.2,142.3 L 249.7,141.5 L 250.1,140.6 L 250.6,139.8 L 251.1,138.9 L 251.5,138.1 L 252.0,137.2 L 252.4,136.4 L 252.9,135.6 L 253.4,134.7 L 253.8,133.9 L 254.3,133.1 L 254.8,132.3 L 255.2,131.5 L 255.7,130.6 L 256.2,129.8 L 256.6,129.0 L 257.1,128.2 L 257.6,127.4 L 258.0,126.6 L 258.5,125.9 L 259.0,125.1 L 259.4,124.3 L 259.9,123.5 L 260.4,122.8 L 260.8,122.0 L 261.3,121.2 L 261.8,120.5 L 262.2,119.8 L 262.7,119.0 L 263.2,118.3 L 263.6,117.6 L 264.1,116.8 L 264.6,116.1 L 265.0,115.4 L 265.5,114.7 L 265.9,114.0 L 266.4,113.4 L 266.9,112.7 L 267.3,112.0 L 267.8,111.4 L 268.3,110.7 L 268.7,110.1 L 269.2,109.4 L 269.7,108.8 L 270.1,108.2 L 270.6,107.6 L 271.1,107.0 L 271.5,106.4 L 272.0,105.8 L 272.5,105.2 L 272.9,104.7 L 273.4,104.1 L 273.9,103.6 L 274.3,103.0 L 274.8,102.5 L 275.3,102.0 L 275.7,101.5 L 276.2,101.0 L 276.7,100.5 L 277.1,100.0 L 277.6,99.5 L 278.1,99.1 L 278.5,98.6 L 279.0,98.2 L 279.4,97.8 L 279.9,97.3 L 280.4,96.9 L 280.8,96.5 L 281.3,96.2 L 281.8,95.8 L 282.2,95.4 L 282.7,95.1 L 283.2,94.7 L 283.6,94.4 L 284.1,94.1 L 284.6,93.8 L 285.0,93.5 L 285.5,93.2 L 286.0,92.9 L 286.4,92.7 L 286.9,92.4 L 287.4,92.2 L 287.8,92.0 L 288.3,91.8 L 288.8,91.6 L 289.2,91.4 L 289.7,91.2 L 290.2,91.0 L 290.6,90.9 L 291.1,90.7 L 291.6,90.6 L 292.0,90.5 L 292.5,90.4 L 292.9,90.3 L 293.4,90.2 L 293.9,90.2 L 294.3,90.1 L 294.8,90.1 L 295.3,90.0 L 295.7,90.0 L 296.2,90.0" fill="none" stroke="#1D4ED8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="193.8" y1="222" x2="296.2" y2="222" stroke="#1D4ED8" stroke-width="6" stroke-linecap="round"/>
+            <text x="245" y="246" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">l'intervalle d'Arcsin</text>
+          </g>
+          <g class="step s2">
+            <circle cx="321.8" cy="107.6" r="8" fill="#0A2A6E"/>
+            <line x1="321.8" y1="115" x2="321.8" y2="150" stroke="#0A2A6E" stroke-width="1.8" stroke-dasharray="5 4"/>
+            <text x="332" y="96" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">x = 3π/4</text>
+          </g>
+          <g class="step s3">
+            <line x1="40" y1="107.6" x2="455" y2="107.6" stroke="#0A2A6E" stroke-width="2.2" stroke-dasharray="8 5"/>
+            <text x="50" y="92" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">sin = √2/2</text>
+          </g>
+          <g class="step s4">
+            <circle cx="270.6" cy="107.6" r="9" fill="#1D4ED8"/>
+            <line x1="270.6" y1="117" x2="270.6" y2="172" stroke="#1D4ED8" stroke-width="2" stroke-dasharray="5 4"/>
+            <text x="270.6" y="192" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">π/4</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2 h4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le sens facile</h3>
+          <div class="expr" style="font-size:21px;text-align:left;line-height:1.3">sin(Arcsin(0,4)) = <b style="color:var(--sfa)">0,4</b></div>
+          <p style="font-size:17px;margin-top:4px">Celui-là marche toujours, pour tout x de [−1 ; 1].</p></div>
+        <div class="card acc step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'autre sens, et la surprise</h3>
+          <div class="expr" style="font-size:19px;text-align:left;line-height:1.45">sin(3π/4) = √2/2<br>Arcsin(√2/2) = <b style="color:var(--sfa)">π/4</b>, pas 3π/4</div>
+          <p style="font-size:17px;margin-top:4px">Arcsin est <b>obligée</b> de rendre l'angle de son intervalle. 3π/4 n'y est pas.</p></div>
+        <div class="card step s5" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La règle, en une phrase</h3>
+          <p style="font-size:17px">Arcsin(sin x) ne redonne x que si x est <b>déjà</b> dans [−π/2 ; π/2]. Sinon, elle rend l'angle de l'intervalle qui a le même sinus.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et le vrai usage au concours</h3>
+          <p style="font-size:17px">Dès qu'un <b>Arcsin</b> ou un <b>Arccos</b> apparaît dans une expression, on écrit immédiatement <b>−1 ≤ argument ≤ 1</b>, et on travaille l'encadrement <b>en une seule fois</b> sur les trois membres.<br><br>Le découper en deux inéquations double le risque d'erreur de signe.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "La sinusoïde, avec en bleu la portion où vit Arcsin.",
+      "On part d'un angle en dehors de cet intervalle : 3π/4.",
+      "Son sinus vaut √2/2 — une valeur parfaitement ordinaire.",
+      "Mais Arcsin, elle, doit rendre un angle de son intervalle : elle rend <b>π/4</b>, pas 3π/4.",
+      "<em>Le vrai usage :</em> dès qu'un Arcsin apparaît, écrire −1 ≤ argument ≤ 1 avant tout calcul."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule D2-B — Les fonctions cyclométriques · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

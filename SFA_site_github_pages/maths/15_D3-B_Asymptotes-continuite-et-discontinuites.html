@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule D3-B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#1D4ED8;          /* bleu SFA */
+  --deep:#0A2A6E;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#E9EEFC;         /* bleu 8 % */
+  --tint2:#D3DEFA;        /* bleu 18 % */
+  --surface:#F4F6FA;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-D3-05 ==================== -->
+  <section class="slide" data-ref="ANIM-D3-05" data-title="Les trois asymptotes" data-sub="Chaque limite calculée se traduit par un élément de la courbe" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="450" height="302">
+          <defs><marker id="b1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <line x1="20" y1="235" x2="165" y2="235" stroke="#8A8F98" stroke-width="1.5"/>
+            <line x1="25" y1="120" x2="25" y2="250" stroke="#8A8F98" stroke-width="1.5"/>
+            <line x1="22" y1="181" x2="165" y2="181" stroke="#0A2A6E" stroke-width="2.4" stroke-dasharray="7 5"/>
+            <path d="M 36.0,235.0 L 36.5,233.9 L 36.9,232.8 L 37.4,231.8 L 37.9,230.8 L 38.3,229.8 L 38.8,228.9 L 39.3,228.0 L 39.7,227.2 L 40.2,226.4 L 40.7,225.6 L 41.1,224.8 L 41.6,224.1 L 42.0,223.4 L 42.5,222.7 L 43.0,222.0 L 43.4,221.3 L 43.9,220.7 L 44.4,220.1 L 44.8,219.5 L 45.3,218.9 L 45.8,218.4 L 46.2,217.9 L 46.7,217.3 L 47.2,216.8 L 47.6,216.3 L 48.1,215.8 L 48.6,215.4 L 49.0,214.9 L 49.5,214.5 L 50.0,214.0 L 50.4,213.6 L 50.9,213.2 L 51.4,212.8 L 51.8,212.4 L 52.3,212.0 L 52.8,211.7 L 53.2,211.3 L 53.7,210.9 L 54.1,210.6 L 54.6,210.2 L 55.1,209.9 L 55.5,209.6 L 56.0,209.3 L 56.5,209.0 L 56.9,208.7 L 57.4,208.4 L 57.9,208.1 L 58.3,207.8 L 58.8,207.5 L 59.3,207.2 L 59.7,207.0 L 60.2,206.7 L 60.7,206.5 L 61.1,206.2 L 61.6,206.0 L 62.1,205.7 L 62.5,205.5 L 63.0,205.2 L 63.5,205.0 L 63.9,204.8 L 64.4,204.6 L 64.9,204.4 L 65.3,204.1 L 65.8,203.9 L 66.2,203.7 L 66.7,203.5 L 67.2,203.3 L 67.6,203.1 L 68.1,203.0 L 68.6,202.8 L 69.0,202.6 L 69.5,202.4 L 70.0,202.2 L 70.4,202.0 L 70.9,201.9 L 71.4,201.7 L 71.8,201.5 L 72.3,201.4 L 72.8,201.2 L 73.2,201.1 L 73.7,200.9 L 74.2,200.7 L 74.6,200.6 L 75.1,200.4 L 75.6,200.3 L 76.0,200.2 L 76.5,200.0 L 77.0,199.9 L 77.4,199.7 L 77.9,199.6 L 78.3,199.5 L 78.8,199.3 L 79.3,199.2 L 79.7,199.1 L 80.2,198.9 L 80.7,198.8 L 81.1,198.7 L 81.6,198.6 L 82.1,198.5 L 82.5,198.3 L 83.0,198.2 L 83.5,198.1 L 83.9,198.0 L 84.4,197.9 L 84.9,197.8 L 85.3,197.7 L 85.8,197.5 L 86.3,197.4 L 86.7,197.3 L 87.2,197.2 L 87.7,197.1 L 88.1,197.0 L 88.6,196.9 L 89.1,196.8 L 89.5,196.7 L 90.0,196.6 L 90.5,196.5 L 90.9,196.4 L 91.4,196.4 L 91.8,196.3 L 92.3,196.2 L 92.8,196.1 L 93.2,196.0 L 93.7,195.9 L 94.2,195.8 L 94.6,195.7 L 95.1,195.6 L 95.6,195.6 L 96.0,195.5 L 96.5,195.4 L 97.0,195.3 L 97.4,195.2 L 97.9,195.2 L 98.4,195.1 L 98.8,195.0 L 99.3,194.9 L 99.8,194.9 L 100.2,194.8 L 100.7,194.7 L 101.2,194.6 L 101.6,194.6 L 102.1,194.5 L 102.5,194.4 L 103.0,194.3 L 103.5,194.3 L 103.9,194.2 L 104.4,194.1 L 104.9,194.1 L 105.3,194.0 L 105.8,193.9 L 106.3,193.9 L 106.7,193.8 L 107.2,193.7 L 107.7,193.7 L 108.1,193.6 L 108.6,193.6 L 109.1,193.5 L 109.5,193.4 L 110.0,193.4 L 110.5,193.3 L 110.9,193.3 L 111.4,193.2 L 111.9,193.1 L 112.3,193.1 L 112.8,193.0 L 113.3,193.0 L 113.7,192.9 L 114.2,192.9 L 114.7,192.8 L 115.1,192.7 L 115.6,192.7 L 116.0,192.6 L 116.5,192.6 L 117.0,192.5 L 117.4,192.5 L 117.9,192.4 L 118.4,192.4 L 118.8,192.3 L 119.3,192.3 L 119.8,192.2 L 120.2,192.2 L 120.7,192.1 L 121.2,192.1 L 121.6,192.0 L 122.1,192.0 L 122.6,191.9 L 123.0,191.9 L 123.5,191.9 L 124.0,191.8 L 124.4,191.8 L 124.9,191.7 L 125.4,191.7 L 125.8,191.6 L 126.3,191.6 L 126.8,191.5 L 127.2,191.5 L 127.7,191.5 L 128.1,191.4 L 128.6,191.4 L 129.1,191.3 L 129.5,191.3 L 130.0,191.2 L 130.5,191.2 L 130.9,191.2 L 131.4,191.1 L 131.9,191.1 L 132.3,191.0 L 132.8,191.0 L 133.3,191.0 L 133.7,190.9 L 134.2,190.9 L 134.7,190.8 L 135.1,190.8 L 135.6,190.8 L 136.1,190.7 L 136.5,190.7 L 137.0,190.7 L 137.5,190.6 L 137.9,190.6 L 138.4,190.6 L 138.8,190.5 L 139.3,190.5 L 139.8,190.4 L 140.2,190.4 L 140.7,190.4 L 141.2,190.3 L 141.6,190.3 L 142.1,190.3 L 142.6,190.2 L 143.0,190.2 L 143.5,190.2 L 144.0,190.1 L 144.4,190.1 L 144.9,190.1 L 145.4,190.0 L 145.8,190.0 L 146.3,190.0 L 146.8,189.9 L 147.2,189.9 L 147.7,189.9 L 148.2,189.9 L 148.6,189.8 L 149.1,189.8 L 149.6,189.8 L 150.0,189.7 L 150.5,189.7 L 150.9,189.7 L 151.4,189.6 L 151.9,189.6 L 152.3,189.6 L 152.8,189.6 L 153.3,189.5 L 153.7,189.5 L 154.2,189.5 L 154.7,189.4 L 155.1,189.4 L 155.6,189.4 L 156.1,189.4 L 156.5,189.3 L 157.0,189.3" fill="none" stroke="#1D4ED8" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="152" y="172" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">y = b</text>
+            <text x="92" y="274" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">horizontale</text>
+            <text x="92" y="296" text-anchor="middle" font-size="12" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="600">limite finie en ±∞</text>
+          </g>
+          <g class="step s2">
+            <line x1="185" y1="235" x2="330" y2="235" stroke="#8A8F98" stroke-width="1.5"/>
+            <line x1="212" y1="100" x2="212" y2="250" stroke="#0A2A6E" stroke-width="2.4" stroke-dasharray="7 5"/>
+            <path d="M 216.0,135.0 L 216.4,144.3 L 216.8,152.1 L 217.2,158.6 L 217.6,164.2 L 218.0,169.0 L 218.4,173.2 L 218.8,176.9 L 219.2,180.2 L 219.6,183.1 L 220.0,185.7 L 220.4,188.1 L 220.9,190.3 L 221.3,192.2 L 221.7,194.0 L 222.1,195.7 L 222.5,197.2 L 222.9,198.6 L 223.3,200.0 L 223.7,201.2 L 224.1,202.3 L 224.5,203.4 L 224.9,204.4 L 225.3,205.3 L 225.7,206.2 L 226.2,207.0 L 226.6,207.8 L 227.0,208.6 L 227.4,209.3 L 227.8,209.9 L 228.2,210.5 L 228.6,211.1 L 229.0,211.7 L 229.4,212.3 L 229.8,212.8 L 230.2,213.3 L 230.6,213.8 L 231.1,214.2 L 231.5,214.6 L 231.9,215.1 L 232.3,215.5 L 232.7,215.9 L 233.1,216.2 L 233.5,216.6 L 233.9,216.9 L 234.3,217.3 L 234.7,217.6 L 235.1,217.9 L 235.5,218.2 L 235.9,218.5 L 236.4,218.7 L 236.8,219.0 L 237.2,219.3 L 237.6,219.5 L 238.0,219.8 L 238.4,220.0 L 238.8,220.2 L 239.2,220.4 L 239.6,220.7 L 240.0,220.9 L 240.4,221.1 L 240.8,221.3 L 241.2,221.5 L 241.7,221.6 L 242.1,221.8 L 242.5,222.0 L 242.9,222.2 L 243.3,222.3 L 243.7,222.5 L 244.1,222.7 L 244.5,222.8 L 244.9,223.0 L 245.3,223.1 L 245.7,223.3 L 246.1,223.4 L 246.5,223.5 L 247.0,223.7 L 247.4,223.8 L 247.8,223.9 L 248.2,224.1 L 248.6,224.2 L 249.0,224.3 L 249.4,224.4 L 249.8,224.5 L 250.2,224.6 L 250.6,224.7 L 251.0,224.9 L 251.4,225.0 L 251.9,225.1 L 252.3,225.2 L 252.7,225.3 L 253.1,225.4 L 253.5,225.5 L 253.9,225.5 L 254.3,225.6 L 254.7,225.7 L 255.1,225.8 L 255.5,225.9 L 255.9,226.0 L 256.3,226.1 L 256.7,226.1 L 257.2,226.2 L 257.6,226.3 L 258.0,226.4 L 258.4,226.5 L 258.8,226.5 L 259.2,226.6 L 259.6,226.7 L 260.0,226.8 L 260.4,226.8 L 260.8,226.9 L 261.2,227.0 L 261.6,227.0 L 262.0,227.1 L 262.5,227.2 L 262.9,227.2 L 263.3,227.3 L 263.7,227.3 L 264.1,227.4 L 264.5,227.5 L 264.9,227.5 L 265.3,227.6 L 265.7,227.6 L 266.1,227.7 L 266.5,227.7 L 266.9,227.8 L 267.3,227.8 L 267.8,227.9 L 268.2,227.9 L 268.6,228.0 L 269.0,228.1 L 269.4,228.1 L 269.8,228.1 L 270.2,228.2 L 270.6,228.2 L 271.0,228.3 L 271.4,228.3 L 271.8,228.4 L 272.2,228.4 L 272.7,228.5 L 273.1,228.5 L 273.5,228.6 L 273.9,228.6 L 274.3,228.6 L 274.7,228.7 L 275.1,228.7 L 275.5,228.8 L 275.9,228.8 L 276.3,228.8 L 276.7,228.9 L 277.1,228.9 L 277.5,229.0 L 278.0,229.0 L 278.4,229.0 L 278.8,229.1 L 279.2,229.1 L 279.6,229.1 L 280.0,229.2 L 280.4,229.2 L 280.8,229.2 L 281.2,229.3 L 281.6,229.3 L 282.0,229.3 L 282.4,229.4 L 282.8,229.4 L 283.3,229.4 L 283.7,229.5 L 284.1,229.5 L 284.5,229.5 L 284.9,229.6 L 285.3,229.6 L 285.7,229.6 L 286.1,229.7 L 286.5,229.7 L 286.9,229.7 L 287.3,229.7 L 287.7,229.8 L 288.1,229.8 L 288.6,229.8 L 289.0,229.9 L 289.4,229.9 L 289.8,229.9 L 290.2,229.9 L 290.6,230.0 L 291.0,230.0 L 291.4,230.0 L 291.8,230.0 L 292.2,230.1 L 292.6,230.1 L 293.0,230.1 L 293.5,230.1 L 293.9,230.2 L 294.3,230.2 L 294.7,230.2 L 295.1,230.2 L 295.5,230.3 L 295.9,230.3 L 296.3,230.3 L 296.7,230.3 L 297.1,230.3 L 297.5,230.4 L 297.9,230.4 L 298.3,230.4 L 298.8,230.4 L 299.2,230.5 L 299.6,230.5 L 300.0,230.5 L 300.4,230.5 L 300.8,230.5 L 301.2,230.6 L 301.6,230.6 L 302.0,230.6 L 302.4,230.6 L 302.8,230.6 L 303.2,230.7 L 303.6,230.7 L 304.1,230.7 L 304.5,230.7 L 304.9,230.7 L 305.3,230.8 L 305.7,230.8 L 306.1,230.8 L 306.5,230.8 L 306.9,230.8 L 307.3,230.8 L 307.7,230.9 L 308.1,230.9 L 308.5,230.9 L 308.9,230.9 L 309.4,230.9 L 309.8,230.9 L 310.2,231.0 L 310.6,231.0 L 311.0,231.0 L 311.4,231.0 L 311.8,231.0 L 312.2,231.0 L 312.6,231.1 L 313.0,231.1 L 313.4,231.1 L 313.8,231.1 L 314.3,231.1 L 314.7,231.1 L 315.1,231.2 L 315.5,231.2 L 315.9,231.2 L 316.3,231.2 L 316.7,231.2 L 317.1,231.2 L 317.5,231.2 L 317.9,231.3 L 318.3,231.3 L 318.7,231.3 L 319.1,231.3 L 319.6,231.3 L 320.0,231.3 L 320.4,231.3 L 320.8,231.4 L 321.2,231.4 L 321.6,231.4 L 322.0,231.4" fill="none" stroke="#1D4ED8" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="224" y="112" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">x = a</text>
+            <text x="257" y="274" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">verticale</text>
+            <text x="257" y="296" text-anchor="middle" font-size="12" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="600">limite infinie en a</text>
+          </g>
+          <g class="step s3">
+            <line x1="345" y1="235" x2="465" y2="235" stroke="#8A8F98" stroke-width="1.5"/>
+            <line x1="350" y1="110" x2="350" y2="250" stroke="#8A8F98" stroke-width="1.5"/>
+            <line x1="365" y1="220" x2="460" y2="125" stroke="#0A2A6E" stroke-width="2.4" stroke-dasharray="7 5"/>
+            <path d="M 365.4,188.2 L 365.8,188.5 L 366.1,188.9 L 366.5,189.2 L 366.9,189.4 L 367.2,189.7 L 367.6,189.9 L 367.9,190.1 L 368.3,190.3 L 368.7,190.4 L 369.0,190.5 L 369.4,190.7 L 369.8,190.7 L 370.1,190.8 L 370.5,190.9 L 370.9,190.9 L 371.2,191.0 L 371.6,191.0 L 371.9,191.0 L 372.3,191.0 L 372.7,191.0 L 373.0,191.0 L 373.4,190.9 L 373.8,190.9 L 374.1,190.8 L 374.5,190.7 L 374.9,190.7 L 375.2,190.6 L 375.6,190.5 L 376.0,190.4 L 376.3,190.3 L 376.7,190.2 L 377.0,190.1 L 377.4,189.9 L 377.8,189.8 L 378.1,189.7 L 378.5,189.5 L 378.9,189.4 L 379.2,189.2 L 379.6,189.1 L 380.0,188.9 L 380.3,188.7 L 380.7,188.5 L 381.0,188.4 L 381.4,188.2 L 381.8,188.0 L 382.1,187.8 L 382.5,187.6 L 382.9,187.4 L 383.2,187.2 L 383.6,187.0 L 384.0,186.8 L 384.3,186.6 L 384.7,186.4 L 385.0,186.1 L 385.4,185.9 L 385.8,185.7 L 386.1,185.5 L 386.5,185.2 L 386.9,185.0 L 387.2,184.8 L 387.6,184.5 L 388.0,184.3 L 388.3,184.0 L 388.7,183.8 L 389.1,183.6 L 389.4,183.3 L 389.8,183.1 L 390.1,182.8 L 390.5,182.5 L 390.9,182.3 L 391.2,182.0 L 391.6,181.8 L 392.0,181.5 L 392.3,181.2 L 392.7,181.0 L 393.1,180.7 L 393.4,180.4 L 393.8,180.2 L 394.1,179.9 L 394.5,179.6 L 394.9,179.3 L 395.2,179.1 L 395.6,178.8 L 396.0,178.5 L 396.3,178.2 L 396.7,177.9 L 397.1,177.7 L 397.4,177.4 L 397.8,177.1 L 398.1,176.8 L 398.5,176.5 L 398.9,176.2 L 399.2,175.9 L 399.6,175.6 L 400.0,175.3 L 400.3,175.1 L 400.7,174.8 L 401.1,174.5 L 401.4,174.2 L 401.8,173.9 L 402.1,173.6 L 402.5,173.3 L 402.9,173.0 L 403.2,172.7 L 403.6,172.4 L 404.0,172.1 L 404.3,171.8 L 404.7,171.5 L 405.1,171.2 L 405.4,170.8 L 405.8,170.5 L 406.2,170.2 L 406.5,169.9 L 406.9,169.6 L 407.2,169.3 L 407.6,169.0 L 408.0,168.7 L 408.3,168.4 L 408.7,168.1 L 409.1,167.7 L 409.4,167.4 L 409.8,167.1 L 410.2,166.8 L 410.5,166.5 L 410.9,166.2 L 411.2,165.9 L 411.6,165.5 L 412.0,165.2 L 412.3,164.9 L 412.7,164.6 L 413.1,164.3 L 413.4,163.9 L 413.8,163.6 L 414.2,163.3 L 414.5,163.0 L 414.9,162.7 L 415.2,162.3 L 415.6,162.0 L 416.0,161.7 L 416.3,161.4 L 416.7,161.0 L 417.1,160.7 L 417.4,160.4 L 417.8,160.1 L 418.2,159.7 L 418.5,159.4 L 418.9,159.1 L 419.2,158.8 L 419.6,158.4 L 420.0,158.1 L 420.3,157.8 L 420.7,157.5 L 421.1,157.1 L 421.4,156.8 L 421.8,156.5 L 422.2,156.1 L 422.5,155.8 L 422.9,155.5 L 423.3,155.1 L 423.6,154.8 L 424.0,154.5 L 424.3,154.1 L 424.7,153.8 L 425.1,153.5 L 425.4,153.1 L 425.8,152.8 L 426.2,152.5 L 426.5,152.1 L 426.9,151.8 L 427.3,151.5 L 427.6,151.1 L 428.0,150.8 L 428.3,150.5 L 428.7,150.1 L 429.1,149.8 L 429.4,149.5 L 429.8,149.1 L 430.2,148.8 L 430.5,148.5 L 430.9,148.1 L 431.3,147.8 L 431.6,147.5 L 432.0,147.1 L 432.3,146.8 L 432.7,146.4 L 433.1,146.1 L 433.4,145.8 L 433.8,145.4 L 434.2,145.1 L 434.5,144.7 L 434.9,144.4 L 435.3,144.1 L 435.6,143.7 L 436.0,143.4 L 436.4,143.0 L 436.7,142.7 L 437.1,142.4 L 437.4,142.0 L 437.8,141.7 L 438.2,141.3 L 438.5,141.0 L 438.9,140.7 L 439.3,140.3 L 439.6,140.0 L 440.0,139.6 L 440.4,139.3 L 440.7,138.9 L 441.1,138.6 L 441.4,138.3 L 441.8,137.9 L 442.2,137.6 L 442.5,137.2 L 442.9,136.9 L 443.3,136.5 L 443.6,136.2 L 444.0,135.9 L 444.4,135.5 L 444.7,135.2 L 445.1,134.8 L 445.4,134.5 L 445.8,134.1 L 446.2,133.8 L 446.5,133.4 L 446.9,133.1 L 447.3,132.8 L 447.6,132.4 L 448.0,132.1 L 448.4,131.7 L 448.7,131.4 L 449.1,131.0 L 449.4,130.7 L 449.8,130.3 L 450.2,130.0 L 450.5,129.6 L 450.9,129.3 L 451.3,129.0 L 451.6,128.6 L 452.0,128.3 L 452.4,127.9 L 452.7,127.6 L 453.1,127.2 L 453.5,126.9 L 453.8,126.5 L 454.2,126.2 L 454.5,125.8 L 454.9,125.5 L 455.3,125.1 L 455.6,124.8 L 456.0,124.4 L 456.4,124.1 L 456.7,123.7 L 457.1,123.4 L 457.5,123.0 L 457.8,122.7 L 458.2,122.3 L 458.5,122.0 L 458.9,121.6 L 459.3,121.3 L 459.6,120.9 L 460.0,120.6" fill="none" stroke="#1D4ED8" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="358" y="112" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">y = ax + b</text>
+            <text x="400" y="274" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">oblique</text>
+            <text x="400" y="296" text-anchor="middle" font-size="12" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="600">numérateur : +1 degré</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1 h3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Asymptote horizontale</h3>
+          <p style="font-size:17px">La limite en ±∞ vaut un nombre fini b → la droite <b>y = b</b>.<br><b>Et elle peut être croisée</b> — contrairement à ce que beaucoup croient.</p></div>
+        <div class="card step s2 h4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Asymptote verticale</h3>
+          <p style="font-size:17px">La limite en a est infinie → la droite <b>x = a</b>. On la cherche aux <b>valeurs interdites</b> du domaine, jamais ailleurs.</p></div>
+        <div class="card acc step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La méthode complète, en deux regards</h3>
+          <div class="expr" style="font-size:18px;text-align:left;line-height:1.5">valeur interdite → <b style="color:var(--sfa)">verticale</b><br>rapport des degrés → <b style="color:var(--sfa)">horizontale ou oblique</b></div>
+          <p style="font-size:17px;margin-top:4px">Deux regards sur une fonction rationnelle, et l'allure est connue.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi ça compte plus que le calcul</h3>
+          <p style="font-size:17px">La question type du concours n'est pas « calculez cette limite » mais <b>« laquelle de ces quatre courbes correspond à cette fonction »</b>.<br><br><b>Savoir lire vaut autant que savoir calculer</b> — et va cinq fois plus vite.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Première asymptote : la courbe s'aplatit sur une <b>horizontale</b>. C'est une limite finie à l'infini.",
+      "Deuxième : la courbe longe une <b>verticale</b> sans jamais la franchir. C'est une limite infinie en un point.",
+      "Troisième : elle s'aligne sur une <b>oblique</b>, quand le degré du haut dépasse celui du bas d'exactement un.",
+      "Sur une fonction rationnelle, deux regards suffisent : la valeur interdite, puis le rapport des degrés.",
+      "<em>Et c'est là que ça rapporte :</em> le QCM demande de reconnaître une courbe, pas de rédiger un calcul."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-D3-06 ==================== -->
+  <section class="slide" data-ref="ANIM-D3-06" data-title="Lire une fonction rationnelle" data-sub="Deux asymptotes, et l'allure est connue" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="450" height="302">
+          <defs><marker id="b2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <g stroke="#E3E7EE" stroke-width="1">
+              <line x1="100" y1="15" x2="100" y2="305"/><line x1="160" y1="15" x2="160" y2="305"/>
+              <line x1="280" y1="15" x2="280" y2="305"/><line x1="340" y1="15" x2="340" y2="305"/>
+              <line x1="400" y1="15" x2="400" y2="305"/>
+              <line x1="40" y1="240" x2="440" y2="240"/><line x1="40" y1="90" x2="440" y2="90"/>
+              <line x1="40" y1="30" x2="440" y2="30"/>
+            </g>
+            <line x1="38" y1="180" x2="442" y2="180" stroke="#8A8F98" stroke-width="1.6"/>
+            <line x1="190" y1="12" x2="190" y2="308" stroke="#8A8F98" stroke-width="1.6"/>
+            <g font-size="12" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">
+              <text x="100" y="198" text-anchor="middle">−3</text><text x="340" y="198" text-anchor="middle">5</text>
+              <text x="182" y="244" text-anchor="end">−2</text><text x="182" y="94" text-anchor="end">3</text>
+            </g>
+            <path d="M 40.0,135.0 L 40.6,135.1 L 41.2,135.1 L 41.8,135.2 L 42.4,135.2 L 43.0,135.3 L 43.6,135.3 L 44.2,135.4 L 44.8,135.4 L 45.5,135.5 L 46.1,135.5 L 46.7,135.6 L 47.3,135.6 L 47.9,135.7 L 48.5,135.7 L 49.1,135.8 L 49.7,135.9 L 50.3,135.9 L 50.9,136.0 L 51.5,136.0 L 52.1,136.1 L 52.7,136.1 L 53.3,136.2 L 53.9,136.3 L 54.5,136.3 L 55.1,136.4 L 55.8,136.4 L 56.4,136.5 L 57.0,136.6 L 57.6,136.6 L 58.2,136.7 L 58.8,136.7 L 59.4,136.8 L 60.0,136.9 L 60.6,136.9 L 61.2,137.0 L 61.8,137.1 L 62.4,137.1 L 63.0,137.2 L 63.6,137.3 L 64.2,137.3 L 64.8,137.4 L 65.4,137.5 L 66.0,137.5 L 66.7,137.6 L 67.3,137.7 L 67.9,137.7 L 68.5,137.8 L 69.1,137.9 L 69.7,138.0 L 70.3,138.0 L 70.9,138.1 L 71.5,138.2 L 72.1,138.3 L 72.7,138.3 L 73.3,138.4 L 73.9,138.5 L 74.5,138.6 L 75.1,138.6 L 75.7,138.7 L 76.3,138.8 L 77.0,138.9 L 77.6,139.0 L 78.2,139.0 L 78.8,139.1 L 79.4,139.2 L 80.0,139.3 L 80.6,139.4 L 81.2,139.5 L 81.8,139.5 L 82.4,139.6 L 83.0,139.7 L 83.6,139.8 L 84.2,139.9 L 84.8,140.0 L 85.4,140.1 L 86.0,140.2 L 86.6,140.2 L 87.2,140.3 L 87.9,140.4 L 88.5,140.5 L 89.1,140.6 L 89.7,140.7 L 90.3,140.8 L 90.9,140.9 L 91.5,141.0 L 92.1,141.1 L 92.7,141.2 L 93.3,141.3 L 93.9,141.4 L 94.5,141.5 L 95.1,141.6 L 95.7,141.7 L 96.3,141.8 L 96.9,141.9 L 97.5,142.0 L 98.2,142.2 L 98.8,142.3 L 99.4,142.4 L 100.0,142.5 L 100.6,142.6 L 101.2,142.7 L 101.8,142.8 L 102.4,143.0 L 103.0,143.1 L 103.6,143.2 L 104.2,143.3 L 104.8,143.4 L 105.4,143.6 L 106.0,143.7 L 106.6,143.8 L 107.2,143.9 L 107.8,144.1 L 108.5,144.2 L 109.1,144.3 L 109.7,144.5 L 110.3,144.6 L 110.9,144.7 L 111.5,144.9 L 112.1,145.0 L 112.7,145.2 L 113.3,145.3 L 113.9,145.4 L 114.5,145.6 L 115.1,145.7 L 115.7,145.9 L 116.3,146.0 L 116.9,146.2 L 117.5,146.4 L 118.1,146.5 L 118.8,146.7 L 119.4,146.8 L 120.0,147.0 L 120.6,147.2 L 121.2,147.3 L 121.8,147.5 L 122.4,147.7 L 123.0,147.8 L 123.6,148.0 L 124.2,148.2 L 124.8,148.4 L 125.4,148.5 L 126.0,148.7 L 126.6,148.9 L 127.2,149.1 L 127.8,149.3 L 128.4,149.5 L 129.0,149.7 L 129.7,149.9 L 130.3,150.1 L 130.9,150.3 L 131.5,150.5 L 132.1,150.7 L 132.7,150.9 L 133.3,151.1 L 133.9,151.4 L 134.5,151.6 L 135.1,151.8 L 135.7,152.0 L 136.3,152.3 L 136.9,152.5 L 137.5,152.7 L 138.1,153.0 L 138.7,153.2 L 139.3,153.5 L 140.0,153.7 L 140.6,154.0 L 141.2,154.2 L 141.8,154.5 L 142.4,154.8 L 143.0,155.1 L 143.6,155.3 L 144.2,155.6 L 144.8,155.9 L 145.4,156.2 L 146.0,156.5 L 146.6,156.8 L 147.2,157.1 L 147.8,157.4 L 148.4,157.7 L 149.0,158.0 L 149.6,158.4 L 150.2,158.7 L 150.9,159.0 L 151.5,159.4 L 152.1,159.7 L 152.7,160.1 L 153.3,160.5 L 153.9,160.8 L 154.5,161.2 L 155.1,161.6 L 155.7,162.0 L 156.3,162.4 L 156.9,162.8 L 157.5,163.2 L 158.1,163.6 L 158.7,164.1 L 159.3,164.5 L 159.9,165.0 L 160.5,165.4 L 161.2,165.9 L 161.8,166.4 L 162.4,166.8 L 163.0,167.3 L 163.6,167.9 L 164.2,168.4 L 164.8,168.9 L 165.4,169.4 L 166.0,170.0 L 166.6,170.6 L 167.2,171.1 L 167.8,171.7 L 168.4,172.3 L 169.0,173.0 L 169.6,173.6 L 170.2,174.3 L 170.8,174.9 L 171.5,175.6 L 172.1,176.3 L 172.7,177.0 L 173.3,177.8 L 173.9,178.5 L 174.5,179.3 L 175.1,180.1 L 175.7,180.9 L 176.3,181.8 L 176.9,182.7 L 177.5,183.5 L 178.1,184.5 L 178.7,185.4 L 179.3,186.4 L 179.9,187.4 L 180.5,188.4 L 181.1,189.5 L 181.8,190.6 L 182.4,191.7 L 183.0,192.9 L 183.6,194.1 L 184.2,195.4 L 184.8,196.7 L 185.4,198.0 L 186.0,199.4 L 186.6,200.8 L 187.2,202.3 L 187.8,203.9 L 188.4,205.5 L 189.0,207.2 L 189.6,208.9 L 190.2,210.7 L 190.8,212.6 L 191.4,214.5 L 192.0,216.6 L 192.7,218.7 L 193.3,221.0 L 193.9,223.3 L 194.5,225.8 L 195.1,228.3 L 195.7,231.0 L 196.3,233.9 L 196.9,236.9 L 197.5,240.0" fill="none" stroke="#1D4ED8" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 245.8,15.3 L 246.5,18.1 L 247.2,20.8 L 247.9,23.3 L 248.6,25.7 L 249.3,28.0 L 250.1,30.2 L 250.8,32.2 L 251.5,34.2 L 252.2,36.1 L 252.9,37.9 L 253.6,39.6 L 254.3,41.3 L 255.0,42.9 L 255.7,44.4 L 256.4,45.9 L 257.1,47.3 L 257.8,48.7 L 258.6,50.0 L 259.3,51.2 L 260.0,52.4 L 260.7,53.6 L 261.4,54.8 L 262.1,55.9 L 262.8,56.9 L 263.5,57.9 L 264.2,58.9 L 264.9,59.9 L 265.6,60.8 L 266.3,61.7 L 267.1,62.6 L 267.8,63.5 L 268.5,64.3 L 269.2,65.1 L 269.9,65.9 L 270.6,66.6 L 271.3,67.4 L 272.0,68.1 L 272.7,68.8 L 273.4,69.5 L 274.1,70.1 L 274.8,70.8 L 275.6,71.4 L 276.3,72.0 L 277.0,72.6 L 277.7,73.2 L 278.4,73.8 L 279.1,74.3 L 279.8,74.9 L 280.5,75.4 L 281.2,75.9 L 281.9,76.4 L 282.6,76.9 L 283.3,77.4 L 284.1,77.8 L 284.8,78.3 L 285.5,78.8 L 286.2,79.2 L 286.9,79.6 L 287.6,80.1 L 288.3,80.5 L 289.0,80.9 L 289.7,81.3 L 290.4,81.7 L 291.1,82.0 L 291.9,82.4 L 292.6,82.8 L 293.3,83.1 L 294.0,83.5 L 294.7,83.8 L 295.4,84.2 L 296.1,84.5 L 296.8,84.8 L 297.5,85.2 L 298.2,85.5 L 298.9,85.8 L 299.6,86.1 L 300.4,86.4 L 301.1,86.7 L 301.8,87.0 L 302.5,87.3 L 303.2,87.5 L 303.9,87.8 L 304.6,88.1 L 305.3,88.4 L 306.0,88.6 L 306.7,88.9 L 307.4,89.1 L 308.1,89.4 L 308.9,89.6 L 309.6,89.9 L 310.3,90.1 L 311.0,90.3 L 311.7,90.6 L 312.4,90.8 L 313.1,91.0 L 313.8,91.2 L 314.5,91.4 L 315.2,91.6 L 315.9,91.9 L 316.6,92.1 L 317.4,92.3 L 318.1,92.5 L 318.8,92.7 L 319.5,92.9 L 320.2,93.1 L 320.9,93.2 L 321.6,93.4 L 322.3,93.6 L 323.0,93.8 L 323.7,94.0 L 324.4,94.1 L 325.1,94.3 L 325.9,94.5 L 326.6,94.7 L 327.3,94.8 L 328.0,95.0 L 328.7,95.2 L 329.4,95.3 L 330.1,95.5 L 330.8,95.6 L 331.5,95.8 L 332.2,95.9 L 332.9,96.1 L 333.6,96.2 L 334.4,96.4 L 335.1,96.5 L 335.8,96.7 L 336.5,96.8 L 337.2,97.0 L 337.9,97.1 L 338.6,97.2 L 339.3,97.4 L 340.0,97.5 L 340.7,97.6 L 341.4,97.8 L 342.2,97.9 L 342.9,98.0 L 343.6,98.1 L 344.3,98.3 L 345.0,98.4 L 345.7,98.5 L 346.4,98.6 L 347.1,98.8 L 347.8,98.9 L 348.5,99.0 L 349.2,99.1 L 349.9,99.2 L 350.7,99.3 L 351.4,99.4 L 352.1,99.6 L 352.8,99.7 L 353.5,99.8 L 354.2,99.9 L 354.9,100.0 L 355.6,100.1 L 356.3,100.2 L 357.0,100.3 L 357.7,100.4 L 358.4,100.5 L 359.2,100.6 L 359.9,100.7 L 360.6,100.8 L 361.3,100.9 L 362.0,101.0 L 362.7,101.1 L 363.4,101.2 L 364.1,101.3 L 364.8,101.4 L 365.5,101.4 L 366.2,101.5 L 366.9,101.6 L 367.7,101.7 L 368.4,101.8 L 369.1,101.9 L 369.8,102.0 L 370.5,102.1 L 371.2,102.1 L 371.9,102.2 L 372.6,102.3 L 373.3,102.4 L 374.0,102.5 L 374.7,102.6 L 375.4,102.6 L 376.2,102.7 L 376.9,102.8 L 377.6,102.9 L 378.3,102.9 L 379.0,103.0 L 379.7,103.1 L 380.4,103.2 L 381.1,103.2 L 381.8,103.3 L 382.5,103.4 L 383.2,103.5 L 383.9,103.5 L 384.7,103.6 L 385.4,103.7 L 386.1,103.7 L 386.8,103.8 L 387.5,103.9 L 388.2,103.9 L 388.9,104.0 L 389.6,104.1 L 390.3,104.1 L 391.0,104.2 L 391.7,104.3 L 392.5,104.3 L 393.2,104.4 L 393.9,104.5 L 394.6,104.5 L 395.3,104.6 L 396.0,104.7 L 396.7,104.7 L 397.4,104.8 L 398.1,104.8 L 398.8,104.9 L 399.5,105.0 L 400.2,105.0 L 401.0,105.1 L 401.7,105.1 L 402.4,105.2 L 403.1,105.3 L 403.8,105.3 L 404.5,105.4 L 405.2,105.4 L 405.9,105.5 L 406.6,105.5 L 407.3,105.6 L 408.0,105.6 L 408.7,105.7 L 409.5,105.7 L 410.2,105.8 L 410.9,105.9 L 411.6,105.9 L 412.3,106.0 L 413.0,106.0 L 413.7,106.1 L 414.4,106.1 L 415.1,106.2 L 415.8,106.2 L 416.5,106.3 L 417.2,106.3 L 418.0,106.4 L 418.7,106.4 L 419.4,106.5 L 420.1,106.5 L 420.8,106.6 L 421.5,106.6 L 422.2,106.6 L 422.9,106.7 L 423.6,106.7 L 424.3,106.8 L 425.0,106.8 L 425.7,106.9 L 426.5,106.9 L 427.2,107.0 L 427.9,107.0 L 428.6,107.1 L 429.3,107.1 L 430.0,107.1" fill="none" stroke="#1D4ED8" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="44" y="300" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">f(x) = (2x + 1) ÷ (x − 1)</text>
+          </g>
+          <g class="step s2">
+            <line x1="220" y1="12" x2="220" y2="268" stroke="#0A2A6E" stroke-width="2.6" stroke-dasharray="8 5"/>
+            <text x="228" y="198" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">x = 1</text>
+          </g>
+          <g class="step s3">
+            <line x1="38" y1="120" x2="442" y2="120" stroke="#0A2A6E" stroke-width="2.6" stroke-dasharray="8 5"/>
+            <text x="440" y="148" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">y = 2</text>
+          </g>
+          <g class="step s4">
+            <circle cx="220" cy="120" r="9" fill="#111"/>
+            <text x="208" y="112" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">(1 ; 2)</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2 h4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Premier regard — la valeur interdite</h3>
+          <p style="font-size:17px">x = 1 annule le dénominateur. Limites infinies de part et d'autre → <b>asymptote verticale x = 1</b>. À gauche −∞, à droite +∞.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Second regard — le rapport des degrés</h3>
+          <div class="expr" style="font-size:20px;text-align:left;line-height:1.35">2x ÷ x → <b style="color:var(--sfa)">2</b></div>
+          <p style="font-size:17px;margin-top:4px">Même degré en haut et en bas → <b>asymptote horizontale y = 2</b>, le rapport des coefficients.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'allure est entièrement déterminée</h3>
+          <p style="font-size:17px">Une <b>hyperbole</b> centrée sur le croisement des deux asymptotes, le point <b>(1 ; 2)</b>. Une branche en bas à gauche, une en haut à droite.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le réflexe à installer</h3>
+          <p style="font-size:17px">Sur une fonction rationnelle, on ne trace <b>jamais</b> de tableau de valeurs.<br><br><b>Valeur interdite, rapport des degrés, point de croisement</b> — trois lectures, dix secondes, et la courbe est identifiée parmi les quatre propositions.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une fonction rationnelle, et ses deux branches.",
+      "Premier regard : la valeur interdite x = 1 donne l'<b>asymptote verticale</b>.",
+      "Second regard : le rapport des degrés donne l'<b>asymptote horizontale y = 2</b>.",
+      "Les deux se croisent en (1 ; 2) — c'est le centre de l'hyperbole.",
+      "<em>Le réflexe :</em> trois lectures, aucune table de valeurs, et la courbe est identifiée."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-D3-07 ==================== -->
+  <section class="slide" data-ref="ANIM-D3-07" data-title="Point discontinu et point anguleux" data-sub="L'un saute, l'autre casse" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="450" height="302">
+          <defs><marker id="b3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <line x1="20" y1="250" x2="180" y2="250" stroke="#8A8F98" stroke-width="1.5"/>
+            <line x1="30" y1="50" x2="30" y2="265" stroke="#8A8F98" stroke-width="1.5"/>
+            <line x1="30" y1="250" x2="90" y2="190" stroke="#1D4ED8" stroke-width="4" stroke-linecap="round"/>
+            <line x1="90" y1="130" x2="150" y2="70" stroke="#1D4ED8" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="90" cy="190" r="7.5" fill="#font-family="Be Vietnam Pro,Arial"font-family="Be Vietnam Pro,Arial"font-family="Be Vietnam Pro,Arial"" stroke="#1D4ED8" stroke-width="3"/>
+            <circle cx="90" cy="130" r="7.5" fill="#1D4ED8"/>
+            <text x="90" y="274" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="700">x = 2</text>
+          </g>
+          <g class="step s2">
+            <line x1="90" y1="190" x2="90" y2="130" stroke="#0A2A6E" stroke-width="3"/>
+            <text x="102" y="166" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">saut</text>
+            <text x="100" y="300" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">point discontinu</text>
+          </g>
+          <g class="step s3">
+            <line x1="250" y1="250" x2="450" y2="250" stroke="#8A8F98" stroke-width="1.5"/>
+            <line x1="350" y1="50" x2="350" y2="265" stroke="#8A8F98" stroke-width="1.5"/>
+            <line x1="262" y1="162" x2="350" y2="250" stroke="#1D4ED8" stroke-width="4" stroke-linecap="round"/>
+            <line x1="350" y1="250" x2="438" y2="162" stroke="#1D4ED8" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="350" cy="250" r="7.5" fill="#1D4ED8"/>
+            <text x="350" y="300" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">point anguleux</text>
+          </g>
+          <g class="step s4">
+            <line x1="282" y1="182" x2="330" y2="230" stroke="#0A2A6E" stroke-width="5"/>
+            <text x="252" y="146" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">pente −1</text>
+            <line x1="370" y1="230" x2="418" y2="182" stroke="#0A2A6E" stroke-width="5"/>
+            <text x="448" y="146" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">pente +1</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2 h3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Point discontinu — la valeur saute</h3>
+          <p style="font-size:17px">La limite à gauche et la limite à droite <b>existent mais diffèrent</b> : 3 d'un côté, 4 de l'autre. <b>Le crayon doit se lever.</b></p></div>
+        <div class="card acc step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Point anguleux — la pente saute</h3>
+          <p style="font-size:17px">Ici la fonction est <b>continue</b> : les deux morceaux se rejoignent. Mais la <b>dérivée</b> vaut −1 à gauche et +1 à droite. La courbe ne saute pas, elle <b>casse</b>.</p></div>
+        <div class="card step s5" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La distinction à marteler</h3>
+          <div class="expr" style="font-size:18px;text-align:left;line-height:1.5">discontinu → la <b style="color:var(--sfa)">valeur</b> saute<br>anguleux → la <b style="color:var(--sfa)">pente</b> saute</div></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi le programme y tient</h3>
+          <p style="font-size:17px">Une fonction peut être <b>continue sans être dérivable</b>. La valeur absolue en 0 est le contre-exemple du cours — et il tombe, sous la forme « cette fonction est-elle dérivable en 0 ? » avec une courbe en V.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une fonction définie par morceaux, qui change de formule en x = 2.",
+      "Les deux limites existent mais ne coïncident pas : la courbe <b>saute</b>. C'est un point <b>discontinu</b>.",
+      "Autre cas : cette fois les deux morceaux se rejoignent — la fonction est continue.",
+      "Mais les <b>pentes</b> diffèrent : −1 à gauche, +1 à droite. C'est un point <b>anguleux</b>.",
+      "<em>Le contre-exemple du programme :</em> continue n'implique pas dérivable."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-D3-08 ==================== -->
+  <section class="slide" data-ref="ANIM-D3-08" data-title="De la courbe aux limites" data-sub="Le sens que le concours demande vraiment" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="450" height="302">
+          <defs><marker id="b4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <g stroke="#E3E7EE" stroke-width="1">
+              <line x1="133" y1="15" x2="133" y2="305"/><line x1="303" y1="15" x2="303" y2="305"/>
+              <line x1="371" y1="15" x2="371" y2="305"/>
+              <line x1="45" y1="238" x2="445" y2="238"/><line x1="45" y1="68" x2="445" y2="68"/>
+            </g>
+            <line x1="42" y1="170" x2="448" y2="170" stroke="#8A8F98" stroke-width="1.6"/>
+            <line x1="235" y1="12" x2="235" y2="308" stroke="#8A8F98" stroke-width="1.6"/>
+            <g font-size="12" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">
+              <text x="133" y="188" text-anchor="middle">−3</text><text x="371" y="188" text-anchor="middle">4</text>
+              <text x="227" y="242" text-anchor="end">−2</text><text x="227" y="72" text-anchor="end">3</text>
+            </g>
+            <path d="M 65.0,153.0 L 65.4,153.1 L 65.9,153.1 L 66.3,153.2 L 66.8,153.2 L 67.2,153.3 L 67.6,153.3 L 68.1,153.4 L 68.5,153.4 L 68.9,153.5 L 69.4,153.6 L 69.8,153.6 L 70.3,153.7 L 70.7,153.7 L 71.1,153.8 L 71.6,153.9 L 72.0,153.9 L 72.4,154.0 L 72.9,154.0 L 73.3,154.1 L 73.8,154.2 L 74.2,154.2 L 74.6,154.3 L 75.1,154.4 L 75.5,154.4 L 76.0,154.5 L 76.4,154.6 L 76.8,154.6 L 77.3,154.7 L 77.7,154.8 L 78.1,154.8 L 78.6,154.9 L 79.0,155.0 L 79.5,155.0 L 79.9,155.1 L 80.3,155.2 L 80.8,155.2 L 81.2,155.3 L 81.6,155.4 L 82.1,155.4 L 82.5,155.5 L 83.0,155.6 L 83.4,155.7 L 83.8,155.7 L 84.3,155.8 L 84.7,155.9 L 85.2,156.0 L 85.6,156.0 L 86.0,156.1 L 86.5,156.2 L 86.9,156.3 L 87.3,156.3 L 87.8,156.4 L 88.2,156.5 L 88.7,156.6 L 89.1,156.7 L 89.5,156.7 L 90.0,156.8 L 90.4,156.9 L 90.8,157.0 L 91.3,157.1 L 91.7,157.2 L 92.2,157.2 L 92.6,157.3 L 93.0,157.4 L 93.5,157.5 L 93.9,157.6 L 94.4,157.7 L 94.8,157.8 L 95.2,157.9 L 95.7,157.9 L 96.1,158.0 L 96.5,158.1 L 97.0,158.2 L 97.4,158.3 L 97.9,158.4 L 98.3,158.5 L 98.7,158.6 L 99.2,158.7 L 99.6,158.8 L 100.0,158.9 L 100.5,159.0 L 100.9,159.1 L 101.4,159.2 L 101.8,159.3 L 102.2,159.4 L 102.7,159.5 L 103.1,159.6 L 103.6,159.7 L 104.0,159.8 L 104.4,159.9 L 104.9,160.0 L 105.3,160.2 L 105.7,160.3 L 106.2,160.4 L 106.6,160.5 L 107.1,160.6 L 107.5,160.7 L 107.9,160.8 L 108.4,161.0 L 108.8,161.1 L 109.2,161.2 L 109.7,161.3 L 110.1,161.4 L 110.6,161.6 L 111.0,161.7 L 111.4,161.8 L 111.9,161.9 L 112.3,162.1 L 112.8,162.2 L 113.2,162.3 L 113.6,162.5 L 114.1,162.6 L 114.5,162.7 L 114.9,162.9 L 115.4,163.0 L 115.8,163.1 L 116.3,163.3 L 116.7,163.4 L 117.1,163.6 L 117.6,163.7 L 118.0,163.9 L 118.4,164.0 L 118.9,164.2 L 119.3,164.3 L 119.8,164.5 L 120.2,164.6 L 120.6,164.8 L 121.1,164.9 L 121.5,165.1 L 121.9,165.2 L 122.4,165.4 L 122.8,165.6 L 123.3,165.7 L 123.7,165.9 L 124.1,166.1 L 124.6,166.3 L 125.0,166.4 L 125.5,166.6 L 125.9,166.8 L 126.3,167.0 L 126.8,167.1 L 127.2,167.3 L 127.6,167.5 L 128.1,167.7 L 128.5,167.9 L 129.0,168.1 L 129.4,168.3 L 129.8,168.5 L 130.3,168.7 L 130.7,168.9 L 131.1,169.1 L 131.6,169.3 L 132.0,169.5 L 132.5,169.7 L 132.9,170.0 L 133.3,170.2 L 133.8,170.4 L 134.2,170.6 L 134.7,170.8 L 135.1,171.1 L 135.5,171.3 L 136.0,171.6 L 136.4,171.8 L 136.8,172.0 L 137.3,172.3 L 137.7,172.5 L 138.2,172.8 L 138.6,173.0 L 139.0,173.3 L 139.5,173.6 L 139.9,173.8 L 140.3,174.1 L 140.8,174.4 L 141.2,174.7 L 141.7,175.0 L 142.1,175.3 L 142.5,175.5 L 143.0,175.8 L 143.4,176.1 L 143.9,176.5 L 144.3,176.8 L 144.7,177.1 L 145.2,177.4 L 145.6,177.7 L 146.0,178.1 L 146.5,178.4 L 146.9,178.8 L 147.4,179.1 L 147.8,179.5 L 148.2,179.8 L 148.7,180.2 L 149.1,180.6 L 149.5,180.9 L 150.0,181.3 L 150.4,181.7 L 150.9,182.1 L 151.3,182.5 L 151.7,182.9 L 152.2,183.4 L 152.6,183.8 L 153.1,184.2 L 153.5,184.7 L 153.9,185.1 L 154.4,185.6 L 154.8,186.0 L 155.2,186.5 L 155.7,187.0 L 156.1,187.5 L 156.6,188.0 L 157.0,188.5 L 157.4,189.1 L 157.9,189.6 L 158.3,190.2 L 158.7,190.7 L 159.2,191.3 L 159.6,191.9 L 160.1,192.5 L 160.5,193.1 L 160.9,193.7 L 161.4,194.3 L 161.8,195.0 L 162.3,195.7 L 162.7,196.4 L 163.1,197.0 L 163.6,197.8 L 164.0,198.5 L 164.4,199.2 L 164.9,200.0 L 165.3,200.8 L 165.8,201.6 L 166.2,202.4 L 166.6,203.3 L 167.1,204.1 L 167.5,205.0 L 167.9,206.0 L 168.4,206.9 L 168.8,207.9 L 169.3,208.8 L 169.7,209.9 L 170.1,210.9 L 170.6,212.0 L 171.0,213.1 L 171.5,214.2 L 171.9,215.4 L 172.3,216.6 L 172.8,217.9 L 173.2,219.2 L 173.6,220.5 L 174.1,221.9 L 174.5,223.3 L 175.0,224.8 L 175.4,226.3 L 175.8,227.9 L 176.3,229.5 L 176.7,231.2 L 177.1,232.9 L 177.6,234.7 L 178.0,236.6 L 178.5,238.6 L 178.9,240.6" fill="none" stroke="#1D4ED8" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 223.1,31.4 L 223.8,34.6 L 224.5,37.6 L 225.2,40.5 L 225.9,43.1 L 226.6,45.7 L 227.3,48.1 L 228.0,50.4 L 228.7,52.5 L 229.4,54.6 L 230.1,56.5 L 230.8,58.4 L 231.5,60.2 L 232.2,61.9 L 232.9,63.5 L 233.6,65.1 L 234.3,66.6 L 235.0,68.0 L 235.7,69.4 L 236.4,70.7 L 237.1,71.9 L 237.8,73.2 L 238.5,74.3 L 239.2,75.5 L 239.9,76.6 L 240.6,77.6 L 241.3,78.6 L 242.0,79.6 L 242.7,80.5 L 243.4,81.5 L 244.1,82.3 L 244.8,83.2 L 245.5,84.0 L 246.2,84.8 L 246.9,85.6 L 247.6,86.4 L 248.3,87.1 L 249.0,87.8 L 249.7,88.5 L 250.4,89.2 L 251.1,89.8 L 251.8,90.5 L 252.5,91.1 L 253.2,91.7 L 253.9,92.3 L 254.6,92.9 L 255.3,93.4 L 256.0,93.9 L 256.7,94.5 L 257.4,95.0 L 258.1,95.5 L 258.8,96.0 L 259.5,96.5 L 260.2,96.9 L 260.9,97.4 L 261.6,97.8 L 262.3,98.3 L 263.0,98.7 L 263.7,99.1 L 264.4,99.5 L 265.1,99.9 L 265.8,100.3 L 266.5,100.7 L 267.2,101.1 L 267.9,101.4 L 268.6,101.8 L 269.3,102.1 L 270.0,102.5 L 270.7,102.8 L 271.4,103.1 L 272.1,103.5 L 272.8,103.8 L 273.5,104.1 L 274.2,104.4 L 274.9,104.7 L 275.6,105.0 L 276.3,105.3 L 277.0,105.6 L 277.7,105.8 L 278.4,106.1 L 279.1,106.4 L 279.8,106.6 L 280.5,106.9 L 281.2,107.2 L 281.9,107.4 L 282.6,107.7 L 283.3,107.9 L 284.0,108.1 L 284.7,108.4 L 285.4,108.6 L 286.1,108.8 L 286.8,109.0 L 287.5,109.3 L 288.2,109.5 L 288.9,109.7 L 289.6,109.9 L 290.3,110.1 L 291.0,110.3 L 291.7,110.5 L 292.4,110.7 L 293.1,110.9 L 293.8,111.1 L 294.5,111.3 L 295.2,111.4 L 295.9,111.6 L 296.6,111.8 L 297.3,112.0 L 298.0,112.2 L 298.7,112.3 L 299.4,112.5 L 300.1,112.7 L 300.8,112.8 L 301.5,113.0 L 302.2,113.1 L 302.9,113.3 L 303.6,113.5 L 304.3,113.6 L 305.0,113.8 L 305.7,113.9 L 306.4,114.1 L 307.1,114.2 L 307.8,114.3 L 308.5,114.5 L 309.2,114.6 L 309.9,114.8 L 310.6,114.9 L 311.3,115.0 L 312.0,115.2 L 312.7,115.3 L 313.4,115.4 L 314.1,115.5 L 314.7,115.7 L 315.4,115.8 L 316.1,115.9 L 316.8,116.0 L 317.5,116.2 L 318.2,116.3 L 318.9,116.4 L 319.6,116.5 L 320.3,116.6 L 321.0,116.7 L 321.7,116.9 L 322.4,117.0 L 323.1,117.1 L 323.8,117.2 L 324.5,117.3 L 325.2,117.4 L 325.9,117.5 L 326.6,117.6 L 327.3,117.7 L 328.0,117.8 L 328.7,117.9 L 329.4,118.0 L 330.1,118.1 L 330.8,118.2 L 331.5,118.3 L 332.2,118.4 L 332.9,118.5 L 333.6,118.6 L 334.3,118.7 L 335.0,118.8 L 335.7,118.8 L 336.4,118.9 L 337.1,119.0 L 337.8,119.1 L 338.5,119.2 L 339.2,119.3 L 339.9,119.4 L 340.6,119.4 L 341.3,119.5 L 342.0,119.6 L 342.7,119.7 L 343.4,119.8 L 344.1,119.8 L 344.8,119.9 L 345.5,120.0 L 346.2,120.1 L 346.9,120.2 L 347.6,120.2 L 348.3,120.3 L 349.0,120.4 L 349.7,120.5 L 350.4,120.5 L 351.1,120.6 L 351.8,120.7 L 352.5,120.7 L 353.2,120.8 L 353.9,120.9 L 354.6,121.0 L 355.3,121.0 L 356.0,121.1 L 356.7,121.2 L 357.4,121.2 L 358.1,121.3 L 358.8,121.4 L 359.5,121.4 L 360.2,121.5 L 360.9,121.5 L 361.6,121.6 L 362.3,121.7 L 363.0,121.7 L 363.7,121.8 L 364.4,121.9 L 365.1,121.9 L 365.8,122.0 L 366.5,122.0 L 367.2,122.1 L 367.9,122.1 L 368.6,122.2 L 369.3,122.3 L 370.0,122.3 L 370.7,122.4 L 371.4,122.4 L 372.1,122.5 L 372.8,122.5 L 373.5,122.6 L 374.2,122.7 L 374.9,122.7 L 375.6,122.8 L 376.3,122.8 L 377.0,122.9 L 377.7,122.9 L 378.4,123.0 L 379.1,123.0 L 379.8,123.1 L 380.5,123.1 L 381.2,123.2 L 381.9,123.2 L 382.6,123.3 L 383.3,123.3 L 384.0,123.4 L 384.7,123.4 L 385.4,123.5 L 386.1,123.5 L 386.8,123.6 L 387.5,123.6 L 388.2,123.7 L 388.9,123.7 L 389.6,123.7 L 390.3,123.8 L 391.0,123.8 L 391.7,123.9 L 392.4,123.9 L 393.1,124.0 L 393.8,124.0 L 394.5,124.1 L 395.2,124.1 L 395.9,124.1 L 396.6,124.2 L 397.3,124.2 L 398.0,124.3 L 398.7,124.3 L 399.4,124.3 L 400.1,124.4 L 400.8,124.4 L 401.5,124.5 L 402.2,124.5 L 402.9,124.5 L 403.6,124.6 L 404.3,124.6 L 405.0,124.7" fill="none" stroke="#1D4ED8" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <g class="step s2">
+            <line x1="42" y1="136" x2="448" y2="136" stroke="#0A2A6E" stroke-width="2.4" stroke-dasharray="8 5"/>
+            <text x="48" y="124" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">lim en ±∞ = 1</text>
+          </g>
+          <g class="step s3">
+            <line x1="201" y1="12" x2="201" y2="308" stroke="#0A2A6E" stroke-width="2.4" stroke-dasharray="8 5"/>
+            <text x="190" y="296" text-anchor="end" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">lim en (−1)⁻ = −∞</text>
+          </g>
+          <g class="step s4">
+            <text x="466" y="40" text-anchor="end" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">lim en (−1)⁺ = +∞</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1 h3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">On part de la courbe, pas de la formule</h3>
+          <p style="font-size:17px">C'est très exactement la forme que prennent les QCM d'analyse : une courbe est donnée, et il faut en <b>énoncer</b> les limites, le domaine et le signe.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce que le dessin dit, sans un calcul</h3>
+          <div class="expr" style="font-size:17px;text-align:left;line-height:1.55">aux deux bouts, la courbe s'aplatit → <b style="color:var(--sfa)">limite 1</b><br>à gauche de −1, elle plonge → <b style="color:var(--sfa)">−∞</b><br>à droite de −1, elle monte → <b style="color:var(--sfa)">+∞</b></div></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et le domaine se lit aussi</h3>
+          <p style="font-size:17px">Une asymptote verticale en −1 signale la <b>valeur interdite</b> : D = ℝ \ {−1}.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La grille de lecture, en cinq points</h3>
+          <div class="expr" style="font-size:17px;text-align:left;line-height:1.55;color:#fff"><b>1.</b> domaine &nbsp;<b>2.</b> asymptotes &nbsp;<b>3.</b> intersections<br><b>4.</b> sens de variation &nbsp;<b>5.</b> points particuliers</div>
+          <p style="font-size:17px;margin-top:6px">Cinq questions, toujours les mêmes, dans cet ordre. <b>C'est la seule chose à automatiser</b> pour la partie analyse du concours.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une courbe, sans son équation. La question du concours est : que peut-on en dire ?",
+      "Aux deux bouts elle s'aplatit sur la même hauteur : la limite en ±∞ vaut <b>1</b>.",
+      "À gauche de −1, elle plonge : la limite y vaut <b>−∞</b>.",
+      "À droite, elle monte : <b>+∞</b>. Et cette asymptote verticale signale la valeur interdite.",
+      "<em>Cinq questions, toujours les mêmes :</em> domaine, asymptotes, intersections, variations, points particuliers."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule D3-B — Asymptotes, continuité et discontinuités · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

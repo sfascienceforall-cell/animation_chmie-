@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule A2-B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#1D4ED8;          /* bleu SFA */
+  --deep:#0A2A6E;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#E9EEFC;         /* bleu 8 % */
+  --tint2:#D3DEFA;        /* bleu 18 % */
+  --surface:#F4F6FA;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+
+.tv{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+.tv th{background:var(--tint);color:var(--sfa);font-size:16px;font-weight:700;padding:11px 14px;
+  text-align:left;border:1px solid var(--tint2);white-space:nowrap}
+.tv td{font-size:22px;font-weight:600;color:var(--ink);padding:11px 0;text-align:center;
+  border:1px solid var(--rule);background:#fff;width:22%}
+
+.sys{display:inline-block;border-left:3px solid var(--sfa);padding-left:16px;margin-top:4px}
+.sys div{font-size:24px;font-weight:600;color:var(--ink);line-height:1.45;font-variant-numeric:tabular-nums}
+.mth div{font-size:19px;color:var(--ink2);line-height:1.75;font-variant-numeric:tabular-nums}
+.mth.d div{color:#C9D6F5}
+.cost{margin-top:12px;display:inline-block;font-size:14px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--grey);border-top:1px solid var(--rule);padding-top:10px;width:100%}
+.cost.win{color:#fff;border-color:rgba(255,255,255,.25)}
+.cascade{display:grid;grid-template-columns:62px 1fr 200px;align-items:center;row-gap:4px}
+.cascade .lb{font-size:19px;font-weight:700;color:var(--grey)}
+.cascade .eq{font-size:27px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;padding:6px 0}
+.cascade .eq.hi{color:var(--sfa)}
+.cascade .eq.res{color:var(--sfa);font-weight:800;font-size:30px}
+.cascade .op{font-size:17px;font-weight:700;color:var(--deep);background:var(--tint);
+  border-radius:8px;padding:5px 12px;justify-self:start}
+.cascade .op:empty{background:none;padding:0}
+.cascade .sep{grid-column:1/4;height:1px;background:var(--rule);margin:10px 0}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-A2-05 ==================== -->
+  <section class="slide" data-ref="ANIM-A2-05" data-title="D'une équation à une droite" data-sub="Pourquoi chaque ligne du système est une droite" data-steps="7">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 482px;display:flex;justify-content:center">
+        <svg viewBox="0 0 450 315" width="440" height="308">
+          <!-- quadrillage -->
+          <g class="step s1" stroke="#E3E7EE" stroke-width="1">
+            <line x1="132" y1="20" x2="132" y2="290"/><line x1="220" y1="20" x2="220" y2="290"/>
+            <line x1="308" y1="20" x2="308" y2="290"/><line x1="396" y1="20" x2="396" y2="290"/>
+            <line x1="30" y1="200" x2="430" y2="200"/><line x1="30" y1="150" x2="430" y2="150"/>
+            <line x1="30" y1="100" x2="430" y2="100"/><line x1="30" y1="50" x2="430" y2="50"/>
+          </g>
+          <g class="step s1">
+            <line x1="30" y1="250" x2="430" y2="250" stroke="#8A8F98" stroke-width="1.8"/>
+            <line x1="44" y1="20" x2="44" y2="292" stroke="#8A8F98" stroke-width="1.8"/>
+            <g font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">
+              <text x="132" y="270" text-anchor="middle">1</text><text x="220" y="270" text-anchor="middle">2</text>
+              <text x="308" y="270" text-anchor="middle">3</text><text x="396" y="270" text-anchor="middle">4</text>
+              <text x="32" y="205" text-anchor="end">1</text><text x="32" y="155" text-anchor="end">2</text>
+              <text x="32" y="105" text-anchor="end">3</text><text x="32" y="55" text-anchor="end">4</text>
+            </g>
+          </g>
+          <!-- points de d1 -->
+          <g class="step s3"><circle cx="44" cy="50" r="7" fill="#1D4ED8"/>
+            <text x="56" y="44" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">(0 ; 4)</text></g>
+          <g class="step s3"><circle cx="396" cy="250" r="7" fill="#1D4ED8"/>
+            <text x="390" y="240" text-anchor="end" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">(4 ; 0)</text></g>
+          <g class="step s3"><circle cx="220" cy="150" r="7" fill="#1D4ED8"/></g>
+          <g class="step s4"><line x1="44" y1="50" x2="396" y2="250" stroke="#1D4ED8" stroke-width="3.5" stroke-linecap="round"/>
+            <text x="404" y="246" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">d₁</text></g>
+          <!-- points de d2 -->
+          <g class="step s6"><circle cx="44" cy="250" r="7" fill="#0A2A6E"/><circle cx="220" cy="150" r="7" fill="#0A2A6E"/>
+            <circle cx="396" cy="50" r="7" fill="#0A2A6E"/>
+            <line x1="44" y1="250" x2="396" y2="50" stroke="#0A2A6E" stroke-width="3.5" stroke-linecap="round"/>
+            <text x="404" y="54" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">d₂</text></g>
+          <g class="step s7"><circle cx="220" cy="150" r="12" fill="none" stroke="#1D4ED8" stroke-width="3"/>
+            <text x="238" y="140" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">(2 ; 2)</text></g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1 h6" style="padding:13px 22px"><h3 style="margin-bottom:4px;font-size:18px">La question posée par une équation</h3>
+          <p style="font-size:17px">« x + y = 4 » ne demande pas <i>un</i> nombre : elle demande <b>tous les couples (x ; y)</b> qui la vérifient.</p></div>
+        <div class="card acc step s2 h6" style="padding:13px 22px"><h3 style="margin-bottom:6px;font-size:18px">On isole y pour pouvoir choisir x</h3>
+          <div class="expr" style="font-size:26px;text-align:left;line-height:1.2">x + y = 4 &nbsp;→&nbsp; y = 4 − x</div></div>
+        <div class="step s3">
+          <table class="tv"><tr><th>x</th><td>0</td><td>2</td><td>4</td></tr>
+          <tr><th>y = 4 − x</th><td>4</td><td>2</td><td>0</td></tr></table></div>
+        <div class="card step s4" style="padding:13px 22px"><h3 style="margin-bottom:4px;font-size:18px">Les points s'alignent — et ce n'est pas un hasard</h3>
+          <p style="font-size:17px">L'équation est du <b>1<sup>er</sup> degré</b> : son graphe est une droite. <b>Tout</b> point de d₁ la vérifie, aucun autre point du plan.</p></div>
+        <div class="card step s6" style="padding:13px 22px"><h3 style="margin-bottom:6px;font-size:18px">Deuxième équation, même procédé</h3>
+          <div class="expr" style="font-size:26px;text-align:left;line-height:1.2">x − y = 0 &nbsp;→&nbsp; y = x</div></div>
+        <div class="card deep step s7 rise" style="padding:13px 22px"><h3 style="margin-bottom:4px;font-size:18px">D'où vient la solution du système</h3>
+          <p style="font-size:17px">Le couple qui vérifie <b>les deux</b> équations est sur <b>les deux droites</b> : c'est donc leur intersection.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une équation à deux inconnues n'a pas une solution, elle en a une <b>infinité</b> — d'où l'idée de les dessiner toutes.",
+      "Pour les trouver, on isole y : on peut alors choisir x librement et calculer le y correspondant.",
+      "x = 0 donne y = 4 · x = 2 donne y = 2 · x = 4 donne y = 0. <b>Trois couples, trois points.</b>",
+      "Ils sont <b>alignés</b>. En reliant, on obtient la droite de <b>tous</b> les couples solutions.",
+      "Et réciproquement : prenez n'importe quel point de cette droite, ses coordonnées vérifient x + y = 4.",
+      "Même travail pour la seconde équation : on isole, on calcule trois points, on trace <b>d₂</b>.",
+      "<em>Le point d'intersection est sur les deux droites à la fois :</em> c'est le seul couple qui vérifie les deux équations. C'est ça, la solution du système."
+    ]</script>
+  </section>
+  <!-- ==================== ANIM-A2-06 ==================== -->
+  <section class="slide" data-ref="ANIM-A2-06" data-title="Deux droites, un système" data-sub="Les trois cas, et comment les reconnaître sans dessiner" data-steps="6">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 482px;display:flex;justify-content:center">
+        <svg viewBox="0 0 450 315" width="440" height="308">
+          <g class="step s1">
+            <line x1="20" y1="250" x2="430" y2="250" stroke="#8A8F98" stroke-width="1.6"/>
+            <line x1="44" y1="14" x2="44" y2="305" stroke="#8A8F98" stroke-width="1.6"/>
+          </g>
+          <!-- d1 : x + y = 4 (toujours affichée) -->
+          <g class="step s1">
+            <line x1="44" y1="50" x2="396" y2="250" stroke="#1D4ED8" stroke-width="3.5" stroke-linecap="round"/>
+            <text x="404" y="246" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">d₁</text>
+          </g>
+          <!-- cas 1 : sécantes -->
+          <g class="step s1 h4">
+            <line x1="44" y1="250" x2="396" y2="50" stroke="#0A2A6E" stroke-width="3.5" stroke-linecap="round"/>
+            <text x="404" y="54" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">d₂</text>
+          </g>
+          <g class="step s2 h4">
+            <circle cx="220" cy="150" r="9" fill="#1D4ED8"/>
+            <text x="234" y="140" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">(2 ; 2)</text>
+          </g>
+          <!-- cas 2 : parallèles -->
+          <g class="step s4 h5">
+            <line x1="44" y1="150" x2="308" y2="300" stroke="#0A2A6E" stroke-width="3.5" stroke-linecap="round"/>
+            <text x="316" y="298" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">d₂</text>
+          </g>
+          <!-- cas 3 : confondues -->
+          <g class="step s5">
+            <line x1="44" y1="50" x2="396" y2="250" stroke="#0A2A6E" stroke-width="9" stroke-linecap="round" opacity=".35"/>
+            <text x="404" y="270" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">d₂</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:13px 22px"><h3 style="margin-bottom:4px;font-size:18px">Un système, c'est deux droites</h3>
+          <div class="sys"><div>x + y = 4</div><div>x − y = 0</div></div></div>
+        <div class="card acc step s2" style="padding:13px 22px"><h3 style="margin-bottom:4px;font-size:18px">Sécantes — une solution unique</h3>
+          <p style="font-size:17px">Le couple solution est le <b>point d'intersection</b> : x = 2 et y = 2.</p></div>
+        <div class="card step s4" style="padding:13px 22px"><h3 style="margin-bottom:4px;font-size:18px">Parallèles — système impossible</h3>
+          <p style="font-size:17px">Aucun point commun, donc <b>aucune solution</b>.</p></div>
+        <div class="card step s5" style="padding:13px 22px"><h3 style="margin-bottom:4px;font-size:18px">Confondues — système indéterminé</h3>
+          <p style="font-size:17px">Les deux équations décrivent la même droite : <b>une infinité de solutions</b>.</p></div>
+        <div class="card deep step s6 rise" style="padding:13px 22px"><h3 style="margin-bottom:6px;font-size:18px">Reconnaître sans tracer</h3>
+          <p style="font-size:17px">On compare les rapports des coefficients. Proportionnels <b>et</b> constantes proportionnelles → confondues. Proportionnels <b>mais pas</b> les constantes → parallèles.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Chaque équation d'un système est une droite. Résoudre, c'est chercher ce qu'elles ont en commun.",
+      "Ici elles se croisent en un point : <b>une solution unique</b>, x = 2 et y = 2.",
+      "Ce n'est pas toujours le cas. Changeons la deuxième équation.",
+      "Les droites sont maintenant <b>parallèles</b> : aucun point commun, le système est <b>impossible</b>.",
+      "Et si les deux équations décrivent la <b>même</b> droite, tous ses points conviennent : système <b>indéterminé</b>.",
+      "<em>Au QCM :</em> ces deux cas se repèrent en comparant les coefficients, <b>avant</b> tout calcul. Se lancer dans l'élimination fait perdre une minute pour rien."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-A2-07 ==================== -->
+  <section class="slide" data-ref="ANIM-A2-07" data-title="Les trois méthodes" data-sub="Même système, trois chemins — et un seul est rapide" data-steps="5">
+    <div class="mid"><div style="width:100%">
+      <div class="card acc step s1" style="padding:14px 22px;display:flex;align-items:center;gap:30px;margin-bottom:20px">
+        <h3 style="margin:0;font-size:18px;flex:none">Le système</h3>
+        <div class="sys" style="margin:0"><div>2x + y = 7</div><div>3x − y = 8</div></div>
+        <p style="font-size:17px;margin-left:auto">On regarde les coefficients <b>deux secondes</b> avant de choisir.</p>
+      </div>
+      <div class="grid3" style="gap:22px;align-items:start">
+        <div class="card step s2" style="padding:18px 20px">
+          <h3 style="font-size:18px;margin-bottom:10px">Substitution</h3>
+          <div class="mth"><div>y = 7 − 2x</div><div>3x − (7 − 2x) = 8</div><div>5x = 15 → x = 3</div><div>y = 7 − 6 = 1</div></div>
+          <div class="cost">4 lignes</div></div>
+        <div class="card deep step s3" style="padding:18px 20px">
+          <h3 style="font-size:18px;margin-bottom:10px">Combinaison</h3>
+          <div class="mth d"><div>L₁ + L₂ : 5x = 15</div><div>x = 3 &nbsp;→&nbsp; y = 1</div></div>
+          <div class="cost win">2 lignes</div></div>
+        <div class="card step s4" style="padding:18px 20px">
+          <h3 style="font-size:18px;margin-bottom:10px">Comparaison</h3>
+          <div class="mth"><div>y = 7 − 2x</div><div>y = 3x − 8</div><div>7 − 2x = 3x − 8</div><div>5x = 15 → x = 3</div></div>
+          <div class="cost">4 lignes</div></div>
+      </div>
+      <div class="card step s5 rise" style="padding:15px 22px;margin-top:20px;text-align:center">
+        <p style="font-size:19px">Les coefficients de y sont <b>opposés</b> : additionner les deux lignes fait disparaître y d'un coup. C'est ce qu'il fallait voir.</p></div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un même système, et trois façons de l'attaquer. Le choix se fait en lisant les coefficients.",
+      "<b>Substitution</b> : on isole une inconnue, on la remplace dans l'autre équation. Quatre lignes.",
+      "<b>Combinaison</b> : on additionne les deux équations. y disparaît immédiatement. <b>Deux lignes.</b>",
+      "<b>Comparaison</b> : on isole la même inconnue des deux côtés et on égale. Quatre lignes aussi.",
+      "<em>Le réflexe :</em> deux secondes de lecture des coefficients ont fait gagner la moitié du calcul."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-A2-08 ==================== -->
+  <section class="slide" data-ref="ANIM-A2-08" data-title="L'élimination en cascade" data-sub="Un système à trois inconnues se ramène à un 2 × 2" data-steps="6">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 760px">
+        <div class="cascade">
+          <div class="lb step s1">L₁</div><div class="eq step s1">x + y + z = 6</div><div class="op step s1"></div>
+          <div class="lb step s1">L₂</div><div class="eq step s1">2x − y + z = 3</div><div class="op step s2">L₂ − 2L₁</div>
+          <div class="lb step s1">L₃</div><div class="eq step s1">x + 2y − z = 2</div><div class="op step s2">L₃ − L₁</div>
+
+          <div class="sep step s3"></div>
+
+          <div class="lb step s3">L₂′</div><div class="eq step s3 hi">3y + z = 9</div><div class="op step s3"></div>
+          <div class="lb step s3">L₃′</div><div class="eq step s3 hi">y − 2z = −4</div><div class="op step s4">z = 9 − 3y</div>
+
+          <div class="sep step s5"></div>
+
+          <div class="lb step s5">→</div><div class="eq step s5">7y = 14</div><div class="op step s5"></div>
+          <div class="lb step s6">→</div><div class="eq step s6 res">y = 2 &nbsp;·&nbsp; z = 3 &nbsp;·&nbsp; x = 1</div><div class="op step s6"></div>
+        </div>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:16px">
+        <div class="card step s2" style="padding:16px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le principe</h3>
+          <p style="font-size:17px">On élimine <b>la même inconnue</b> entre deux paires de lignes pour se ramener à un système 2 × 2.</p></div>
+        <div class="card acc step s5" style="padding:16px 22px"><h3 style="margin-bottom:6px;font-size:18px">La discipline d'écriture</h3>
+          <p style="font-size:17px">Une ligne par étape, l'opération notée <b>en marge</b>. Un 3 × 3 se perd rarement sur le calcul, presque toujours sur l'organisation.</p></div>
+        <div class="card deep step s6 rise" style="padding:16px 22px"><h3 style="margin-bottom:6px;font-size:18px">Détecter l'impasse</h3>
+          <p style="font-size:17px">Une ligne devient « 0 = un nombre non nul » → <b>impossible</b>.<br>Une ligne devient « 0 = 0 » → <b>indéterminé</b>.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Trois équations, trois inconnues. On ne cherche pas à tout résoudre d'un coup.",
+      "On combine L₂ avec L₁, puis L₃ avec L₁, pour <b>faire disparaître x</b> des deux.",
+      "Il reste un système <b>2 × 2</b> en y et z — et ça, on sait le faire.",
+      "On isole z dans la première, on remplace dans la seconde.",
+      "7y = 14 : la cascade a fait son travail.",
+      "<b>y = 2, puis z = 3, puis x = 1.</b> On remonte ligne par ligne, et on vérifie dans les trois équations de départ."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule A2-B — Les systèmes linéaires · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

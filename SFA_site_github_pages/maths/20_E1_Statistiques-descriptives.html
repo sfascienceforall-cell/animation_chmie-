@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule E1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#1D4ED8;          /* bleu SFA */
+  --deep:#0A2A6E;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#E9EEFC;         /* bleu 8 % */
+  --tint2:#D3DEFA;        /* bleu 18 % */
+  --surface:#F4F6FA;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-E1-01 ==================== -->
+  <section class="slide" data-ref="ANIM-E1-01" data-title="Du brut au tableau" data-sub="Effectifs, fréquences, cumuls : le geste préalable à tout calcul" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="452" height="303">
+          <defs><marker id="b1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1 h2">
+            <text x="235" y="130" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">série brute, dans le désordre</text>
+            <text x="235" y="170" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">12 · 15 · 9 · 15 · 18</text>
+            <text x="235" y="204" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">12 · 15 · 9 · 12 · 15</text>
+          </g>
+          <g class="step s2">
+            <line x1="46" y1="268" x2="452" y2="268" stroke="#8A8F98" stroke-width="1.8"/>
+            <rect x="71" y="178" width="58" height="90" rx="4" fill="#1D4ED8" opacity="0.85"/><rect x="171" y="133" width="58" height="135" rx="4" fill="#1D4ED8" opacity="0.85"/><rect x="271" y="88" width="58" height="180" rx="4" fill="#1D4ED8" opacity="0.85"/><rect x="371" y="223" width="58" height="45" rx="4" fill="#1D4ED8" opacity="0.85"/>
+            <text x="100" y="288" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">9</text><text x="200" y="288" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">12</text><text x="300" y="288" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">15</text><text x="400" y="288" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">18</text>
+            <text x="452" y="306" text-anchor="end" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">valeur de la note</text>
+          </g>
+          <g class="step s3"><text x="100" y="168" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">2</text><text x="200" y="123" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">3</text><text x="300" y="78" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">4</text><text x="400" y="213" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">1</text>
+            <text x="60" y="40" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">effectif</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:11px 20px"><h3 style="margin-bottom:5px;font-size:18px">On ordonne, puis on compte</h3>
+          <p style="font-size:17px">Le <b>premier geste</b> de tout exercice : tant que la série est en vrac, aucune lecture n'est possible.</p></div>
+        <div class="card acc step s3" style="padding:12px 20px"><h3 style="margin-bottom:8px;font-size:18px">Le tableau, ligne par ligne</h3>
+          <table style="width:100%;border-collapse:collapse;font-size:16px">
+            <tr style="border-bottom:1.5px solid #C9D2E4"><td style="padding:4px 0;color:#3F3F46">valeur xᵢ</td><td align="center"><b>9</b></td><td align="center"><b>12</b></td><td align="center"><b>15</b></td><td align="center"><b>18</b></td><td align="center" style="color:#8A8F98">total</td></tr>
+            <tr style="border-bottom:1px solid #E3E7EE"><td style="padding:4px 0;color:#3F3F46">effectif nᵢ</td><td align="center">2</td><td align="center">3</td><td align="center">4</td><td align="center">1</td><td align="center"><b>10</b></td></tr>
+            <tr style="border-bottom:1px solid #E3E7EE"><td style="padding:4px 0;color:#3F3F46">fréquence fᵢ</td><td align="center">0,2</td><td align="center">0,3</td><td align="center">0,4</td><td align="center">0,1</td><td align="center"><b>1</b></td></tr>
+            <tr><td style="padding:4px 0;color:#3F3F46">cumulée Fᵢ</td><td align="center">0,2</td><td align="center">0,5</td><td align="center">0,9</td><td align="center">1,0</td><td align="center">—</td></tr>
+          </table></div>
+        <div class="card step s4" style="padding:11px 20px"><h3 style="margin-bottom:5px;font-size:18px">Deux vérifications gratuites</h3>
+          <p style="font-size:17px">La somme des effectifs doit donner <b>n</b>, celle des fréquences doit donner <b>1</b>. Sinon, tout ce qui suit est faux.</p></div>
+        <div class="card deep step s5 rise" style="padding:11px 20px"><h3 style="margin-bottom:5px;font-size:18px">À quoi sert la colonne cumulée</h3>
+          <p style="font-size:17px">Elle répond aux questions « combien ont <b>au plus</b> tant ? », et c'est elle qui donne la <b>médiane</b> et les <b>quartiles</b> : on lit la première valeur où F dépasse 0,50 · 0,25 · 0,75.<br><br><b>Vocabulaire :</b> la <b>population</b> est l'ensemble étudié, le <b>caractère</b> ce qu'on mesure — <b>quantitatif</b> s'il se calcule, <b>qualitatif</b> (couleur, groupe sanguin) s'il se compte seulement.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Dix notes, telles qu'on les reçoit : en vrac.",
+      "On ordonne et on compte : le diagramme en bâtons apparaît.",
+      "Chaque bâton porte son <b>effectif</b> — et le tableau se remplit.",
+      "Deux vérifications gratuites : la somme des effectifs fait n, celle des fréquences fait 1.",
+      "<em>Et la colonne cumulée</em> donnera tout à l'heure la médiane et les quartiles."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-E1-02 ==================== -->
+  <section class="slide" data-ref="ANIM-E1-02" data-title="Moyenne contre médiane" data-sub="Une seule valeur extrême, et les deux ne disent plus la même chose" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="452" height="303">
+          <defs><marker id="b2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <text x="52" y="72" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">une semaine normale (min)</text>
+            <line x1="52" y1="118" x2="459" y2="118" stroke="#E3E7EE" stroke-width="2"/>
+            <circle cx="111.5" cy="118" r="8" fill="#0A2A6E"/><circle cx="122.2" cy="118" r="8" fill="#0A2A6E"/><circle cx="132.9" cy="118" r="8" fill="#0A2A6E"/><circle cx="138.2" cy="118" r="8" fill="#0A2A6E"/><circle cx="159.6" cy="118" r="8" fill="#0A2A6E"/>
+            <line x1="132.9" y1="96" x2="132.9" y2="140" stroke="#1D4ED8" stroke-width="3.5"/>
+            <text x="132.9" y="90" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">moyenne = médiane = 14</text>
+          </g>
+          <g class="step s2">
+            <text x="52" y="184" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">la semaine avec un jour de panne</text>
+            <line x1="52" y1="228" x2="459" y2="228" stroke="#E3E7EE" stroke-width="2"/>
+            <circle cx="111.5" cy="228" r="8" fill="#0A2A6E"/><circle cx="122.2" cy="228" r="8" fill="#0A2A6E"/><circle cx="132.9" cy="228" r="8" fill="#0A2A6E"/><circle cx="138.2" cy="228" r="8" fill="#0A2A6E"/><circle cx="432.5" cy="228" r="8" fill="#0A2A6E"/>
+            <text x="432.5" y="204" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">70</text>
+          </g>
+          <g class="step s3">
+            <line x1="187.5" y1="206" x2="187.5" y2="250" stroke="#C02A20" stroke-width="3.5"/>
+            <text x="196" y="268" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">moyenne 24,2</text>
+          </g>
+          <g class="step s4">
+            <line x1="132.9" y1="206" x2="132.9" y2="250" stroke="#0A2A6E" stroke-width="3.5"/>
+            <text x="124" y="268" text-anchor="end" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">médiane 14</text>
+          </g>
+          <g class="step s1">
+            <line x1="52" y1="285" x2="459" y2="285" stroke="#8A8F98" stroke-width="1.6"/>
+            <g><line x1="58.0" y1="285" x2="58.0" y2="292" stroke="#8A8F98" stroke-width="1.6"/><text x="58.0" y="308" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">0</text></g><g><line x1="165.0" y1="285" x2="165.0" y2="292" stroke="#8A8F98" stroke-width="1.6"/><text x="165.0" y="308" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">20</text></g><g><line x1="272.0" y1="285" x2="272.0" y2="292" stroke="#8A8F98" stroke-width="1.6"/><text x="272.0" y="308" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">40</text></g><g><line x1="379.0" y1="285" x2="379.0" y2="292" stroke="#8A8F98" stroke-width="1.6"/><text x="379.0" y="308" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">60</text></g>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1 h2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Cinq trajets, une semaine ordinaire</h3>
+          <p style="font-size:17px">10 · 12 · 14 · 15 · 19 minutes. Moyenne et médiane valent toutes deux <b>14</b> : les deux résument bien la semaine.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Un seul jour change tout</h3>
+          <p style="font-size:17px">Le vendredi, une panne : 70 minutes. La moyenne bondit à <b>24,2</b> — alors qu'aucun jour, pas un seul, n'a duré 24 minutes.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La médiane, elle, n'a pas bougé</h3>
+          <p style="font-size:17px">Elle coupe la série <b>en deux moitiés d'effectif égal</b>. Peu importe l'ampleur de la valeur extrême : seule sa <b>position</b> compte.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Laquelle choisir, et comment ne pas se tromper</h3>
+          <p style="font-size:17px"><b>Série symétrique et sans extrême</b> → la moyenne. <b>Série déséquilibrée</b> (salaires, temps d'attente, durées de séjour) → la médiane.<br><br><b>Le calcul de la médiane :</b> on ordonne, toujours. Si <b>n est impair</b>, c'est la valeur centrale ; si <b>n est pair</b>, c'est la moyenne des deux valeurs centrales.<br><br><b>Le piège du QCM :</b> calculer la médiane sans avoir ordonné la série. Elle ne veut alors rien dire.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Cinq trajets ordinaires : moyenne et médiane coïncident, à 14 minutes.",
+      "Le vendredi, une panne : 70 minutes.",
+      "La moyenne bondit à <b>24,2</b> — alors qu'aucun jour n'a duré 24 minutes.",
+      "La médiane, elle, n'a pas bougé : elle ne regarde que les <b>positions</b>.",
+      "<em>La règle :</em> dès qu'une série a une valeur extrême, c'est la médiane qui la résume honnêtement."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-E1-03 ==================== -->
+  <section class="slide" data-ref="ANIM-E1-03" data-title="Même moyenne, deux réalités" data-sub="Ce que l'écart-type ajoute, et que la moyenne ne dit pas" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="452" height="303">
+          <defs><marker id="b3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <text x="62" y="48" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">groupe A</text>
+            <line x1="62" y1="122" x2="459" y2="122" stroke="#E3E7EE" stroke-width="2"/>
+            <circle cx="238.4" cy="122.0" r="8.5" fill="#1D4ED8"/><circle cx="258.0" cy="122.0" r="8.5" fill="#1D4ED8"/><circle cx="258.0" cy="102.0" r="8.5" fill="#1D4ED8"/><circle cx="258.0" cy="82.0" r="8.5" fill="#1D4ED8"/><circle cx="277.6" cy="122.0" r="8.5" fill="#1D4ED8"/>
+          </g>
+          <g class="step s2">
+            <text x="62" y="170" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">groupe B</text>
+            <line x1="62" y1="240" x2="459" y2="240" stroke="#E3E7EE" stroke-width="2"/>
+            <circle cx="140.4" cy="240.0" r="8.5" fill="#1D4ED8"/><circle cx="199.2" cy="240.0" r="8.5" fill="#1D4ED8"/><circle cx="258.0" cy="240.0" r="8.5" fill="#1D4ED8"/><circle cx="316.8" cy="240.0" r="8.5" fill="#1D4ED8"/><circle cx="375.6" cy="240.0" r="8.5" fill="#1D4ED8"/>
+          </g>
+          <g class="step s3">
+            <line x1="258.0" y1="42" x2="258.0" y2="252" stroke="#1D4ED8" stroke-width="3" stroke-dasharray="8 6"/>
+            <text x="258.0" y="34" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">même moyenne : 10</text>
+          </g>
+          <g class="step s4">
+            <text x="459" y="110" text-anchor="end" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">σ ≈ 0,6</text>
+            <text x="459" y="196" text-anchor="end" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">σ ≈ 4,2</text>
+          </g>
+          <g class="step s1">
+            <line x1="62" y1="270" x2="459" y2="270" stroke="#8A8F98" stroke-width="1.6"/>
+            <text x="62.0" y="292" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">0</text><text x="160.0" y="292" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">5</text><text x="258.0" y="292" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">10</text><text x="356.0" y="292" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">15</text><text x="454.0" y="292" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">20</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s3" style="padding:11px 20px"><h3 style="margin-bottom:5px;font-size:18px">Deux groupes, une seule moyenne</h3>
+          <p style="font-size:17px">Les deux groupes ont <b>exactement la même moyenne</b> : 10. Sur cette seule information, on les croirait identiques.</p></div>
+        <div class="card acc step s4" style="padding:11px 20px"><h3 style="margin-bottom:5px;font-size:18px">Et pourtant</h3>
+          <p style="font-size:17px">Le groupe A est <b>homogène</b>, le groupe B <b>éclaté</b> : de 4 à 16. L'écart-type met un nombre sur cette différence.</p></div>
+        <div class="card step s4" style="padding:11px 20px"><h3 style="margin-bottom:5px;font-size:18px">Comment il se calcule</h3>
+          <div class="expr" style="font-size:17px;text-align:left;line-height:1.4"><b>1.</b> chaque écart à la moyenne<br><b>2.</b> au carré, pour supprimer les signes<br><b>3.</b> on en fait la moyenne → <b>la variance</b><br><b>4.</b> racine carrée → <b>l'écart-type</b></div></div>
+        <div class="card deep step s5 rise" style="padding:11px 20px"><h3 style="margin-bottom:5px;font-size:18px">Pourquoi passer par le carré, et comment lire σ</h3>
+          <p style="font-size:17px">Sans le carré, les écarts positifs et négatifs <b>s'annulent</b> : leur somme vaut toujours zéro, quelle que soit la dispersion. La racine finale ramène σ <b>dans l'unité de départ</b> — la variance, elle, est en unités².<br><br><b>Lecture :</b> σ est la distance typique à la moyenne. « Moyenne 10, σ = 4 » annonce des valeurs vers 6 et 14.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un premier groupe, très resserré.",
+      "Un second, beaucoup plus dispersé.",
+      "Leur moyenne est pourtant <b>exactement la même</b> : 10.",
+      "L'écart-type, lui, les sépare : 0,6 contre 4,2.",
+      "<em>La lecture :</em> σ est la distance typique d'un individu à la moyenne."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-E1-04 ==================== -->
+  <section class="slide" data-ref="ANIM-E1-04" data-title="La boîte à moustaches" data-sub="Cinq nombres qui résument toute une série" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="452" height="303">
+          <defs><marker id="b4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <text x="52" y="50" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">la série, ordonnée</text>
+            <circle cx="89.8" cy="80" r="6" fill="#8A8F98"/><circle cx="115.0" cy="80" r="6" fill="#8A8F98"/><circle cx="127.6" cy="80" r="6" fill="#8A8F98"/><circle cx="152.8" cy="80" r="6" fill="#8A8F98"/><circle cx="165.4" cy="80" r="6" fill="#8A8F98"/><circle cx="190.6" cy="80" r="6" fill="#8A8F98"/><circle cx="203.2" cy="80" r="6" fill="#8A8F98"/><circle cx="241.0" cy="80" r="6" fill="#8A8F98"/><circle cx="278.8" cy="80" r="6" fill="#8A8F98"/><circle cx="316.6" cy="80" r="6" fill="#8A8F98"/><circle cx="354.4" cy="80" r="6" fill="#8A8F98"/><circle cx="430.0" cy="80" r="6" fill="#8A8F98"/>
+          </g>
+          <g class="step s2">
+            <rect x="140.2" y="128" width="157.5" height="76" rx="4" fill="#C9D2E4" stroke="#0A2A6E" stroke-width="2.4"/>
+            <text x="140.2" y="120" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">Q₁ = 7</text>
+            <text x="297.7" y="120" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">Q₃ = 19,5</text>
+          </g>
+          <g class="step s3">
+            <line x1="196.9" y1="128" x2="196.9" y2="204" stroke="#1D4ED8" stroke-width="4.5"/>
+            <text x="196.9" y="226" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">médiane 11,5</text>
+          </g>
+          <g class="step s4">
+            <line x1="89.8" y1="166" x2="140.2" y2="166" stroke="#0A2A6E" stroke-width="2.4"/>
+            <line x1="297.7" y1="166" x2="430.0" y2="166" stroke="#0A2A6E" stroke-width="2.4"/>
+            <line x1="89.8" y1="146" x2="89.8" y2="186" stroke="#0A2A6E" stroke-width="2.8"/>
+            <line x1="430.0" y1="146" x2="430.0" y2="186" stroke="#0A2A6E" stroke-width="2.8"/>
+            <text x="89.8" y="206" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">min 3</text>
+            <text x="430.0" y="206" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">max 30</text>
+          </g>
+          <g class="step s1">
+            <line x1="46" y1="266" x2="459" y2="266" stroke="#8A8F98" stroke-width="1.6"/>
+            <text x="52.0" y="290" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">0</text><text x="178.0" y="290" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">10</text><text x="304.0" y="290" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">20</text><text x="430.0" y="290" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">30</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:11px 20px"><h3 style="margin-bottom:5px;font-size:18px">La boîte : la moitié centrale</h3>
+          <p style="font-size:17px">Elle va de <b>Q₁</b> à <b>Q₃</b>, et contient donc <b>50 % de l'effectif</b>. Un quart est à gauche, un quart à droite.</p></div>
+        <div class="card acc step s3" style="padding:11px 20px"><h3 style="margin-bottom:5px;font-size:18px">Le trait intérieur est la médiane</h3>
+          <p style="font-size:17px">S'il n'est <b>pas au milieu</b> de la boîte, la série est dissymétrique — ici il est décalé vers la gauche : les valeurs basses sont plus serrées.</p></div>
+        <div class="card step s4" style="padding:11px 20px"><h3 style="margin-bottom:5px;font-size:18px">Les moustaches vont aux extrêmes</h3>
+          <p style="font-size:17px">Du minimum au maximum. Avec Q₁, la médiane et Q₃, cela fait les <b>cinq nombres</b> qui résument la série.</p></div>
+        <div class="card deep step s5 rise" style="padding:11px 20px"><h3 style="margin-bottom:5px;font-size:18px">Ce qu'il faut savoir lire en trois secondes</h3>
+          <p style="font-size:17px"><b>Largeur de la boîte</b> = écart interquartile Q₃ − Q₁ = 12,5. C'est une mesure de dispersion <b>insensible aux extrêmes</b>, contrairement à l'écart-type.<br><br><b>Boîte étroite</b> → série homogène · <b>boîte large</b> → série dispersée · <b>moustache longue d'un seul côté</b> → série étirée de ce côté.<br><br><b>L'erreur classique :</b> croire qu'une boîte large contient plus de monde. Il y en a toujours exactement la moitié : c'est l'étendue qui change, pas l'effectif.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une série de douze valeurs, ordonnée.",
+      "La <b>boîte</b> va de Q₁ à Q₃ : elle contient la moitié centrale de l'effectif.",
+      "Le trait intérieur est la <b>médiane</b> — décalé ici, donc série dissymétrique.",
+      "Les <b>moustaches</b> rejoignent le minimum et le maximum.",
+      "<em>À lire en trois secondes :</em> la largeur de la boîte, c'est l'écart interquartile."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule E1 — Statistiques descriptives · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

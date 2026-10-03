@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule CH8-B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#0F7A4F;          /* bleu SFA */
+  --deep:#08402A;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#E4F2EA;         /* bleu 8 % */
+  --tint2:#C2E0D0;        /* bleu 18 % */
+  --surface:#F2F7F4;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-CH8-05 ==================== -->
+  <section class="slide" data-ref="ANIM-CH8-05" data-title="Assembler deux demi-équations" data-sub="Le plus petit multiple commun des électrons" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <text x="16" y="38" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">réduction · 5 électrons captés</text>
+            <text x="235" y="76" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">MnO₄⁻ + 8 H⁺ + 5 e⁻ → Mn²⁺ + 4 H₂O</text>
+          </g>
+          <g class="step s2">
+            <text x="16" y="124" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">oxydation · 1 électron cédé</text>
+            <text x="235" y="162" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">Fe²⁺ → Fe³⁺ + e⁻</text>
+            <text x="235" y="206" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">ppcm(5 ; 1) = 5 → on multiplie la seconde par 5</text>
+          </g>
+          <g class="step s3">
+            <line x1="34" y1="226" x2="436" y2="226" stroke="#08402A" stroke-width="2.4"/>
+            <rect x="18" y="240" width="434" height="92" rx="14" fill="#C2E0D0" stroke="#08402A" stroke-width="2.6"/>
+            <text x="235" y="280" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">MnO₄⁻ + 8 H⁺ + 5 Fe²⁺</text>
+            <text x="235" y="316" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">→ Mn²⁺ + 4 H₂O + 5 Fe³⁺</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="348" width="450" height="110" rx="13" fill="#FFFFFF" stroke="#0F7A4F" stroke-width="2.4"/>
+            <text x="235" y="380" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">aucun électron ne subsiste ✓</text>
+            <text x="235" y="412" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#08402A">charges : + 17 à gauche · + 17 à droite ✓</text>
+            <text x="235" y="442" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#08402A">atomes : Mn 1 · O 4 · H 8 · Fe 5 ✓</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le principe, et il est exact</h3>
+          <p style="font-size:17px">Les électrons cédés par le réducteur sont <b>exactement</b> ceux que capte l'oxydant. Il n'en reste donc aucun dans l'équation finale.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La méthode</h3>
+          <p style="font-size:17px">On cherche le <b>plus petit multiple commun</b> des nombres d'électrons, on multiplie chaque demi-équation pour l'atteindre, puis on additionne.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Un détail de convention à ne pas oublier</h3>
+          <p style="font-size:17px">Une demi-équation s'écrit toujours dans le sens de la <b>réduction</b>. Celle du réducteur doit donc être <b>inversée</b> avant l'addition.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le contrôle immédiat, et pourquoi il suffit</h3>
+          <p style="font-size:17px">S'il reste des électrons dans l'équation finale, les coefficients sont faux — sans exception. C'est le contrôle le plus rapide du chapitre.<br><br>Et il se double du contrôle des charges : + 17 de chaque côté ici. Deux vérifications, dix secondes, et l'équation entière est validée.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "La demi-équation de réduction capte cinq électrons.",
+      "Celle d'oxydation n'en cède qu'un : il faut les mettre au même nombre.",
+      "Le plus petit multiple commun vaut 5 : on multiplie la seconde par cinq.",
+      "On additionne, et <b>les électrons disparaissent</b>.",
+      "<em>Et c'est le contrôle :</em> s'il en reste, les coefficients sont faux."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-CH8-06 ==================== -->
+  <section class="slide" data-ref="ANIM-CH8-06" data-title="La règle du gamma, deuxième application" data-sub="Exactement la même figure qu'en CH7" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <text x="30" y="44" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">E° (V)</text>
+            <text x="143" y="44" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">OXYDANTS</text>
+            <text x="353" y="44" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">RÉDUCTEURS</text>
+            <text x="30" y="93" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">1,51</text><rect x="60" y="64" width="166" height="46" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.6"/><text x="143" y="95" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">MnO₄⁻</text><rect x="258" y="64" width="190" height="46" rx="9" fill="#FFFFFF" stroke="#8A8F98" stroke-width="1.6"/><text x="353" y="95" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">Mn²⁺</text><text x="30" y="147" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">0,77</text><rect x="60" y="118" width="166" height="46" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.6"/><text x="143" y="149" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">Fe³⁺</text><rect x="258" y="118" width="190" height="46" rx="9" fill="#FFFFFF" stroke="#8A8F98" stroke-width="1.6"/><text x="353" y="149" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">Fe²⁺</text><text x="30" y="201" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">0,00</text><rect x="60" y="172" width="166" height="46" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.6"/><text x="143" y="203" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">H⁺</text><rect x="258" y="172" width="190" height="46" rx="9" fill="#FFFFFF" stroke="#8A8F98" stroke-width="1.6"/><text x="353" y="203" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">H₂</text><text x="30" y="255" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">−0,76</text><rect x="60" y="226" width="166" height="46" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.6"/><text x="143" y="257" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">Zn²⁺</text><rect x="258" y="226" width="190" height="46" rx="9" fill="#FFFFFF" stroke="#8A8F98" stroke-width="1.6"/><text x="353" y="257" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">Zn</text>
+            <line x1="459" y1="266" x2="459" y2="80" stroke="#8A8F98" stroke-width="3" marker-end="url(#d2)"/>
+          </g>
+          <g class="step s2"><path d="M 226,87.0 L 242,87.0 L 242,141.0 L 254,141.0" fill="none" stroke="#0F7A4F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#v2)"/></g>
+          <g class="step s3">
+            <rect x="10" y="286" width="450" height="52" rx="12" fill="#C2E0D0"/>
+            <text x="235" y="318" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">oxydant fort + réducteur fort → la réaction a lieu</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="348" width="450" height="52" rx="12" fill="#FFFFFF" stroke="#C02A20" stroke-width="2.6"/>
+            <text x="235" y="380" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">tracé inversé → pas de réaction</text>
+            <rect x="10" y="410" width="450" height="48" rx="12" fill="#E4F2EA" stroke="#0F7A4F" stroke-width="2.2"/>
+            <text x="235" y="440" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">c'est la figure de CH7-B, sur une autre table</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Comment la table est rangée</h3>
+          <p style="font-size:17px">Par <b>potentiel standard croissant</b> : les oxydants les plus forts en haut, leurs réducteurs conjugués — donc les plus faibles — en face.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La règle, mot pour mot celle de CH7</h3>
+          <p style="font-size:17px">L'oxydant le plus fort réagit avec le réducteur le plus fort. Le tracé entre les deux dessine un <b>gamma</b>, et la réaction a lieu.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et le tracé inversé dit l'inverse</h3>
+          <p style="font-size:17px">Si le tracé ne forme pas un gamma, la réaction <b>ne se produit pas spontanément</b>. Un seul coup d'œil suffit à trancher.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">À dire explicitement, et à ne surtout pas réexpliquer</h3>
+          <p style="font-size:17px">Ce n'est pas une nouvelle méthode : c'est <b>la même figure</b> qu'en CH7-B, appliquée à une autre table. Le professeur le dit en une phrase et passe à la suite.<br><br>Réexpliquer la construction reviendrait à suggérer qu'il y a deux choses à apprendre. Il n'y en a qu'une, et elle sert deux fois.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "La table des potentiels : les oxydants les plus forts en haut.",
+      "On relie l'oxydant qui réagit au réducteur qui réagit.",
+      "Le tracé dessine un gamma : la réaction a lieu.",
+      "Tracé inversé : elle ne se produit pas spontanément.",
+      "<em>C'est la figure de CH7-B, à l'identique</em> — une construction, deux chapitres."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-CH8-07 ==================== -->
+  <section class="slide" data-ref="ANIM-CH8-07" data-title="Prédire si une réaction a lieu" data-sub="Le couple H⁺/H₂ comme référence, et ce qu'il sépare" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <line x1="150" y1="44" x2="150" y2="392" stroke="#8A8F98" stroke-width="2"/>
+            <text x="26" y="42" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">E° croissant vers le haut</text>
+            <circle cx="150" cy="69.1" r="8" fill="#C02A20"/><text x="168" y="75.1" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">MnO₄⁻ / Mn²⁺</text><text x="134" y="74.1" text-anchor="end" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">+ 1,51 V</text><circle cx="150" cy="157.1" r="8" fill="#08402A"/><text x="168" y="163.1" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">Ag⁺ / Ag</text><text x="134" y="162.1" text-anchor="end" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">+ 0,80 V</text><circle cx="150" cy="214.0" r="8" fill="#08402A"/><text x="168" y="220.0" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">Cu²⁺ / Cu</text><text x="134" y="219.0" text-anchor="end" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">+ 0,34 V</text><circle cx="150" cy="256.2" r="8" fill="#0F7A4F"/><text x="168" y="262.2" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">H⁺ / H₂</text><text x="134" y="261.2" text-anchor="end" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">+ 0,00 V</text><circle cx="150" cy="310.6" r="8" fill="#08402A"/><text x="168" y="316.6" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">Fe²⁺ / Fe</text><text x="134" y="315.6" text-anchor="end" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">− 0,44 V</text><circle cx="150" cy="350.3" r="8" fill="#08402A"/><text x="168" y="356.3" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">Zn²⁺ / Zn</text><text x="134" y="355.3" text-anchor="end" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">− 0,76 V</text>
+          </g>
+          <g class="step s2">
+            <line x1="26" y1="256.2" x2="66" y2="256.2" stroke="#0F7A4F" stroke-width="2.4" stroke-dasharray="7 5"/><line x1="262" y1="256.2" x2="454" y2="256.2" stroke="#0F7A4F" stroke-width="2.4" stroke-dasharray="7 5"/>
+          </g>
+          <g class="step s3">
+            <text x="452" y="100" text-anchor="end" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">non attaqués par les acides</text>
+            <text x="452" y="404" text-anchor="end" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">attaqués par les acides</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="420" width="450" height="44" rx="12" fill="#C2E0D0"/>
+            <text x="235" y="449" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">potentiel plus grand = oxydant plus fort</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La règle chiffrée</h3>
+          <p style="font-size:17px">Une réaction est spontanée si le potentiel de l'<b>oxydant</b> est <b>supérieur</b> à celui du réducteur mis en jeu. C'est la règle du gamma, exprimée en nombres.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Une seule valeur à situer</h3>
+          <p style="font-size:17px">Le couple <b>H⁺/H₂</b> sert de référence, à <b>0 V</b>. Au-dessus, les oxydants forts ; en dessous, les réducteurs forts. Les autres valeurs sont fournies.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'application classique</h3>
+          <p style="font-size:17px">Un métal dont le potentiel est <b>inférieur</b> à celui de H⁺/H₂ est attaqué par les acides. C'est le cas du zinc et du fer — pas du cuivre, ni de l'argent.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi cette lecture vaut mieux qu'une liste</h3>
+          <p style="font-size:17px">« Quels métaux sont attaqués par les acides ? » est une question qu'on peut apprendre par cœur — ou <b>lire sur la table</b> en trois secondes.<br><br>La table est fournie au concours. Ce qui est évalué n'est jamais de connaître les potentiels : c'est de savoir <b>où passe la ligne du zéro</b>, et de quel côté se trouve l'espèce qu'on vous donne.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une échelle verticale de potentiels : les oxydants les plus forts en haut.",
+      "Le couple H⁺/H₂ est à zéro — c'est la référence de toute l'échelle.",
+      "Au-dessus de cette ligne, les métaux ne sont pas attaqués par les acides.",
+      "En dessous, ils le sont : c'est le cas du fer et du zinc.",
+      "<em>Rien de tout cela ne s'apprend :</em> la table est fournie, il faut savoir la lire."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-CH8-08 ==================== -->
+  <section class="slide" data-ref="ANIM-CH8-08" data-title="Le contrôle final en trois vérifications" data-sub="Atomes, charges, électrons" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <rect x="12" y="26" width="446" height="96" rx="13" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.6"/>
+            <text x="235" y="62" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">1 · les atomes</text>
+            <text x="235" y="98" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">Mn 1/1 · O 4/4 · H 8/8 · Fe 5/5 ✓</text>
+          </g>
+          <g class="step s2">
+            <rect x="12" y="136" width="446" height="96" rx="13" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.6"/>
+            <text x="235" y="172" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">2 · les charges</text>
+            <text x="235" y="208" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">(−1) + 8 + 10 = + 17 &nbsp;·&nbsp; (+2) + 15 = + 17 ✓</text>
+          </g>
+          <g class="step s3">
+            <rect x="12" y="246" width="446" height="96" rx="13" fill="#C2E0D0" stroke="#08402A" stroke-width="2.2"/>
+            <text x="235" y="282" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">3 · les électrons</text>
+            <text x="235" y="318" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">aucun ne subsiste dans l'équation finale ✓</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="368" width="450" height="90" rx="13" fill="#FFFFFF" stroke="#0F7A4F" stroke-width="2.6"/>
+            <text x="235" y="402" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">quinze secondes de vérification</text>
+            <text x="235" y="436" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">et toutes les erreurs de coefficient sont attrapées</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les atomes</h3>
+          <p style="font-size:17px">Chaque élément doit apparaître en <b>nombre égal</b> des deux côtés. On les compte dans l'ordre de l'équation, sans en sauter un.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les charges</h3>
+          <p style="font-size:17px">La <b>somme algébrique</b> des charges doit être la même de part et d'autre. Elle n'a pas à être nulle — seulement identique.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les électrons</h3>
+          <p style="font-size:17px">Il ne doit plus en rester <b>aucun</b>. Un électron qui subsiste signale que les deux demi-équations n'ont pas été mises au même nombre.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi ces trois contrôles sont obligatoires, pas facultatifs</h3>
+          <p style="font-size:17px">Une erreur de coefficient ne se voit pas à la relecture : l'équation reste plausible. Elle ne se voit qu'au <b>recomptage</b>.<br><br>Quinze secondes, et l'on récupère un point que la moitié de la salle perdra. Sur un concours à −1/3 par erreur, c'est le meilleur rapport entre le temps investi et les points gagnés de tout le programme de chimie.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Premier contrôle : chaque élément, en nombre égal des deux côtés.",
+      "Deuxième : la somme des charges, identique de part et d'autre.",
+      "Troisième : plus aucun électron dans l'équation finale.",
+      "Quinze secondes, et toutes les erreurs de coefficient sont attrapées.",
+      "<em>Ce n'est pas facultatif :</em> une erreur de coefficient ne se voit qu'au recomptage."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule CH8-B — Équilibrer et prédire avec la table · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

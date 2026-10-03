@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule A2-A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#1D4ED8;          /* bleu SFA */
+  --deep:#0A2A6E;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#E9EEFC;         /* bleu 8 % */
+  --tint2:#D3DEFA;        /* bleu 18 % */
+  --surface:#F4F6FA;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+
+.ca{color:var(--sfa);font-weight:700}
+.cb{color:var(--deep);font-weight:700}
+.cc{color:var(--ink);font-weight:800}
+
+.signtable{display:grid;grid-template-columns:104px 54px 1fr 54px 1fr 54px 1fr 54px;
+  border:1px solid var(--rule);border-radius:12px;overflow:hidden;text-align:center;font-weight:600}
+.signtable>div{padding:15px 0}
+.signtable>div:nth-child(-n+8){background:var(--surface);border-bottom:1px solid var(--rule)}
+.signtable .hd{background:var(--tint)!important;color:var(--sfa);font-size:18px;font-weight:700}
+.signtable .m{font-size:21px;color:var(--ink)}
+.signtable .pos{color:var(--sfa);font-size:28px}
+.signtable .neg{color:var(--deep);font-size:28px}
+.signtable .z{color:var(--grey);font-size:20px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-A2-01 ==================== -->
+  <section class="slide" data-ref="ANIM-A2-01" data-title="a, b, c — du 1er au 2e degré" data-sub="Qui sont les coefficients, et ce qu'ils décident" data-steps="6">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 482px;display:flex;justify-content:center">
+        <svg viewBox="0 0 450 310" width="440" height="303">
+          <g class="step s1">
+            <line x1="20" y1="228" x2="430" y2="228" stroke="#8A8F98" stroke-width="1.6"/>
+            <line x1="44" y1="10" x2="44" y2="300" stroke="#8A8F98" stroke-width="1.6"/>
+            <text x="424" y="250" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">x</text>
+          </g>
+          <!-- droite du 1er degré -->
+          <g class="step s1 h4">
+            <line x1="44" y1="114" x2="326" y2="296" stroke="#1D4ED8" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="44" cy="114" r="7" fill="#0A2A6E"/>
+            <text x="58" y="106" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">b</text>
+          </g>
+          <g class="step s2 h4">
+            <circle cx="220" cy="228" r="8" fill="#1D4ED8"/>
+            <text x="220" y="278" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">UNE seule racine</text>
+          </g>
+          <!-- parabole du 2e degré -->
+          <g class="step s4">
+            <path d="M 44,57 Q 220,513 396,57" fill="none" stroke="#1D4ED8" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="44" cy="57" r="7" fill="#0A2A6E"/>
+            <text x="58" y="50" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">c</text>
+          </g>
+          <g class="step s5">
+            <circle cx="132" cy="228" r="8" fill="#1D4ED8"/><circle cx="308" cy="228" r="8" fill="#1D4ED8"/>
+            <text x="220" y="196" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">jusqu'à DEUX racines</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:14px">
+        <div class="card step s1" style="padding:16px 22px">
+          <h3 style="margin-bottom:8px;font-size:18px">Le 1<sup>er</sup> degré</h3>
+          <div class="expr" style="font-size:34px;text-align:left;line-height:1.2"><span class="ca">a</span>x + <span class="cb">b</span></div>
+          <p style="font-size:17px;margin-top:6px"><span class="ca">a</span> est la <b>pente</b> &nbsp;·&nbsp; <span class="cb">b</span> est l'<b>ordonnée à l'origine</b></p></div>
+        <div class="card acc step s2" style="padding:16px 22px">
+          <h3 style="margin-bottom:6px;font-size:18px">Une droite coupe l'axe une fois</h3>
+          <div class="expr" style="font-size:28px;text-align:left;line-height:1.2"><span class="ca">a</span>x + <span class="cb">b</span> = 0 &nbsp;→&nbsp; x = − <span class="cb">b</span> ÷ <span class="ca">a</span></div></div>
+        <div class="card step s3" style="padding:16px 22px">
+          <h3 style="margin-bottom:8px;font-size:18px">Le 2<sup>e</sup> degré</h3>
+          <div class="expr" style="font-size:34px;text-align:left;line-height:1.2"><span class="ca">a</span>x<sup>2</sup> + <span class="cb">b</span>x + <span class="cc">c</span></div>
+          <p style="font-size:17px;margin-top:6px"><span class="ca">a</span> donne le <b>sens</b> &nbsp;·&nbsp; <span class="cc">c</span> est l'<b>ordonnée à l'origine</b> &nbsp;·&nbsp; <span class="cb">b</span> décale le sommet</p></div>
+        <div class="card deep step s6 rise" style="padding:16px 22px">
+          <h3 style="margin-bottom:6px;font-size:18px">La condition qu'on oublie</h3>
+          <p style="font-size:18px">Si <b>a = 0</b>, il n'y a plus de terme en x<sup>2</sup> : ce n'est plus du 2<sup>e</sup> degré, c'est une droite. <b>a ≠ 0</b> fait partie de la définition.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Avant le 2<sup>e</sup> degré, un rappel : une fonction du 1<sup>er</sup> degré s'écrit ax + b. <b>a est la pente, b l'ordonnée à l'origine.</b>",
+      "Résoudre ax + b = 0, c'est chercher où la droite coupe l'axe : <b>une racine, toujours exactement une</b>.",
+      "Au 2<sup>e</sup> degré, un terme en x<sup>2</sup> apparaît. Les trois coefficients portent les mêmes noms : <b>a, b et c</b>.",
+      "La courbe n'est plus une droite mais une parabole — et <b>c</b> reste l'ordonnée à l'origine : f(0) = c.",
+      "La différence décisive : une parabole peut couper l'axe <b>deux fois, une fois, ou pas du tout</b>.",
+      "<em>Et la condition à ne jamais oublier :</em> a ≠ 0, sinon on est retombé sur une droite."
+    ]</script>
+  </section>
+  <!-- ==================== ANIM-A2-02 ==================== -->
+  <section class="slide" data-ref="ANIM-A2-02" data-title="Le discriminant" data-sub="Ce que Δ dit de la parabole" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 450 310" width="450" height="310">
+          <!-- axes -->
+          <g class="step s1">
+            <line x1="20" y1="228" x2="430" y2="228" stroke="#8A8F98" stroke-width="1.6"/>
+            <line x1="44" y1="10" x2="44" y2="300" stroke="#8A8F98" stroke-width="1.6"/>
+            <text x="424" y="250" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">x</text>
+          </g>
+          <!-- Δ > 0 -->
+          <g class="step s1 h3">
+            <path d="M 44,57 Q 220,513 396,57" fill="none" stroke="#1D4ED8" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="132" cy="228" r="8" fill="#1D4ED8"/><circle cx="308" cy="228" r="8" fill="#1D4ED8"/>
+            <text x="132" y="262" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">1</text>
+            <text x="308" y="262" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">3</text>
+          </g>
+          <!-- Δ = 0 -->
+          <g class="step s3 h4">
+            <path d="M 44,0 Q 220,456 396,0" fill="none" stroke="#1D4ED8" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="220" cy="228" r="9" fill="#0A2A6E"/>
+            <text x="220" y="262" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">2</text>
+          </g>
+          <!-- Δ < 0 -->
+          <g class="step s4">
+            <path d="M 97,2 Q 220,226 343,2" fill="none" stroke="#1D4ED8" stroke-width="3.5" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:14px">
+        <div class="step s2"><div class="expr" style="font-size:30px;text-align:left">Δ = <span class="cb">b</span><sup>2</sup> − 4<span class="ca">a</span><span class="cc">c</span></div><p style="font-size:17px;color:var(--grey);margin-top:4px">les coefficients de <span class="ca">a</span>x<sup>2</sup> + <span class="cb">b</span>x + <span class="cc">c</span>, avec a ≠ 0</p></div>
+        <div class="card acc step s2" style="padding:16px 22px"><h3 style="margin-bottom:6px;font-size:18px">Δ &gt; 0 — deux racines distinctes</h3>
+          <p style="font-size:17px">La parabole <b>coupe</b> l'axe en deux points &nbsp;·&nbsp; x = (−b ± √Δ) ÷ 2a</p></div>
+        <div class="card step s3" style="padding:16px 22px"><h3 style="margin-bottom:6px;font-size:18px">Δ = 0 — une racine double</h3>
+          <p style="font-size:17px">La parabole est <b>tangente</b> à l'axe &nbsp;·&nbsp; x = −b ÷ 2a</p></div>
+        <div class="card deep step s4" style="padding:16px 22px"><h3 style="margin-bottom:6px;font-size:18px">Δ &lt; 0 — aucune racine réelle</h3>
+          <p style="font-size:17px">Elle ne touche <b>jamais</b> l'axe et garde le signe de a partout.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une parabole, un axe. La question est simple : combien de fois le coupe-t-elle ?",
+      "Δ mesure exactement cela. Ici Δ &gt; 0 : <b>deux points d'intersection</b>, donc deux racines.",
+      "On remonte la parabole. Elle devient <b>tangente</b> à l'axe : Δ = 0, une racine double.",
+      "On remonte encore. Plus aucun contact : Δ &lt; 0, <b>aucune racine réelle</b>.",
+      "<em>À retenir :</em> Δ ne se calcule pas pour le plaisir — il répond à « combien de solutions ? »."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-A2-03 ==================== -->
+  <section class="slide" data-ref="ANIM-A2-03" data-title="Les trois formes d'écriture" data-sub="Une même parabole, trois informations" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 462px;display:flex;justify-content:center">
+        <svg viewBox="0 0 430 310" width="420" height="305">
+          <g class="step s1">
+            <line x1="20" y1="228" x2="415" y2="228" stroke="#8A8F98" stroke-width="1.6"/>
+            <line x1="44" y1="10" x2="44" y2="300" stroke="#8A8F98" stroke-width="1.6"/>
+            <path d="M 44,57 Q 220,513 396,57" fill="none" stroke="#1D4ED8" stroke-width="3.5" stroke-linecap="round"/>
+          </g>
+          <g class="step s2 h3">
+            <circle cx="44" cy="57" r="8" fill="#0A2A6E"/>
+            <text x="62" y="50" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">(0 ; 3)</text>
+          </g>
+          <g class="step s3 h4">
+            <circle cx="220" cy="285" r="8" fill="#0A2A6E"/>
+            <line x1="220" y1="10" x2="220" y2="300" stroke="#0A2A6E" stroke-width="1.6" stroke-dasharray="6 5"/>
+            <text x="238" y="292" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">(2 ; −1)</text>
+          </g>
+          <g class="step s4">
+            <circle cx="132" cy="228" r="8" fill="#0A2A6E"/><circle cx="308" cy="228" r="8" fill="#0A2A6E"/>
+            <text x="132" y="262" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">1</text>
+            <text x="308" y="262" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">3</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:15px 22px"><h3 style="margin-bottom:4px;font-size:18px">Forme générale</h3>
+          <div class="expr" style="font-size:30px;text-align:left;line-height:1.25">x<sup>2</sup> − 4x + 3</div>
+          <p style="margin-top:4px;font-size:17px">donne le sens (signe de a) et l'<b>ordonnée à l'origine</b></p></div>
+        <div class="card acc step s3" style="padding:15px 22px"><h3 style="margin-bottom:4px;font-size:18px">Forme canonique</h3>
+          <div class="expr" style="font-size:30px;text-align:left;line-height:1.25">(x − 2)<sup>2</sup> − 1</div>
+          <p style="margin-top:4px;font-size:17px">donne le <b>sommet</b> et l'axe de symétrie</p></div>
+        <div class="card deep step s4" style="padding:15px 22px"><h3 style="margin-bottom:4px;font-size:18px">Forme factorisée</h3>
+          <div class="expr" style="font-size:30px;text-align:left;line-height:1.25;color:#fff">(x − 1)(x − 3)</div>
+          <p style="margin-top:4px;font-size:17px">donne les <b>racines</b> — n'existe que si Δ ≥ 0</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une seule parabole. Trois façons de l'écrire, et chacune dit autre chose.",
+      "La <b>forme générale</b> livre l'ordonnée à l'origine : le terme constant, ici 3.",
+      "La <b>forme canonique</b> livre le sommet directement : α = −b ÷ 2a et β = −Δ ÷ 4a.",
+      "La <b>forme factorisée</b> livre les racines — et le sommet est toujours au milieu des deux.",
+      "<em>Au QCM :</em> on demande souvent l'information que la forme donnée ne montre pas. Savoir passer de l'une à l'autre, c'est tout l'exercice."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-A2-04 ==================== -->
+  <section class="slide" data-ref="ANIM-A2-04" data-title="Le signe du trinôme" data-sub="Du signe de a partout, sauf entre les racines" data-steps="5">
+    <div class="mid"><div style="width:100%">
+      <div class="split" style="align-items:flex-start">
+        <div class="col" style="flex:0 0 400px;display:flex;justify-content:center">
+          <svg viewBox="0 0 400 272" width="390" height="265">
+            <g class="step s1">
+              <line x1="14" y1="170" x2="390" y2="170" stroke="#8A8F98" stroke-width="1.6"/>
+              <path d="M 30,20 Q 206,420 382,20" fill="none" stroke="#1D4ED8" stroke-width="3.5" stroke-linecap="round"/>
+              <circle cx="118" cy="170" r="7" fill="#1D4ED8"/><circle cx="294" cy="170" r="7" fill="#1D4ED8"/>
+              <text x="118" y="196" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">1</text>
+              <text x="294" y="196" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">3</text>
+            </g>
+            <g class="step s2">
+              <rect x="30" y="20" width="88" height="150" fill="#1D4ED8" opacity=".12"/>
+              <rect x="294" y="20" width="88" height="150" fill="#1D4ED8" opacity=".12"/>
+              <text x="74" y="60" text-anchor="middle" font-size="30" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">+</text>
+              <text x="338" y="60" text-anchor="middle" font-size="30" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">+</text>
+            </g>
+            <g class="step s3">
+              <rect x="118" y="170" width="176" height="56" fill="#0A2A6E" opacity=".14"/>
+              <text x="206" y="262" text-anchor="middle" font-size="30" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">−</text>
+            </g>
+          </svg>
+        </div>
+        <div class="col" style="flex:1">
+          <div class="step s4" style="margin-top:6px">
+            <div class="signtable">
+              <div class="hd">x</div><div class="m">−∞</div><div></div><div class="m">1</div><div></div><div class="m">3</div><div></div><div class="m">+∞</div>
+              <div class="hd">f(x)</div><div></div><div class="pos">+</div><div class="z">0</div><div class="neg">−</div><div class="z">0</div><div class="pos">+</div><div></div>
+            </div>
+          </div>
+          <div class="card deep step s5 rise" style="margin-top:22px;padding:18px 24px">
+            <h3 style="margin-bottom:8px;font-size:18px">La phrase qui remplace le calcul</h3>
+            <p style="font-size:18px">Un trinôme est <b>du signe de a partout</b>, sauf <b>entre les racines</b>.<br><br>
+            Et si Δ &lt; 0 : du signe de a partout, sans exception — il n'y a pas d'« entre ».</p></div>
+        </div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "La parabole de tout à l'heure, avec ses deux racines 1 et 3.",
+      "À l'extérieur des racines, la courbe est <b>au-dessus</b> de l'axe : le trinôme y est positif.",
+      "Entre les deux racines, elle passe <b>en dessous</b> : le trinôme y est négatif.",
+      "On transcrit dans un tableau de signes — c'est la même information, sous forme utilisable.",
+      "<em>Le réflexe :</em> aucun calcul de signe. On regarde a, on place les racines, on écrit."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule A2-A — Équations du 1er et du 2e degré · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

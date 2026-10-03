@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule CH7-B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#0F7A4F;          /* bleu SFA */
+  --deep:#08402A;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#E4F2EA;         /* bleu 8 % */
+  --tint2:#C2E0D0;        /* bleu 18 % */
+  --surface:#F2F7F4;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-CH7-05 ==================== -->
+  <section class="slide" data-ref="ANIM-CH7-05" data-title="La règle du gamma" data-sub="Le sens de la réaction se lit sur la table, sans calcul" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <text x="122" y="44" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">ACIDES</text>
+            <text x="350" y="44" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">BASES</text>
+            <rect x="24" y="64" width="196" height="46" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.6"/><text x="122" y="95" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">H₃O⁺</text><rect x="252" y="64" width="196" height="46" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.6"/><text x="350" y="95" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">H₂O</text><rect x="24" y="118" width="196" height="46" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.6"/><text x="122" y="149" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">CH₃COOH</text><rect x="252" y="118" width="196" height="46" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.6"/><text x="350" y="149" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">CH₃COO⁻</text><rect x="24" y="172" width="196" height="46" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.6"/><text x="122" y="203" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">NH₄⁺</text><rect x="252" y="172" width="196" height="46" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.6"/><text x="350" y="203" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">NH₃</text><rect x="24" y="226" width="196" height="46" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.6"/><text x="122" y="257" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">H₂O</text><rect x="252" y="226" width="196" height="46" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.6"/><text x="350" y="257" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">OH⁻</text>
+            <line x1="11" y1="70" x2="11" y2="256" stroke="#8A8F98" stroke-width="3" marker-end="url(#d1)"/>
+            <line x1="459" y1="266" x2="459" y2="80" stroke="#8A8F98" stroke-width="3" marker-end="url(#d1)"/>
+          </g>
+          <g class="step s2"><path d="M 220,141.0 L 236,141.0 L 236,195.0 L 248,195.0" fill="none" stroke="#0F7A4F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#v1)"/></g>
+          <g class="step s3">
+            <rect x="10" y="286" width="450" height="52" rx="12" fill="#C2E0D0"/>
+            <text x="235" y="318" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">le tracé forme un gamma → la réaction a lieu</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="348" width="450" height="52" rx="12" fill="#FFFFFF" stroke="#C02A20" stroke-width="2.6"/>
+            <text x="235" y="380" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">tracé inversé → elle n'a pas lieu</text>
+            <rect x="10" y="410" width="450" height="48" rx="12" fill="#E4F2EA" stroke="#0F7A4F" stroke-width="2.2"/>
+            <text x="235" y="440" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">aucun calcul : on lit la table</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Comment la table est rangée</h3>
+          <p style="font-size:17px">Les couples sont classés par force : les acides les plus forts <b>en haut</b> à gauche, et leurs bases conjuguées — donc les plus faibles — en face.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La règle, en une phrase</h3>
+          <p style="font-size:17px">L'acide le plus fort réagit avec la base la plus forte. On relie les deux espèces, et le tracé dessine un <b>gamma</b>.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et le sens du tracé donne la réponse</h3>
+          <p style="font-size:17px">Gamma à l'endroit — l'acide au-dessus, la base en dessous — la réaction <b>a lieu</b>. Tracé inversé : elle <b>n'a pas lieu</b>.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi cette figure mérite d'être apprise une fois pour toutes</h3>
+          <p style="font-size:17px">Le programme ARES dit « <b>utilisation des tables</b> ». Ce qui est évalué n'est donc pas de retenir des pKa : c'est de <b>lire</b> une table fournie et d'en tirer une conclusion.<br><br>Et cette même figure reviendra <b>à l'identique</b> au chapitre CH8, sur la table des potentiels. Une construction, deux chapitres.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "La table des couples, classés par force : les acides forts en haut.",
+      "On relie l'acide qui réagit à la base qui réagit — et le tracé dessine un <b>gamma</b>.",
+      "Gamma à l'endroit : la réaction a lieu.",
+      "Tracé inversé : elle n'a pas lieu. C'est tout.",
+      "<em>Aucun calcul n'est nécessaire</em> — et c'est exactement ce que le programme demande."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-CH7-06 ==================== -->
+  <section class="slide" data-ref="ANIM-CH7-06" data-title="Le pH est un logarithme" data-sub="L'échelle de la capsule D2-A des maths, en chimie" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="44" text-anchor="middle" font-size="28" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">pH = − log [H₃O⁺]</text>
+          </g>
+          <g class="step s2">
+            <rect x="30" y="172" width="210" height="28" fill="#C02A20" opacity="0.22"/>
+            <rect x="240" y="172" width="210" height="28" fill="#0F7A4F" opacity="0.22"/>
+            <text x="42" y="192" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">acide</text>
+            <text x="438" y="192" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">basique</text>
+            <line x1="26" y1="200" x2="454" y2="200" stroke="#8A8F98" stroke-width="2"/>
+            <line x1="30" y1="200" x2="30" y2="210" stroke="#8A8F98" stroke-width="1.8"/><text x="30" y="230" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">0</text><line x1="90" y1="200" x2="90" y2="210" stroke="#8A8F98" stroke-width="1.8"/><text x="90" y="230" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">2</text><line x1="150" y1="200" x2="150" y2="210" stroke="#8A8F98" stroke-width="1.8"/><text x="150" y="230" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">4</text><line x1="210" y1="200" x2="210" y2="210" stroke="#8A8F98" stroke-width="1.8"/><text x="210" y="230" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">6</text><line x1="270" y1="200" x2="270" y2="210" stroke="#8A8F98" stroke-width="1.8"/><text x="270" y="230" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">8</text><line x1="330" y1="200" x2="330" y2="210" stroke="#8A8F98" stroke-width="1.8"/><text x="330" y="230" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">10</text><line x1="390" y1="200" x2="390" y2="210" stroke="#8A8F98" stroke-width="1.8"/><text x="390" y="230" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">12</text><line x1="450" y1="200" x2="450" y2="210" stroke="#8A8F98" stroke-width="1.8"/><text x="450" y="230" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">14</text>
+          </g>
+          <g class="step s3"><line x1="120" y1="156" x2="120" y2="172" stroke="#08402A" stroke-width="3"/><text x="120" y="148" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">10⁻³</text><line x1="180" y1="156" x2="180" y2="172" stroke="#08402A" stroke-width="3"/><text x="180" y="148" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">10⁻⁵</text></g>
+          <g class="step s4">
+            <rect x="10" y="262" width="450" height="68" rx="13" fill="#C2E0D0"/>
+            <text x="235" y="292" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">une unité de pH = un facteur dix</text>
+            <text x="235" y="318" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#08402A">de pH 3 à pH 5, la concentration est divisée par cent</text>
+            <rect x="10" y="342" width="450" height="116" rx="13" fill="#FFFFFF" stroke="#0F7A4F" stroke-width="2.4"/>
+            <text x="235" y="380" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">[H₃O⁺] = 10⁻ᵖᴴ</text>
+            <text x="235" y="416" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">[H₃O⁺] × [OH⁻] = 10⁻¹⁴</text>
+            <text x="235" y="446" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">donc pH + pOH = 14</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La définition, et elle suffit</h3>
+          <p style="font-size:17px">pH = − log [H₃O⁺], la concentration étant exprimée en mol/L. C'est le logarithme décimal de la capsule <b>D2-A</b> des mathématiques, appliqué tel quel.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce que l'échelle logarithmique change</h3>
+          <p style="font-size:17px">Une unité de pH correspond à un facteur <b>dix</b> sur la concentration. Deux unités, un facteur cent. L'écart paraît petit, il ne l'est pas.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et la relation inverse</h3>
+          <p style="font-size:17px">[H₃O⁺] = 10<sup>−pH</sup>. Pour un pH entier, <b>aucune calculatrice n'est nécessaire</b> — ce qui tombe bien, puisqu'elle est interdite.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'exemple qui fait comprendre l'échelle</h3>
+          <p style="font-size:17px">Le suc gastrique est à pH 2, le sang à pH 7,4. Sur l'échelle, l'écart semble modeste : cinq unités et demie.<br><br>Sur les concentrations, il vaut 10<sup>5,4</sup> — le suc gastrique est <b>environ 250 000 fois plus acide</b> que le sang. Aucune définition ne fait comprendre le logarithme aussi bien que ce calcul.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Le pH n'est pas une grandeur nouvelle : c'est un logarithme décimal.",
+      "L'échelle va de 0 à 14, acide à gauche, basique à droite.",
+      "Deux points : pH 3 et pH 5 — soit 10⁻³ et 10⁻⁵ mol/L.",
+      "Deux unités d'écart, et la concentration est divisée par <b>cent</b>.",
+      "<em>Et la relation inverse</em> se lit sans calculatrice pour tout pH entier."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-CH7-07 ==================== -->
+  <section class="slide" data-ref="ANIM-CH7-07" data-title="Calculer le pH d'un acide fort" data-sub="Trois lignes, et le piège de la dilution extrême" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <rect x="56" y="22" width="358" height="66" rx="13" fill="#E4F2EA" stroke="#08402A" stroke-width="2.6"/>
+            <text x="235" y="64" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">HCl à 1,0 × 10⁻² mol/L</text>
+          </g>
+          <g class="step s2">
+            <line x1="235" y1="94" x2="235" y2="124" stroke="#8A8F98" stroke-width="2.6" marker-end="url(#d3)"/>
+            <text x="235" y="152" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">acide fort → totalement dissocié</text>
+            <text x="235" y="198" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">[H₃O⁺] = c = 10⁻² mol/L</text>
+          </g>
+          <g class="step s3">
+            <rect x="40" y="222" width="390" height="76" rx="14" fill="#C2E0D0" stroke="#08402A" stroke-width="3"/>
+            <text x="235" y="272" text-anchor="middle" font-size="32" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">pH = − log(10⁻²) = 2,0</text>
+            <rect x="10" y="312" width="450" height="46" rx="12" fill="#FFFFFF" stroke="#0F7A4F" stroke-width="2.2"/>
+            <text x="235" y="341" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">base forte : pOH = − log c, puis pH = 14 − pOH</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="374" width="450" height="84" rx="13" fill="#FFFFFF" stroke="#C02A20" stroke-width="2.6"/>
+            <text x="235" y="406" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">c = 10⁻⁸ ? la formule donnerait pH = 8</text>
+            <text x="235" y="438" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">sous 10⁻⁶, l'eau domine et le pH tend vers 7</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi le calcul est immédiat</h3>
+          <p style="font-size:17px">Un acide fort est <b>totalement dissocié</b>. La concentration en H₃O⁺ est donc <b>égale</b> à celle de l'acide introduit — il n'y a rien à calculer avant.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Une seule ligne</h3>
+          <p style="font-size:17px">pH = − log c. Pour c = 10⁻² mol/L, le pH vaut <b>2,0</b>. Aucune calculatrice, aucune approximation.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pour une base forte, un détour d'une ligne</h3>
+          <p style="font-size:17px">On calcule d'abord le <b>pOH</b> = − log c, puis on passe au pH par <b>pH = 14 − pOH</b>. Calculer directement le pH d'une base est l'erreur d'étourderie classique.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège de la dilution extrême</h3>
+          <p style="font-size:17px">Pour c = 10⁻⁸ mol/L, la formule donnerait pH = 8 — un acide qui rendrait la solution <b>basique</b>. C'est absurde.<br><br>En dessous de 10⁻⁶ mol/L, l'eau elle-même fournit plus d'ions que l'acide, et le pH tend vers 7. Le signaler suffit : le calcul complet n'est pas au programme, mais l'absurdité, elle, peut tomber en QCM.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une solution d'acide chlorhydrique à un centième de mole par litre.",
+      "Acide fort : il est totalement dissocié, donc [H₃O⁺] vaut exactement c.",
+      "Le pH suit en une ligne : <b>2,0</b>.",
+      "Pour une base forte, on passe d'abord par le pOH, puis par pH = 14 − pOH.",
+      "<em>Et le piège :</em> sous 10⁻⁶ mol/L, la formule devient absurde — le pH tend vers 7."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-CH7-08 ==================== -->
+  <section class="slide" data-ref="ANIM-CH7-08" data-title="Le titrage et son point d'équivalence" data-sub="Ce qu'on cherche, et comment on le repère" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <line x1="30" y1="360" x2="458" y2="360" stroke="#8A8F98" stroke-width="1.8"/>
+            <line x1="44" y1="30" x2="44" y2="376" stroke="#8A8F98" stroke-width="1.8"/>
+            <text x="56" y="44" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">pH</text>
+            <text x="456" y="386" text-anchor="end" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">volume versé</text>
+          </g>
+          <g class="step s2">
+            <path d="M 44.0,318.6 L 45.3,318.6 L 46.7,318.6 L 48.0,318.6 L 49.3,318.6 L 50.7,318.6 L 52.0,318.6 L 53.3,318.6 L 54.7,318.6 L 56.0,318.6 L 57.3,318.6 L 58.7,318.6 L 60.0,318.6 L 61.3,318.6 L 62.7,318.6 L 64.0,318.6 L 65.3,318.6 L 66.7,318.6 L 68.0,318.6 L 69.3,318.6 L 70.7,318.6 L 72.0,318.6 L 73.3,318.6 L 74.7,318.6 L 76.0,318.6 L 77.3,318.6 L 78.7,318.6 L 80.0,318.6 L 81.3,318.6 L 82.7,318.6 L 84.0,318.6 L 85.3,318.6 L 86.7,318.6 L 88.0,318.6 L 89.3,318.6 L 90.7,318.6 L 92.0,318.6 L 93.3,318.6 L 94.7,318.6 L 96.0,318.6 L 97.3,318.6 L 98.7,318.6 L 100.0,318.6 L 101.3,318.6 L 102.7,318.6 L 104.0,318.6 L 105.3,318.6 L 106.7,318.6 L 108.0,318.6 L 109.3,318.6 L 110.7,318.6 L 112.0,318.6 L 113.3,318.6 L 114.7,318.6 L 116.0,318.6 L 117.3,318.6 L 118.7,318.6 L 120.0,318.6 L 121.3,318.6 L 122.7,318.6 L 124.0,318.6 L 125.3,318.6 L 126.7,318.6 L 128.0,318.6 L 129.3,318.6 L 130.7,318.6 L 132.0,318.6 L 133.3,318.6 L 134.7,318.6 L 136.0,318.6 L 137.3,318.6 L 138.7,318.6 L 140.0,318.6 L 141.3,318.6 L 142.7,318.6 L 144.0,318.6 L 145.3,318.6 L 146.7,318.6 L 148.0,318.6 L 149.3,318.6 L 150.7,318.6 L 152.0,318.6 L 153.3,318.6 L 154.7,318.6 L 156.0,318.6 L 157.3,318.6 L 158.7,318.6 L 160.0,318.6 L 161.3,318.6 L 162.7,318.6 L 164.0,318.6 L 165.3,318.6 L 166.7,318.6 L 168.0,318.6 L 169.3,318.6 L 170.7,318.6 L 172.0,318.6 L 173.3,318.6 L 174.7,318.6 L 176.0,318.6 L 177.3,318.6 L 178.7,318.6 L 180.0,318.6 L 181.3,318.6 L 182.7,318.6 L 184.0,318.6 L 185.3,318.6 L 186.7,318.6 L 188.0,318.6 L 189.3,318.6 L 190.7,318.6 L 192.0,318.6 L 193.3,318.6 L 194.7,318.6 L 196.0,318.6 L 197.3,318.6 L 198.7,318.6 L 200.0,318.6 L 201.3,318.6 L 202.7,318.6 L 204.0,318.6 L 205.3,318.6 L 206.7,318.6 L 208.0,318.6 L 209.3,318.6 L 210.7,318.6 L 212.0,318.6 L 213.3,318.6 L 214.7,318.6 L 216.0,318.6 L 217.3,318.6 L 218.7,318.5 L 220.0,318.5 L 221.3,318.5 L 222.7,318.5 L 224.0,318.5 L 225.3,318.5 L 226.7,318.5 L 228.0,318.5 L 229.3,318.4 L 230.7,318.4 L 232.0,318.4 L 233.3,318.4 L 234.7,318.3 L 236.0,318.3 L 237.3,318.3 L 238.7,318.2 L 240.0,318.1 L 241.3,318.1 L 242.7,318.0 L 244.0,317.9 L 245.3,317.8 L 246.7,317.7 L 248.0,317.5 L 249.3,317.4 L 250.7,317.2 L 252.0,317.0 L 253.3,316.8 L 254.7,316.5 L 256.0,316.2 L 257.3,315.8 L 258.7,315.4 L 260.0,314.9 L 261.3,314.4 L 262.7,313.8 L 264.0,313.1 L 265.3,312.3 L 266.7,311.4 L 268.0,310.4 L 269.3,309.2 L 270.7,307.8 L 272.0,306.3 L 273.3,304.6 L 274.7,302.7 L 276.0,300.5 L 277.3,298.0 L 278.7,295.2 L 280.0,292.1 L 281.3,288.7 L 282.7,284.8 L 284.0,280.6 L 285.3,275.9 L 286.7,270.9 L 288.0,265.3 L 289.3,259.4 L 290.7,253.0 L 292.0,246.1 L 293.3,238.9 L 294.7,231.4 L 296.0,223.6 L 297.3,215.5 L 298.7,207.3 L 300.0,199.0 L 301.3,190.7 L 302.7,182.5 L 304.0,174.4 L 305.3,166.6 L 306.7,159.1 L 308.0,151.9 L 309.3,145.0 L 310.7,138.6 L 312.0,132.7 L 313.3,127.1 L 314.7,122.1 L 316.0,117.4 L 317.3,113.2 L 318.7,109.3 L 320.0,105.9 L 321.3,102.8 L 322.7,100.0 L 324.0,97.5 L 325.3,95.3 L 326.7,93.4 L 328.0,91.7 L 329.3,90.2 L 330.7,88.8 L 332.0,87.6 L 333.3,86.6 L 334.7,85.7 L 336.0,84.9 L 337.3,84.2 L 338.7,83.6 L 340.0,83.1 L 341.3,82.6 L 342.7,82.2 L 344.0,81.8 L 345.3,81.5 L 346.7,81.2 L 348.0,81.0 L 349.3,80.8 L 350.7,80.6 L 352.0,80.5 L 353.3,80.3 L 354.7,80.2 L 356.0,80.1 L 357.3,80.0 L 358.7,79.9 L 360.0,79.9 L 361.3,79.8 L 362.7,79.7 L 364.0,79.7 L 365.3,79.7 L 366.7,79.6 L 368.0,79.6 L 369.3,79.6 L 370.7,79.6 L 372.0,79.5 L 373.3,79.5 L 374.7,79.5 L 376.0,79.5 L 377.3,79.5 L 378.7,79.5 L 380.0,79.5 L 381.3,79.5 L 382.7,79.4 L 384.0,79.4 L 385.3,79.4 L 386.7,79.4 L 388.0,79.4 L 389.3,79.4 L 390.7,79.4 L 392.0,79.4 L 393.3,79.4 L 394.7,79.4 L 396.0,79.4 L 397.3,79.4 L 398.7,79.4 L 400.0,79.4 L 401.3,79.4 L 402.7,79.4 L 404.0,79.4 L 405.3,79.4 L 406.7,79.4 L 408.0,79.4 L 409.3,79.4 L 410.7,79.4 L 412.0,79.4 L 413.3,79.4 L 414.7,79.4 L 416.0,79.4 L 417.3,79.4 L 418.7,79.4 L 420.0,79.4 L 421.3,79.4 L 422.7,79.4 L 424.0,79.4 L 425.3,79.4 L 426.7,79.4 L 428.0,79.4 L 429.3,79.4 L 430.7,79.4 L 432.0,79.4 L 433.3,79.4 L 434.7,79.4 L 436.0,79.4 L 437.3,79.4 L 438.7,79.4 L 440.0,79.4 L 441.3,79.4 L 442.7,79.4 L 444.0,79.4" fill="none" stroke="#0F7A4F" stroke-width="4.5" stroke-linecap="round"/>
+            <text x="318" y="150" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">saut brutal de pH</text>
+          </g>
+          <g class="step s3">
+            <line x1="300.0" y1="360" x2="300.0" y2="199.0" stroke="#08402A" stroke-width="2" stroke-dasharray="6 5"/>
+            <line x1="44" y1="199.0" x2="300.0" y2="199.0" stroke="#08402A" stroke-width="2" stroke-dasharray="6 5"/>
+            <circle cx="300.0" cy="199.0" r="9" fill="#C02A20"/>
+            <text x="54" y="191.0" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">pH = 7</text>
+            <text x="300.0" y="404" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">V à l'équivalence</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="420" width="450" height="46" rx="12" fill="#C2E0D0"/>
+            <text x="235" y="450" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">à l'équivalence : c(A) × V(A) = c(B) × V(B)</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce qu'on cherche</h3>
+          <p style="font-size:17px">Titrer, c'est déterminer une <b>concentration inconnue</b> en la faisant réagir avec une solution de concentration connue.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le point d'équivalence</h3>
+          <p style="font-size:17px">Il est atteint lorsque les réactifs ont été mélangés dans les <b>proportions exactes</b> de l'équation. Ni l'un ni l'autre n'est alors en excès.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Comment on le repère</h3>
+          <p style="font-size:17px">Par un <b>saut brutal de pH</b> — la courbe devient presque verticale — ou par le virage d'un indicateur coloré choisi pour changer à ce pH-là.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La relation à l'équivalence, et un détail qui fait gagner du temps</h3>
+          <p style="font-size:17px">Pour une réaction <b>un pour un</b> : c<sub>A</sub>V<sub>A</sub> = c<sub>B</sub>V<sub>B</sub>. Avec d'autres coefficients, on les fait intervenir.<br><br>Les volumes apparaissent <b>en rapport</b> : ils peuvent donc rester en millilitres des deux côtés. C'est l'un des rares cas du programme où la conversion en litres est inutile — le vérifier une fois évite de la refaire à chaque exercice.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Deux axes : le volume de solution titrante versé, et le pH du mélange.",
+      "Au début, le pH bouge à peine. Puis il <b>saute</b>.",
+      "Le milieu de ce saut est le <b>point d'équivalence</b> : les proportions y sont exactes.",
+      "On lit alors le volume versé, et la concentration inconnue s'en déduit.",
+      "<em>Et les volumes restent en millilitres :</em> ils apparaissent en rapport."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule CH7-B — Lire la table, prédire, calculer le pH · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

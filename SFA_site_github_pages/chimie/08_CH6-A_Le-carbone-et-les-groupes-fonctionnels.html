@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule CH6-A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#0F7A4F;          /* bleu SFA */
+  --deep:#08402A;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#E4F2EA;         /* bleu 8 % */
+  --tint2:#C2E0D0;        /* bleu 18 % */
+  --surface:#F2F7F4;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-CH6-01 ==================== -->
+  <section class="slide" data-ref="ANIM-CH6-01" data-title="Pourquoi le carbone fait quatre liaisons" data-sub="Et pourquoi lui seul construit des chaînes" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <circle cx="235" cy="104" r="40" fill="#0F7A4F"/>
+            <text x="235" y="118" text-anchor="middle" font-size="36" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">C</text>
+            <text x="235" y="216" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">4 électrons de valence</text>
+            <text x="235" y="244" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">il lui en faut 4 de plus</text>
+          </g>
+          <g class="step s2">
+            <g stroke="#08402A" stroke-width="3.4" stroke-linecap="round">
+              <line x1="235" y1="62" x2="235" y2="26"/>
+              <line x1="235" y1="146" x2="235" y2="182"/>
+              <line x1="193" y1="104" x2="122" y2="104"/>
+              <line x1="277" y1="104" x2="348" y2="104"/>
+            </g>
+            <text x="235" y="282" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">4 liaisons, toujours</text>
+          </g>
+          <g class="step s3">
+            <g stroke="#08402A" stroke-width="3.4" stroke-linecap="round"><line x1="46.0" y1="368" x2="109.0" y2="322"/><line x1="109.0" y1="322" x2="172.0" y2="368"/><line x1="172.0" y1="368" x2="235.0" y2="322"/><line x1="235.0" y1="322" x2="298.0" y2="368"/><line x1="298.0" y1="368" x2="361.0" y2="322"/><line x1="361.0" y1="322" x2="424.0" y2="368"/></g>
+            <g fill="#0F7A4F"><circle cx="46.0" cy="368" r="15"/><circle cx="109.0" cy="322" r="15"/><circle cx="172.0" cy="368" r="15"/><circle cx="235.0" cy="322" r="15"/><circle cx="298.0" cy="368" r="15"/><circle cx="361.0" cy="322" r="15"/><circle cx="424.0" cy="368" r="15"/></g>
+            <rect x="14" y="400" width="442" height="52" rx="12" fill="#C2E0D0"/>
+            <text x="235" y="433" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">et il se lie à lui-même, indéfiniment</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Quatre électrons de valence</h3>
+          <p style="font-size:17px">Le carbone est en colonne 14 : il en a quatre, il lui en faut quatre de plus pour atteindre l'octet. C'est la configuration de <b>CH2-A</b>, rien de neuf.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Donc quatre liaisons covalentes</h3>
+          <p style="font-size:17px">Toujours quatre, sans exception. <b>C'est le contrôle de toute formule développée :</b> un carbone à trois ou cinq liaisons signale une erreur d'écriture.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et il se lie à lui-même</h3>
+          <p style="font-size:17px">C'est le <b>seul</b> élément qui forme durablement de longues chaînes avec ses semblables. D'où les millions de composés organiques connus, contre quelques centaines de milliers d'inorganiques.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Trois formes de chaîne, trois types de liaison</h3>
+          <p style="font-size:17px">Les chaînes peuvent être <b>linéaires</b>, <b>ramifiées</b> ou <b>cycliques</b> ; les liaisons entre carbones peuvent être <b>simples</b>, <b>doubles</b> ou <b>triples</b>.<br><br>Ces deux libertés combinées suffisent à expliquer l'immense diversité du vivant — et c'est pourquoi la chimie du carbone porte le nom de chimie <b>organique</b>.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Le carbone a quatre électrons de valence. Il lui en faut quatre de plus.",
+      "Il forme donc <b>quatre liaisons</b> covalentes, toujours — c'est le contrôle de toute formule.",
+      "Et surtout : il se lie à lui-même, en chaînes aussi longues qu'on veut.",
+      "Aucun autre élément ne fait cela durablement.",
+      "<em>D'où le nom :</em> la chimie du carbone est la chimie du vivant."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-CH6-02 ==================== -->
+  <section class="slide" data-ref="ANIM-CH6-02" data-title="Les sept groupes fonctionnels" data-sub="Le tableau qui tient sur une page" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="28" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">les sept du programme, et pas un de plus</text>
+            <rect x="14" y="46" width="442" height="44" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.4"/><text x="32" y="76" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">alcool</text><text x="438" y="76" text-anchor="end" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">— OH</text><rect x="14" y="96" width="442" height="44" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.4"/><text x="32" y="126" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">amine</text><text x="438" y="126" text-anchor="end" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">— NH₂</text><rect x="14" y="146" width="442" height="44" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.4"/><text x="32" y="176" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">aldéhyde</text><text x="438" y="176" text-anchor="end" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">— CHO</text><rect x="14" y="196" width="442" height="44" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.4"/><text x="32" y="226" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">cétone</text><text x="438" y="226" text-anchor="end" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">— CO —</text><rect x="14" y="246" width="442" height="44" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.4"/><text x="32" y="276" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">acide carboxylique</text><text x="438" y="276" text-anchor="end" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">— COOH</text><rect x="14" y="296" width="442" height="44" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.4"/><text x="32" y="326" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">ester</text><text x="438" y="326" text-anchor="end" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">— COO —</text><rect x="14" y="346" width="442" height="44" rx="9" fill="#E4F2EA" stroke="#8A8F98" stroke-width="1.4"/><text x="32" y="376" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">amide</text><text x="438" y="376" text-anchor="end" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">— CONH₂</text>
+          </g>
+          <g class="step s2"><rect x="10" y="42" width="450" height="102" rx="11" fill="none" stroke="#C02A20" stroke-width="3"/>
+            <text x="235" y="424" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">les deux sans C=O</text>
+          </g>
+          <g class="step s3"><rect x="10" y="142" width="450" height="252" rx="11" fill="none" stroke="#0F7A4F" stroke-width="3"/>
+            <text x="235" y="452" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">les cinq avec un C=O, seul ou combiné</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Sept groupes, et c'est tout le programme</h3>
+          <p style="font-size:17px">Le texte ARES en nomme sept : alcool, aldéhyde, cétone, acide carboxylique, ester, amine, amide. <b>Aucun autre n'est exigible.</b></p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Une structure, pas une liste</h3>
+          <p style="font-size:17px">Deux groupes n'ont <b>pas</b> de C=O : l'alcool et l'amine. Tous les autres en portent un, seul ou combiné à un O ou un N.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et cette structure guide la reconnaissance</h3>
+          <p style="font-size:17px">Chercher d'abord le <b>C=O</b>, puis regarder ce qui l'entoure : c'est l'arbre de décision de la dernière animation, et il découle directement de ce classement.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi on classe ainsi, et pas par taille</h3>
+          <p style="font-size:17px">Parce que <b>les propriétés suivent la fonction</b>, pas le nombre de carbones. Un alcool à deux carbones et un alcool à dix se comportent qualitativement pareil ; un alcool et une cétone de même taille, non.<br><br>C'est ce qui rend le classement utile : connaître la fonction, c'est connaître la polarité, la solubilité et le comportement de la molécule — sans rien savoir d'autre d'elle.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Sept groupes fonctionnels. Le programme n'en nomme pas un de plus.",
+      "Deux n'ont pas de C=O : l'alcool et l'amine.",
+      "Les cinq autres en portent un, seul ou combiné à un oxygène ou un azote.",
+      "Ce classement n'est pas décoratif : c'est lui qui guidera la reconnaissance.",
+      "<em>Et il vaut mieux qu'un classement par taille :</em> les propriétés suivent la fonction."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-CH6-03 ==================== -->
+  <section class="slide" data-ref="ANIM-CH6-03" data-title="Aldéhyde ou cétone : la position décide" data-sub="Le carbonyle en bout de chaîne, ou au milieu" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="32" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">le même groupe C=O dans les deux cas</text>
+            <line x1="14" y1="248" x2="456" y2="248" stroke="#E3E7EE" stroke-width="2"/>
+          </g>
+          <g class="step s2">
+            <rect x="14" y="60" width="442" height="34" rx="9" fill="#E4F2EA"/>
+            <text x="235" y="84" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">ALDÉHYDE · le C=O est en bout de chaîne</text>
+            <g stroke="#08402A" stroke-width="3.4" stroke-linecap="round">
+              <line x1="118" y1="150" x2="150" y2="150"/><line x1="218" y1="150" x2="252" y2="150"/>
+            </g>
+            <text x="80" y="158" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">CH₃</text>
+            <text x="184" y="158" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">CH₂</text>
+            <text x="270" y="158" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">C</text>
+            <g stroke="#0F7A4F" stroke-width="3.4" stroke-linecap="round">
+              <line x1="290" y1="143" x2="338" y2="143"/><line x1="290" y1="157" x2="338" y2="157"/>
+            </g>
+            <text x="360" y="158" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">O</text>
+            <line x1="270" y1="170" x2="270" y2="190" stroke="#08402A" stroke-width="3.4" stroke-linecap="round"/>
+            <text x="270" y="216" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">H</text>
+          </g>
+          <g class="step s3">
+            <rect x="14" y="274" width="442" height="34" rx="9" fill="#E4F2EA"/>
+            <text x="235" y="298" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">CÉTONE · le C=O est entre deux carbones</text>
+            <text x="235" y="352" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">O</text>
+            <g stroke="#0F7A4F" stroke-width="3.4" stroke-linecap="round">
+              <line x1="229" y1="364" x2="229" y2="392"/><line x1="241" y1="364" x2="241" y2="392"/>
+            </g>
+            <g stroke="#08402A" stroke-width="3.4" stroke-linecap="round">
+              <line x1="148" y1="410" x2="212" y2="410"/><line x1="258" y1="410" x2="322" y2="410"/>
+            </g>
+            <text x="110" y="418" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">CH₃</text>
+            <text x="235" y="418" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">C</text>
+            <text x="360" y="418" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">CH₃</text>
+            <text x="235" y="458" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">une cétone demande donc au moins trois carbones</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'aldéhyde : le carbonyle est au bout</h3>
+          <p style="font-size:17px">Son carbone porte donc encore un <b>hydrogène</b> — d'où l'écriture <b>CHO</b>, qui suffit à le reconnaître.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La cétone : il est entouré de carbones</h3>
+          <p style="font-size:17px">Le carbonyle est <b>à l'intérieur</b> de la chaîne, entre deux carbones. Aucun hydrogène ne lui est lié.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Une conséquence à connaître</h3>
+          <p style="font-size:17px">Une cétone demande <b>au moins trois carbones</b>. Avec deux seulement, le carbonyle serait forcément en bout de chaîne — donc un aldéhyde. C'est un contrôle utile quand on cherche des isomères.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Même formule brute, deux molécules différentes</h3>
+          <p style="font-size:17px">Le propanal et la propanone ont <b>tous deux</b> la formule C₃H₆O. Même nombre d'atomes, même masse molaire — et pourtant deux fonctions distinctes, donc deux comportements différents.<br><br>C'est une <b>isomérie de fonction</b>, et c'est la plus profonde des trois : ce n'est pas la forme du squelette qui change, c'est la nature chimique de la molécule.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Le même groupe C=O — le carbonyle — dans les deux cas.",
+      "S'il est en <b>bout</b> de chaîne, son carbone porte encore un hydrogène : c'est un <b>aldéhyde</b>.",
+      "S'il est <b>entre deux carbones</b>, c'est une <b>cétone</b>.",
+      "D'où une conséquence : une cétone demande au moins trois carbones.",
+      "<em>Et les deux peuvent avoir la même formule brute :</em> c'est l'isomérie de fonction."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-CH6-04 ==================== -->
+  <section class="slide" data-ref="ANIM-CH6-04" data-title="Reconnaître une fonction sur une formule" data-sub="L'arbre de décision, en quatre questions" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0F7A4F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#08402A"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C02A20"/></marker></defs>
+          <g class="step s1">
+            <rect x="12" y="18" width="252" height="54" rx="12" fill="#C2E0D0" stroke="#08402A" stroke-width="2.4"/>
+            <text x="138" y="52" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">1 · y a-t-il un azote ?</text>
+            <line x1="138" y1="74" x2="138" y2="98" stroke="#8A8F98" stroke-width="2.6"/>
+            <line x1="268" y1="45" x2="288" y2="45" stroke="#0F7A4F" stroke-width="2.4"/>
+            <text x="294" y="51" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">amine / amide</text>
+          </g>
+          <g class="step s2">
+            <rect x="12" y="100" width="252" height="54" rx="12" fill="#C2E0D0" stroke="#08402A" stroke-width="2.4"/>
+            <text x="138" y="134" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">2 · y a-t-il un C=O ?</text>
+            <line x1="138" y1="156" x2="138" y2="180" stroke="#8A8F98" stroke-width="2.6"/>
+            <line x1="268" y1="127" x2="288" y2="127" stroke="#0F7A4F" stroke-width="2.4"/>
+            <text x="294" y="121" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">non, mais un OH :</text>
+            <text x="294" y="143" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">alcool</text>
+          </g>
+          <g class="step s3">
+            <rect x="12" y="182" width="252" height="54" rx="12" fill="#C2E0D0" stroke="#08402A" stroke-width="2.4"/>
+            <text x="138" y="216" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">3 · que porte le C=O ?</text>
+            <line x1="138" y1="238" x2="138" y2="262" stroke="#8A8F98" stroke-width="2.6"/>
+            <line x1="268" y1="209" x2="288" y2="209" stroke="#0F7A4F" stroke-width="2.4"/>
+            <text x="294" y="203" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">OH → acide</text>
+            <text x="294" y="225" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">O—C → ester</text>
+          </g>
+          <g class="step s4">
+            <rect x="12" y="264" width="252" height="54" rx="12" fill="#0F7A4F"/>
+            <text x="138" y="298" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">4 · en bout ou au milieu ?</text>
+            <line x1="268" y1="291" x2="288" y2="291" stroke="#08402A" stroke-width="2.4"/>
+            <text x="294" y="285" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">aldéhyde</text>
+            <text x="294" y="307" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">ou cétone</text>
+            <rect x="12" y="352" width="446" height="104" rx="14" fill="#FFFFFF" stroke="#C02A20" stroke-width="2.6"/>
+            <text x="235" y="386" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#C02A20" font-weight="700">et on parcourt TOUTE la formule</text>
+            <text x="235" y="420" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#08402A" font-weight="700">CH₃—CH(OH)—COOH</text>
+            <text x="235" y="444" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">un alcool et un acide dans la même molécule</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Toujours dans cet ordre</h3>
+          <p style="font-size:17px">L'azote d'abord, parce qu'il ne concerne que deux fonctions et les élimine immédiatement. Le C=O ensuite, parce qu'il partage le reste en deux.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Puis ce qui entoure le carbonyle</h3>
+          <p style="font-size:17px">Un <b>OH</b> accroché au C=O → acide carboxylique. Un <b>O relié à un autre carbone</b> → ester. Sinon, il reste les deux derniers cas.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et la position tranche</h3>
+          <p style="font-size:17px">En bout de chaîne → <b>aldéhyde</b>. Entre deux carbones → <b>cétone</b>. Quatre questions, sept fonctions, aucune hésitation possible.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège : s'arrêter à la première</h3>
+          <p style="font-size:17px">Une molécule peut porter <b>plusieurs</b> fonctions. L'acide lactique, CH₃—CH(OH)—COOH, en porte deux : un alcool sur le carbone central, un acide carboxylique au bout.<br><br>On parcourt donc <b>toute</b> la formule, jamais seulement son début — et le contrôle des quatre liaisons par carbone valide au passage l'écriture entière.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Première question : y a-t-il un azote ? Si oui, il ne reste que deux possibilités.",
+      "Deuxième : y a-t-il un C=O ? Si non et qu'il y a un OH, c'est un alcool.",
+      "Troisième : que porte ce C=O ? Un OH donne un acide, un O—C donne un ester.",
+      "Quatrième : est-il en bout de chaîne, ou au milieu ? Aldéhyde, ou cétone.",
+      "<em>Et le piège :</em> une molécule peut porter plusieurs fonctions. On lit tout."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule CH6-A — Le carbone et les groupes fonctionnels · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>
