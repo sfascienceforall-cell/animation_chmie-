@@ -53,9 +53,10 @@ body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
 .body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
 .slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
 .slide.on{opacity:1;pointer-events:auto}
-.mid{height:100%;display:flex;align-items:center}
-.split{display:flex;gap:44px;width:100%;align-items:center}
-.split>.col:first-child{align-self:stretch;align-items:center}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
 .split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
 .col{min-width:0}
 
@@ -469,14 +470,19 @@ body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
       for(var k=0;k<T;k++){
         applySteps(s,k);
         cols.forEach(function(c,i){
-          var h=c.getBoundingClientRect().height;
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
           if(h>need[i]) need[i]=h;
         });
       }
       cols.forEach(function(c,i){
         if(!need[i]) return;
-        var r=avail/need[i];
-        if(r<0.998) c.style.zoom=Math.max(0.70, r*0.99).toFixed(4);
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
       });
       applySteps(s,0);
     });

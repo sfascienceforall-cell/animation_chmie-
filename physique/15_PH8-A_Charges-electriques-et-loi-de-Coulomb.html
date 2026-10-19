@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule PH8-A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#C0261F;          /* bleu SFA */
+  --deep:#6E1410;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#FBECEA;         /* bleu 8 % */
+  --tint2:#F5D7D3;        /* bleu 18 % */
+  --surface:#FAF6F5;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-PH8-01 ==================== -->
+  <section class="slide" data-ref="ANIM-PH8-01" data-title="La charge : deux signes, une unité" data-sub="Et la quantification, qu'on mentionne sans la développer" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="36" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">il existe deux sortes de charges</text>
+            <circle cx="120" cy="90" r="26" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/>
+            <text x="120" y="99" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">+</text>
+            <circle cx="300" cy="90" r="26" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/>
+            <text x="300" y="99" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">+</text>
+            <line x1="94.0" y1="90.0" x2="44.0" y2="90.0" stroke="#1B3A8C" stroke-width="3.4" stroke-linecap="round" marker-end="url(#r1)"/><line x1="326.0" y1="90.0" x2="396.0" y2="90.0" stroke="#1B3A8C" stroke-width="3.4" stroke-linecap="round" marker-end="url(#r1)"/>
+            <text x="210" y="154" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">même signe : elles se repoussent</text>
+          </g>
+          <g class="step s2">
+            <circle cx="120" cy="210" r="26" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/>
+            <text x="120" y="220" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">+</text>
+            <circle cx="300" cy="210" r="26" fill="#FFFFFF" stroke="#6E1410" stroke-width="2.6"/>
+            <text x="300" y="220" text-anchor="middle" font-size="30" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">−</text>
+            <line x1="146.0" y1="210.0" x2="196.0" y2="210.0" stroke="#C0261F" stroke-width="3.4" stroke-linecap="round" marker-end="url(#v1)"/><line x1="274.0" y1="210.0" x2="224.0" y2="210.0" stroke="#C0261F" stroke-width="3.4" stroke-linecap="round" marker-end="url(#v1)"/>
+            <text x="210" y="274" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">signes opposés : elles s'attirent</text>
+          </g>
+          <g class="step s3">
+            <rect x="10" y="296" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="326" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">l'unité SI : le coulomb (C)</text>
+            <rect x="10" y="350" width="450" height="46" rx="11" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="235" y="380" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">e = 1,6 × 10⁻¹⁹ C</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="404" width="450" height="56" rx="11" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="430" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">la charge se conserve :</text>
+            <text x="235" y="450" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">on la déplace, on ne la crée pas</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Deux sortes de charges</h3>
+          <p style="font-size:17px">Positives et négatives. Deux charges de <b>même signe</b> se repoussent, deux charges de <b>signes opposés</b> s'attirent. C'est la première différence avec la gravitation.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'unité SI</h3>
+          <p style="font-size:17px">Le <b>coulomb</b> (C) — le programme le nomme explicitement. C'est une unité énorme : un coulomb correspond à plus de six milliards de milliards de charges élémentaires.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La charge élémentaire</h3>
+          <p style="font-size:17px">e = 1,6 × 10⁻¹⁹ C est la plus petite charge libre observée. <b>Toute charge en est un multiple entier</b> — c'est la quantification, qu'on mentionne sans la développer.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La conservation de la charge</h3>
+          <p style="font-size:17px">Dans tout système <b>isolé</b>, la charge totale ne change pas. On la <b>déplace</b>, on ne la crée pas.</p>
+          <p style="font-size:17px">C'est ce principe qui rend la capsule suivante immédiate : les trois modes d'électrisation ne font rien d'autre que <b>transférer</b> des électrons d'un corps à l'autre. Si un corps devient positif, c'est qu'un autre est devenu négatif — exactement de la même quantité.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Deux charges de même signe : elles se repoussent.",
+      "Deux charges de signes opposés : elles s'attirent.",
+      "L'unité SI est le coulomb, et la charge élémentaire vaut 1,6 × 10⁻¹⁹ C.",
+      "Toute charge observée est un multiple entier de cette valeur.",
+      "<em>Et elle se conserve :</em> on la déplace, on ne la crée jamais."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH8-02 ==================== -->
+  <section class="slide" data-ref="ANIM-PH8-02" data-title="Électriser par frottement, contact, influence" data-sub="Trois façons, un seul principe de conservation" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <rect x="40" y="52" width="76" height="56" rx="7" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.4"/>
+            <text x="78" y="88" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">+ + +</text>
+            <rect x="128" y="52" width="76" height="56" rx="7" fill="#FFFFFF" stroke="#6E1410" stroke-width="2.4"/>
+            <text x="166" y="88" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">− − −</text>
+            <text x="228" y="68" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">par frottement</text>
+            <text x="228" y="92" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">échange d'électrons</text>
+            <text x="228" y="114" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">autant de + que de −</text>
+          </g>
+          <g class="step s2">
+            <circle cx="76" cy="200" r="30" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.4"/>
+            <text x="76" y="209" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">+</text>
+            <circle cx="140" cy="200" r="30" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.4"/>
+            <text x="140" y="209" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">+</text>
+            <text x="228" y="182" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">par contact</text>
+            <text x="228" y="206" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">le chargé cède une part</text>
+            <text x="228" y="228" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">les deux repartent de même signe</text>
+          </g>
+          <g class="step s3">
+            <rect x="44" y="300" width="18" height="74" rx="5" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.4"/>
+            <text x="53" y="292" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">+</text>
+            <circle cx="140" cy="337" r="36" fill="#FFFFFF" stroke="#6E1410" stroke-width="2.4"/>
+            <text x="118" y="345" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">−</text>
+            <text x="160" y="345" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">+</text>
+            <text x="228" y="318" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">par influence</text>
+            <text x="228" y="342" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">sans contact, il se polarise</text>
+            <text x="228" y="364" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">globalement neutre, et attiré</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="396" width="450" height="64" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="424" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">un corps neutre est quand même attiré</text>
+            <text x="235" y="448" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">c'est l'influence</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Par frottement</h3>
+          <p style="font-size:17px">Deux corps frottés <b>échangent des électrons</b>. L'un devient positif, l'autre négatif — et de la <b>même</b> quantité, puisque la charge se conserve.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Par contact</h3>
+          <p style="font-size:17px">Un corps chargé touché par un corps neutre lui cède une <b>partie</b> de sa charge. Les deux repartent avec le <b>même signe</b>.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Par influence</h3>
+          <p style="font-size:17px">Un corps chargé <b>approché sans contact</b> déplace les charges du corps neutre. Celui-ci reste <b>globalement neutre</b> mais se <b>polarise</b> : les charges opposées viennent du côté proche.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège, et l'expérience qui le dissipe</h3>
+          <p style="font-size:17px">Croire qu'un corps <b>neutre</b> ne subit aucune force. Faux : il est attiré <b>par influence</b>.</p>
+          <p style="font-size:17px">C'est ce qui explique qu'une règle frottée attire de petits papiers <b>non chargés</b>. La règle polarise le papier ; les charges opposées sont plus <b>proches</b> qu'elles ne sont loin, et comme la force varie en 1/r², l'attraction l'emporte sur la répulsion. Le papier, globalement neutre, est bel et bien attiré.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Par frottement : deux corps échangent des électrons, un + et un − égaux.",
+      "Par contact : le corps chargé cède une part de sa charge, même signe pour les deux.",
+      "Par influence : sans contact, le corps neutre se polarise — et il est attiré.",
+      "Dans les trois cas, aucune charge n'est créée : elle est seulement déplacée.",
+      "<em>Le piège :</em> croire qu'un corps neutre ne subit aucune force."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH8-03 ==================== -->
+  <section class="slide" data-ref="ANIM-PH8-03" data-title="La loi de Coulomb" data-sub="Son air de famille avec la gravitation, et ses deux différences" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <circle cx="110" cy="76" r="26" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/>
+            <text x="110" y="84" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">q₁</text>
+            <circle cx="330" cy="76" r="20" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/>
+            <text x="330" y="83" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">q₂</text>
+            <line x1="110" y1="122" x2="330" y2="122" stroke="#8A8F98" stroke-width="2" stroke-dasharray="7 5"/>
+            <text x="220" y="146" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">r, de centre à centre</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="160" width="450" height="52" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="194" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">F = k · | q₁ q₂ | / r²   ·   k = 9 × 10⁹</text>
+          </g>
+          <g class="step s3">
+            <rect x="10" y="222" width="218" height="96" rx="11" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="119" y="250" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">Coulomb</text>
+            <text x="119" y="276" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">k = 9 × 10⁹</text>
+            <text x="119" y="300" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">attractive ou répulsive</text>
+            <rect x="242" y="222" width="218" height="96" rx="11" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="351" y="250" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">Newton</text>
+            <text x="351" y="276" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">G = 6,67 × 10⁻¹¹</text>
+            <text x="351" y="300" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">toujours attractive</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="328" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="358" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">même forme : produit divisé par r²</text>
+            <rect x="10" y="384" width="450" height="76" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="414" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">entre deux protons, l'électrique vaut</text>
+            <text x="235" y="444" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">10³⁶ fois la gravitation</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'énoncé</h3>
+          <p style="font-size:17px">F = k · |q₁q₂| / r², avec k = 9 × 10⁹ dans le vide. La force est portée par la <b>droite qui joint</b> les deux charges, et r est mesuré de centre à centre.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La ressemblance avec la gravitation</h3>
+          <p style="font-size:17px">Même structure : <b>produit des grandeurs</b>, divisé par le <b>carré de la distance</b>. Le raisonnement de proportionnalité de PH3-B s'applique à l'identique — distance divisée par deux, force multipliée par quatre.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Première différence</h3>
+          <p style="font-size:17px">La force électrique peut être <b>répulsive</b>. La gravitation ne l'est jamais — c'est ce qui rend l'électricité capable de s'annuler, et la gravitation capable de s'accumuler à l'échelle des astres.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Seconde différence, et elle est colossale</h3>
+          <p style="font-size:17px">k vaut <b>9 × 10⁹</b> quand G vaut <b>6,67 × 10⁻¹¹</b>. Vingt ordres de grandeur séparent les deux constantes.</p>
+          <p style="font-size:17px">Conséquence : la force électrique entre deux protons est environ <b>10³⁶ fois</b> plus intense que leur attraction gravitationnelle. C'est pourquoi on néglige systématiquement le poids dans tout le chapitre — et pourquoi la matière doit être presque exactement neutre pour que la gravitation gouverne quoi que ce soit.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Deux charges ponctuelles, séparées d'une distance r de centre à centre.",
+      "La loi : k fois le produit des charges, divisé par le carré de la distance.",
+      "C'est la forme exacte de la gravitation — avec deux différences.",
+      "La première : elle peut être répulsive. La gravitation, jamais.",
+      "<em>La seconde :</em> k est vingt ordres de grandeur au-dessus de G."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH8-04 ==================== -->
+  <section class="slide" data-ref="ANIM-PH8-04" data-title="Trois charges alignées" data-sub="La force totale est une somme vectorielle" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <line x1="30" y1="160" x2="34" y2="160" stroke="#8A8F98" stroke-width="1.8"/><line x1="86" y1="160" x2="187" y2="160" stroke="#8A8F98" stroke-width="1.8"/><line x1="233" y1="160" x2="341" y2="160" stroke="#8A8F98" stroke-width="1.8"/><line x1="379" y1="160" x2="440" y2="160" stroke="#8A8F98" stroke-width="1.8"/>
+            <circle cx="60" cy="160" r="22" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.4"/>
+            <text x="60" y="167" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">+4</text>
+            <circle cx="210" cy="160" r="19" fill="#FFFFFF" stroke="#6E1410" stroke-width="2.4"/>
+            <text x="210" y="167" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">−2</text>
+            <circle cx="360" cy="160" r="15" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.4"/>
+            <text x="360" y="166" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">+1</text>
+            <text x="60" y="196" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">0</text>
+            <text x="210" y="196" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">0,30 m</text>
+            <text x="360" y="196" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">0,60 m</text>
+            <text x="235" y="36" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">quelle force totale sur la charge de droite ?</text>
+          </g>
+          <g class="step s2"><line x1="360.0" y1="112.0" x2="410.0" y2="112.0" stroke="#C0261F" stroke-width="3.4" stroke-linecap="round" marker-end="url(#v4)"/><line x1="360.0" y1="112.0" x2="260.0" y2="112.0" stroke="#1B3A8C" stroke-width="3.4" stroke-linecap="round" marker-end="url(#r4)"/>
+            <text x="458" y="98" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">F₁ = 0,1 N</text>
+            <text x="252" y="98" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">F₂ = 0,2 N</text>
+          </g>
+          <g class="step s3"><line x1="360.0" y1="70.0" x2="310.0" y2="70.0" stroke="#6E1410" stroke-width="4.0" stroke-linecap="round" marker-end="url(#d4)"/>
+            <text x="300" y="76" text-anchor="end" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">F = 0,1 N vers la gauche</text>
+            <rect x="10" y="216" width="450" height="52" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="248" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">chaque sens se lit sur les signes des charges</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="280" width="450" height="70" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="308" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">additionner 0,1 et 0,2 pour faire 0,3</text>
+            <text x="235" y="334" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">est l'erreur type du chapitre</text>
+            <rect x="10" y="360" width="450" height="44" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="388" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">l'addition est algébrique, pas arithmétique</text>
+            <rect x="10" y="410" width="450" height="50" rx="11" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="235" y="430" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">deux fois plus petite, mais deux fois plus proche :</text>
+            <text x="235" y="450" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">le carré de la distance l'emporte</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le principe de superposition</h3>
+          <p style="font-size:17px">La force totale sur une charge est la <b>somme vectorielle</b> des forces exercées par chacune des autres, prises <b>deux à deux</b>. On ne traite jamais trois charges d'un coup.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La méthode, sur un axe</h3>
+          <p style="font-size:17px">On calcule chaque force <b>en grandeur</b>, on détermine son <b>sens</b> par les signes des charges, on lui affecte un signe algébrique, puis on additionne.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ici, concrètement</h3>
+          <p style="font-size:17px">F₁ = 0,1 N <b>répulsive</b> (mêmes signes) vers la droite. F₂ = 0,2 N <b>attractive</b> (signes opposés) vers la gauche. Total : <b>0,1 N vers la gauche</b>.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège, et le contrôle qui l'évite</h3>
+          <p style="font-size:17px"><b>Le piège :</b> additionner les grandeurs sans regarder les sens. Deux forces de 0,1 N et 0,2 N <b>opposées</b> donnent 0,1 N, pas 0,3 N. C'est une somme vectorielle — la capsule B2-A des mathématiques, et le diagramme de forces de PH2-A.</p>
+          <p style="font-size:17px"><b>Le contrôle :</b> q₂ est deux fois plus <b>petite</b> que q₁, mais deux fois plus <b>proche</b>. Le carré de la distance l'emporte sur le facteur de charge, donc c'est q₂ qui domine. Le résultat doit pointer vers elle — et il le fait.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Trois charges sur un axe. On cherche la force totale sur celle de droite.",
+      "La charge positive de gauche la repousse ; la négative du milieu l'attire.",
+      "On additionne algébriquement : 0,1 vers la droite, 0,2 vers la gauche.",
+      "Total : 0,1 N vers la gauche. Jamais 0,3 N.",
+      "<em>Le contrôle :</em> deux fois plus petite mais deux fois plus proche — elle domine."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule PH8-A — Charges électriques et loi de Coulomb · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule PH10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#C0261F;          /* bleu SFA */
+  --deep:#6E1410;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#FBECEA;         /* bleu 8 % */
+  --tint2:#F5D7D3;        /* bleu 18 % */
+  --surface:#FAF6F5;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-PH10-01 ==================== -->
+  <section class="slide" data-ref="ANIM-PH10-01" data-title="Du continu à l'alternatif" data-sub="Le sens change, la sinusoïde apparaît" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="32" y1="130" x2="440" y2="130" stroke="#8A8F98" stroke-width="1.8"/><line x1="50" y1="44" x2="50" y2="148" stroke="#8A8F98" stroke-width="1.8"/><text x="440" y="156" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">t</text><text x="62" y="58" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">I</text><line x1="50" y1="86" x2="430" y2="86" stroke="#C0261F" stroke-width="3.6"/>
+            <text x="50" y="40" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">continu : même sens, même intensité</text>
+          </g>
+          <g class="step s2"><line x1="32" y1="276" x2="440" y2="276" stroke="#8A8F98" stroke-width="1.8"/><line x1="50" y1="196" x2="50" y2="294" stroke="#8A8F98" stroke-width="1.8"/><text x="440" y="302" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">t</text><text x="62" y="210" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">I</text>
+            <path d="M 50.0,224.0 L 51.6,224.2 L 53.2,224.6 L 54.8,225.4 L 56.3,226.4 L 57.9,227.8 L 59.5,229.4 L 61.1,231.3 L 62.7,233.4 L 64.2,235.9 L 65.8,238.5 L 67.4,241.4 L 69.0,244.4 L 70.6,247.7 L 72.2,251.1 L 73.8,254.7 L 75.3,258.3 L 76.9,262.1 L 78.5,266.0 L 80.1,269.9 L 81.7,273.9 L 83.2,277.9 L 84.8,281.9 L 86.4,285.8 L 88.0,289.7 L 89.6,293.5 L 91.2,297.2 L 92.8,300.7 L 94.3,304.1 L 95.9,307.4 L 97.5,310.5 L 99.1,313.4 L 100.7,316.0 L 102.2,318.4 L 103.8,320.6 L 105.4,322.5 L 107.0,324.2 L 108.6,325.5 L 110.2,326.6 L 111.8,327.4 L 113.3,327.8 L 114.9,328.0 L 116.5,327.9 L 118.1,327.4 L 119.7,326.7 L 121.2,325.6 L 122.8,324.3 L 124.4,322.7 L 126.0,320.8 L 127.6,318.7 L 129.2,316.3 L 130.8,313.6 L 132.3,310.8 L 133.9,307.7 L 135.5,304.5 L 137.1,301.1 L 138.7,297.5 L 140.2,293.9 L 141.8,290.1 L 143.4,286.2 L 145.0,282.3 L 146.6,278.3 L 148.2,274.3 L 149.8,270.4 L 151.3,266.4 L 152.9,262.5 L 154.5,258.7 L 156.1,255.0 L 157.7,251.5 L 159.2,248.0 L 160.8,244.8 L 162.4,241.7 L 164.0,238.8 L 165.6,236.1 L 167.2,233.7 L 168.8,231.5 L 170.3,229.6 L 171.9,227.9 L 173.5,226.5 L 175.1,225.5 L 176.7,224.7 L 178.2,224.2 L 179.8,224.0 L 181.4,224.1 L 183.0,224.5 L 184.6,225.3 L 186.2,226.3 L 187.8,227.6 L 189.3,229.2 L 190.9,231.1 L 192.5,233.2 L 194.1,235.6 L 195.7,238.2 L 197.2,241.0 L 198.8,244.1 L 200.4,247.3 L 202.0,250.7 L 203.6,254.3 L 205.2,258.0 L 206.8,261.7 L 208.3,265.6 L 209.9,269.5 L 211.5,273.5 L 213.1,277.5 L 214.7,281.4 L 216.2,285.4 L 217.8,289.3 L 219.4,293.1 L 221.0,296.8 L 222.6,300.4 L 224.2,303.8 L 225.8,307.1 L 227.3,310.2 L 228.9,313.1 L 230.5,315.7 L 232.1,318.2 L 233.7,320.4 L 235.2,322.3 L 236.8,324.0 L 238.4,325.4 L 240.0,326.5 L 241.6,327.3 L 243.2,327.8 L 244.8,328.0 L 246.3,327.9 L 247.9,327.5 L 249.5,326.8 L 251.1,325.8 L 252.7,324.5 L 254.2,322.9 L 255.8,321.0 L 257.4,318.9 L 259.0,316.5 L 260.6,313.9 L 262.2,311.1 L 263.8,308.1 L 265.3,304.8 L 266.9,301.5 L 268.5,297.9 L 270.1,294.2 L 271.7,290.5 L 273.2,286.6 L 274.8,282.7 L 276.4,278.7 L 278.0,274.7 L 279.6,270.8 L 281.2,266.8 L 282.8,262.9 L 284.3,259.1 L 285.9,255.4 L 287.5,251.8 L 289.1,248.4 L 290.7,245.1 L 292.2,242.0 L 293.8,239.1 L 295.4,236.4 L 297.0,233.9 L 298.6,231.7 L 300.2,229.8 L 301.8,228.1 L 303.3,226.7 L 304.9,225.6 L 306.5,224.7 L 308.1,224.2 L 309.7,224.0 L 311.2,224.1 L 312.8,224.5 L 314.4,225.2 L 316.0,226.2 L 317.6,227.5 L 319.2,229.0 L 320.8,230.9 L 322.3,233.0 L 323.9,235.3 L 325.5,237.9 L 327.1,240.7 L 328.7,243.8 L 330.2,247.0 L 331.8,250.4 L 333.4,253.9 L 335.0,257.6 L 336.6,261.3 L 338.2,265.2 L 339.8,269.1 L 341.3,273.1 L 342.9,277.0 L 344.5,281.0 L 346.1,285.0 L 347.7,288.9 L 349.2,292.7 L 350.8,296.4 L 352.4,300.0 L 354.0,303.4 L 355.6,306.7 L 357.2,309.9 L 358.8,312.8 L 360.3,315.5 L 361.9,317.9 L 363.5,320.2 L 365.1,322.1 L 366.7,323.8 L 368.2,325.3 L 369.8,326.4 L 371.4,327.2 L 373.0,327.8 L 374.6,328.0 L 376.2,327.9 L 377.8,327.5 L 379.3,326.9 L 380.9,325.9 L 382.5,324.6 L 384.1,323.1 L 385.7,321.2 L 387.2,319.1 L 388.8,316.8 L 390.4,314.2 L 392.0,311.4 L 393.6,308.4 L 395.2,305.2 L 396.8,301.8 L 398.3,298.3 L 399.9,294.6 L 401.5,290.9 L 403.1,287.0 L 404.7,283.1 L 406.2,279.1 L 407.8,275.2 L 409.4,271.2 L 411.0,267.2 L 412.6,263.4 L 414.2,259.5 L 415.8,255.8 L 417.3,252.2 L 418.9,248.7 L 420.5,245.4 L 422.1,242.3 L 423.7,239.4 L 425.2,236.7 L 426.8,234.2 L 428.4,231.9 L 430.0,230.0" fill="none" stroke="#C0261F" stroke-width="3.6"/>
+            <text x="50" y="186" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">alternatif : le sens change</text>
+          </g>
+          <g class="step s3">
+            <rect x="10" y="346" width="450" height="50" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="378" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">valeur moyenne nulle sur une période</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="404" width="450" height="56" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="430" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">moyenne nulle ne veut pas dire sans effet</text>
+            <text x="235" y="450" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">il chauffe dans les deux sens</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le courant continu</h3>
+          <p style="font-size:17px">Il garde le <b>même sens</b> et, le plus souvent, la <b>même intensité</b>. Une pile en produit — c'est tout ce qu'on a vu jusqu'ici.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le courant alternatif</h3>
+          <p style="font-size:17px">Il change <b>périodiquement de sens</b>. Sa valeur moyenne sur une période est <b>nulle</b> : autant dans un sens que dans l'autre.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi une sinusoïde</h3>
+          <p style="font-size:17px">Parce que c'est la forme que produit <b>naturellement</b> un alternateur en rotation. Ce n'est pas un choix de représentation, c'est la physique de la machine.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège, et ce qu'il annonce</h3>
+          <p style="font-size:17px">Conclure de la valeur moyenne nulle que le courant <b>ne fait rien</b>. Il chauffe pourtant une résistance — <b>dans les deux sens</b>, puisque l'échauffement dépend de I², qui est positif quel que soit le sens.</p>
+          <p style="font-size:17px">C'est exactement ce que la <b>valeur efficace</b> va mesurer, et c'est pour cela qu'elle existe. Toute la capsule tient dans cette remarque.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un courant continu : même sens, même intensité, une droite horizontale.",
+      "Un courant alternatif change de sens périodiquement : c'est une sinusoïde.",
+      "Sa valeur moyenne sur une période est nulle — autant d'un côté que de l'autre.",
+      "Et pourtant il chauffe : l'échauffement dépend du carré, toujours positif.",
+      "<em>C'est ce que la valeur efficace va mesurer</em> — toute la capsule est là."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH10-02 ==================== -->
+  <section class="slide" data-ref="ANIM-PH10-02" data-title="Période, fréquence, amplitude" data-sub="La lecture d'un oscillogramme, point par point" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><rect x="49.3" y="70" width="1.4" height="240" fill="#E3E7EE"/><rect x="89.3" y="70" width="1.4" height="240" fill="#E3E7EE"/><rect x="129.3" y="70" width="1.4" height="240" fill="#E3E7EE"/><rect x="169.3" y="70" width="1.4" height="240" fill="#E3E7EE"/><rect x="209.3" y="70" width="1.4" height="240" fill="#E3E7EE"/><rect x="249.3" y="70" width="1.4" height="240" fill="#E3E7EE"/><rect x="289.3" y="70" width="1.4" height="240" fill="#E3E7EE"/><rect x="329.3" y="70" width="1.4" height="240" fill="#E3E7EE"/><rect x="369.3" y="70" width="1.4" height="240" fill="#E3E7EE"/><rect x="409.3" y="70" width="1.4" height="240" fill="#E3E7EE"/><rect x="50" y="69.3" width="360" height="1.4" fill="#E3E7EE"/><rect x="50" y="109.3" width="360" height="1.4" fill="#E3E7EE"/><rect x="50" y="149.3" width="360" height="1.4" fill="#E3E7EE"/><rect x="50" y="189.3" width="360" height="1.4" fill="#E3E7EE"/><rect x="50" y="229.3" width="360" height="1.4" fill="#E3E7EE"/><rect x="50" y="269.3" width="360" height="1.4" fill="#E3E7EE"/><rect x="50" y="309.3" width="360" height="1.4" fill="#E3E7EE"/>
+            <line x1="50" y1="190" x2="410" y2="190" stroke="#8A8F98" stroke-width="1.8"/>
+            <path d="M 50.0,190.0 L 51.5,185.3 L 53.0,180.6 L 54.5,175.9 L 56.0,171.3 L 57.5,166.8 L 59.0,162.3 L 60.5,157.9 L 62.0,153.7 L 63.5,149.5 L 65.0,145.6 L 66.5,141.7 L 68.0,138.0 L 69.5,134.6 L 71.0,131.3 L 72.5,128.2 L 74.0,125.3 L 75.5,122.6 L 77.0,120.2 L 78.5,118.0 L 80.0,116.1 L 81.5,114.4 L 83.0,113.0 L 84.5,111.9 L 86.0,111.0 L 87.5,110.4 L 89.0,110.1 L 90.5,110.0 L 92.0,110.2 L 93.5,110.8 L 95.0,111.5 L 96.5,112.6 L 98.0,113.9 L 99.5,115.5 L 101.0,117.3 L 102.5,119.4 L 104.0,121.8 L 105.5,124.4 L 107.0,127.2 L 108.5,130.2 L 110.0,133.4 L 111.5,136.9 L 113.0,140.5 L 114.5,144.3 L 116.0,148.2 L 117.5,152.3 L 119.0,156.5 L 120.5,160.8 L 122.0,165.3 L 123.5,169.8 L 125.0,174.4 L 126.5,179.0 L 128.0,183.7 L 129.5,188.4 L 131.0,193.1 L 132.5,197.8 L 134.0,202.5 L 135.5,207.1 L 137.0,211.7 L 138.5,216.2 L 140.0,220.6 L 141.5,224.9 L 143.0,229.1 L 144.5,233.1 L 146.0,237.0 L 147.5,240.8 L 149.0,244.3 L 150.5,247.7 L 152.0,250.8 L 153.5,253.8 L 155.0,256.5 L 156.5,259.0 L 158.0,261.3 L 159.5,263.3 L 161.0,265.1 L 162.5,266.6 L 164.0,267.8 L 165.5,268.8 L 167.0,269.4 L 168.5,269.9 L 170.0,270.0 L 171.5,269.9 L 173.0,269.4 L 174.5,268.8 L 176.0,267.8 L 177.5,266.6 L 179.0,265.1 L 180.5,263.3 L 182.0,261.3 L 183.5,259.0 L 185.0,256.5 L 186.5,253.8 L 188.0,250.8 L 189.5,247.7 L 191.0,244.3 L 192.5,240.8 L 194.0,237.0 L 195.5,233.1 L 197.0,229.1 L 198.5,224.9 L 200.0,220.6 L 201.5,216.2 L 203.0,211.7 L 204.5,207.1 L 206.0,202.5 L 207.5,197.8 L 209.0,193.1 L 210.5,188.4 L 212.0,183.7 L 213.5,179.0 L 215.0,174.4 L 216.5,169.8 L 218.0,165.3 L 219.5,160.8 L 221.0,156.5 L 222.5,152.3 L 224.0,148.2 L 225.5,144.3 L 227.0,140.5 L 228.5,136.9 L 230.0,133.4 L 231.5,130.2 L 233.0,127.2 L 234.5,124.4 L 236.0,121.8 L 237.5,119.4 L 239.0,117.3 L 240.5,115.5 L 242.0,113.9 L 243.5,112.6 L 245.0,111.5 L 246.5,110.8 L 248.0,110.2 L 249.5,110.0 L 251.0,110.1 L 252.5,110.4 L 254.0,111.0 L 255.5,111.9 L 257.0,113.0 L 258.5,114.4 L 260.0,116.1 L 261.5,118.0 L 263.0,120.2 L 264.5,122.6 L 266.0,125.3 L 267.5,128.2 L 269.0,131.3 L 270.5,134.6 L 272.0,138.0 L 273.5,141.7 L 275.0,145.6 L 276.5,149.5 L 278.0,153.7 L 279.5,157.9 L 281.0,162.3 L 282.5,166.8 L 284.0,171.3 L 285.5,175.9 L 287.0,180.6 L 288.5,185.3 L 290.0,190.0 L 291.5,194.7 L 293.0,199.4 L 294.5,204.1 L 296.0,208.7 L 297.5,213.2 L 299.0,217.7 L 300.5,222.1 L 302.0,226.3 L 303.5,230.5 L 305.0,234.4 L 306.5,238.3 L 308.0,242.0 L 309.5,245.4 L 311.0,248.7 L 312.5,251.8 L 314.0,254.7 L 315.5,257.4 L 317.0,259.8 L 318.5,262.0 L 320.0,263.9 L 321.5,265.6 L 323.0,267.0 L 324.5,268.1 L 326.0,269.0 L 327.5,269.6 L 329.0,269.9 L 330.5,270.0 L 332.0,269.8 L 333.5,269.2 L 335.0,268.5 L 336.5,267.4 L 338.0,266.1 L 339.5,264.5 L 341.0,262.7 L 342.5,260.6 L 344.0,258.2 L 345.5,255.6 L 347.0,252.8 L 348.5,249.8 L 350.0,246.6 L 351.5,243.1 L 353.0,239.5 L 354.5,235.7 L 356.0,231.8 L 357.5,227.7 L 359.0,223.5 L 360.5,219.2 L 362.0,214.7 L 363.5,210.2 L 365.0,205.6 L 366.5,201.0 L 368.0,196.3 L 369.5,191.6 L 371.0,186.9 L 372.5,182.2 L 374.0,177.5 L 375.5,172.9 L 377.0,168.3 L 378.5,163.8 L 380.0,159.4 L 381.5,155.1 L 383.0,150.9 L 384.5,146.9 L 386.0,143.0 L 387.5,139.2 L 389.0,135.7 L 390.5,132.3 L 392.0,129.2 L 393.5,126.2 L 395.0,123.5 L 396.5,121.0 L 398.0,118.7 L 399.5,116.7 L 401.0,114.9 L 402.5,113.4 L 404.0,112.2 L 405.5,111.2 L 407.0,110.6 L 408.5,110.1 L 410.0,110.0" fill="none" stroke="#C0261F" stroke-width="3.6"/>
+            <text x="50" y="46" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">un oscillogramme, et son calibre</text>
+          </g>
+          <g class="step s2"><line x1="90.0" y1="190.0" x2="90.0" y2="110.0" stroke="#1B3A8C" stroke-width="2.6" stroke-linecap="round" marker-end="url(#r2)"/><line x1="90.0" y1="110.0" x2="90.0" y2="190.0" stroke="#1B3A8C" stroke-width="2.6" stroke-linecap="round" marker-end="url(#r2)"/>
+            <rect x="96" y="136" width="76" height="30" rx="6" fill="#FFFFFF"/>
+            <text x="134" y="157" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">U max</text>
+          </g>
+          <g class="step s3"><line x1="90.0" y1="96.0" x2="250.0" y2="96.0" stroke="#6E1410" stroke-width="2.6" stroke-linecap="round" marker-end="url(#d2)"/><line x1="250.0" y1="96.0" x2="90.0" y2="96.0" stroke="#6E1410" stroke-width="2.6" stroke-linecap="round" marker-end="url(#d2)"/>
+            <rect x="158" y="64" width="36" height="32" rx="6" fill="#FFFFFF"/>
+            <text x="176" y="87" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">T</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="330" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="360" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">f = 1 / T, en hertz</text>
+            <rect x="10" y="384" width="450" height="76" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="412" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">en Europe : 50 Hz, soit T = 20 ms</text>
+            <text x="235" y="442" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">l'erreur vient du calibre, jamais du comptage</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'amplitude</h3>
+          <p style="font-size:17px">U<sub>max</sub> est la valeur maximale atteinte, mesurée <b>depuis l'axe horizontal</b> — et <b>non</b> de crête à crête. C'est la confusion la plus fréquente sur un oscillogramme.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La période</h3>
+          <p style="font-size:17px">T est la durée d'un <b>motif complet</b> : d'une crête à la crête suivante. On peut aussi la lire entre deux passages par zéro <b>dans le même sens</b>.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La fréquence</h3>
+          <p style="font-size:17px">f = 1/T, en hertz. En Europe, le réseau est à <b>50 Hz</b>, soit une période de <b>20 ms</b>. Ces deux nombres valent la peine d'être sus.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La méthode de lecture, dans cet ordre</h3>
+          <p style="font-size:17px"><b>D'abord</b> le calibre des axes — combien de volts par division, combien de millisecondes par division. <b>Ensuite</b> on compte les divisions.</p>
+          <p style="font-size:17px">L'erreur vient presque toujours du <b>calibre</b>, jamais du comptage : on lit « 4 divisions » correctement, puis on oublie que chaque division vaut 5 ms. Écrire le calibre à côté du graphe avant de compter règle la question.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un oscillogramme : une sinusoïde sur une grille graduée.",
+      "L'amplitude se mesure de l'axe à la crête — jamais de crête à crête.",
+      "La période est la durée d'un motif complet, d'une crête à la suivante.",
+      "La fréquence s'en déduit : f = 1/T. Le réseau européen est à 50 Hz.",
+      "<em>La méthode :</em> le calibre d'abord, le comptage ensuite."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH10-03 ==================== -->
+  <section class="slide" data-ref="ANIM-PH10-03" data-title="La valeur efficace" data-sub="Pourquoi 230 V n'est pas le maximum, et d'où sort le √2" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="30" y1="250" x2="340" y2="250" stroke="#8A8F98" stroke-width="1.8"/>
+            <path d="M 40.0,150.0 L 41.2,150.1 L 42.4,150.6 L 43.6,151.3 L 44.8,152.3 L 46.0,153.7 L 47.2,155.2 L 48.5,157.1 L 49.7,159.3 L 50.9,161.7 L 52.1,164.3 L 53.3,167.3 L 54.5,170.4 L 55.7,173.8 L 56.9,177.5 L 58.1,181.3 L 59.3,185.3 L 60.5,189.6 L 61.8,194.0 L 63.0,198.5 L 64.2,203.3 L 65.4,208.1 L 66.6,213.1 L 67.8,218.2 L 69.0,223.4 L 70.2,228.7 L 71.4,234.0 L 72.6,239.4 L 73.8,244.8 L 75.0,250.2 L 76.2,255.6 L 77.5,261.0 L 78.7,266.4 L 79.9,271.7 L 81.1,277.0 L 82.3,282.1 L 83.5,287.2 L 84.7,292.2 L 85.9,297.1 L 87.1,301.8 L 88.3,306.3 L 89.5,310.7 L 90.8,314.9 L 92.0,319.0 L 93.2,322.8 L 94.4,326.4 L 95.6,329.8 L 96.8,332.9 L 98.0,335.8 L 99.2,338.5 L 100.4,340.9 L 101.6,343.0 L 102.8,344.9 L 104.0,346.4 L 105.2,347.7 L 106.5,348.7 L 107.7,349.5 L 108.9,349.9 L 110.1,350.0 L 111.3,349.8 L 112.5,349.4 L 113.7,348.6 L 114.9,347.6 L 116.1,346.2 L 117.3,344.6 L 118.5,342.7 L 119.8,340.6 L 121.0,338.1 L 122.2,335.5 L 123.4,332.5 L 124.6,329.3 L 125.8,325.9 L 127.0,322.3 L 128.2,318.4 L 129.4,314.4 L 130.6,310.1 L 131.8,305.7 L 133.0,301.1 L 134.2,296.4 L 135.5,291.5 L 136.7,286.5 L 137.9,281.4 L 139.1,276.2 L 140.3,271.0 L 141.5,265.6 L 142.7,260.3 L 143.9,254.9 L 145.1,249.4 L 146.3,244.0 L 147.5,238.6 L 148.8,233.2 L 150.0,227.9 L 151.2,222.7 L 152.4,217.5 L 153.6,212.4 L 154.8,207.5 L 156.0,202.6 L 157.2,197.9 L 158.4,193.4 L 159.6,189.0 L 160.8,184.8 L 162.0,180.8 L 163.2,176.9 L 164.5,173.4 L 165.7,170.0 L 166.9,166.9 L 168.1,164.0 L 169.3,161.3 L 170.5,159.0 L 171.7,156.8 L 172.9,155.0 L 174.1,153.5 L 175.3,152.2 L 176.5,151.2 L 177.8,150.5 L 179.0,150.1 L 180.2,150.0 L 181.4,150.2 L 182.6,150.7 L 183.8,151.4 L 185.0,152.5 L 186.2,153.9 L 187.4,155.5 L 188.6,157.4 L 189.8,159.6 L 191.0,162.0 L 192.2,164.7 L 193.5,167.7 L 194.7,170.9 L 195.9,174.3 L 197.1,178.0 L 198.3,181.8 L 199.5,185.9 L 200.7,190.2 L 201.9,194.6 L 203.1,199.2 L 204.3,203.9 L 205.5,208.8 L 206.8,213.8 L 208.0,218.9 L 209.2,224.1 L 210.4,229.4 L 211.6,234.7 L 212.8,240.1 L 214.0,245.5 L 215.2,250.9 L 216.4,256.4 L 217.6,261.8 L 218.8,267.1 L 220.0,272.4 L 221.2,277.7 L 222.5,282.9 L 223.7,287.9 L 224.9,292.9 L 226.1,297.7 L 227.3,302.4 L 228.5,306.9 L 229.7,311.3 L 230.9,315.5 L 232.1,319.5 L 233.3,323.3 L 234.5,326.9 L 235.8,330.2 L 237.0,333.4 L 238.2,336.2 L 239.4,338.8 L 240.6,341.2 L 241.8,343.3 L 243.0,345.1 L 244.2,346.6 L 245.4,347.9 L 246.6,348.9 L 247.8,349.5 L 249.0,349.9 L 250.2,350.0 L 251.5,349.8 L 252.7,349.3 L 253.9,348.5 L 255.1,347.4 L 256.3,346.0 L 257.5,344.4 L 258.7,342.5 L 259.9,340.3 L 261.1,337.8 L 262.3,335.1 L 263.5,332.1 L 264.8,328.9 L 266.0,325.4 L 267.2,321.8 L 268.4,317.9 L 269.6,313.8 L 270.8,309.5 L 272.0,305.1 L 273.2,300.5 L 274.4,295.7 L 275.6,290.8 L 276.8,285.8 L 278.0,280.7 L 279.2,275.5 L 280.5,270.2 L 281.7,264.9 L 282.9,259.5 L 284.1,254.1 L 285.3,248.7 L 286.5,243.3 L 287.7,237.9 L 288.9,232.5 L 290.1,227.2 L 291.3,222.0 L 292.5,216.8 L 293.8,211.7 L 295.0,206.8 L 296.2,202.0 L 297.4,197.3 L 298.6,192.7 L 299.8,188.4 L 301.0,184.2 L 302.2,180.2 L 303.4,176.4 L 304.6,172.9 L 305.8,169.5 L 307.0,166.4 L 308.2,163.6 L 309.5,161.0 L 310.7,158.6 L 311.9,156.6 L 313.1,154.8 L 314.3,153.3 L 315.5,152.0 L 316.7,151.1 L 317.9,150.4 L 319.1,150.1 L 320.3,150.0 L 321.5,150.2 L 322.8,150.8 L 324.0,151.6 L 325.2,152.7 L 326.4,154.1 L 327.6,155.7 L 328.8,157.7 L 330.0,159.9" fill="none" stroke="#C0261F" stroke-width="3.6"/>
+            <text x="30" y="40" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">la tension du réseau, en vraie grandeur</text>
+          </g>
+          <g class="step s2"><line x1="30" y1="150" x2="440" y2="150" stroke="#8A8F98" stroke-width="2" stroke-dasharray="7 5"/>
+            <text x="344" y="140" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">325 V crête</text>
+          </g>
+          <g class="step s3"><line x1="30" y1="179.3" x2="440" y2="179.3" stroke="#1B3A8C" stroke-width="2.6" stroke-dasharray="8 6"/>
+            <text x="344" y="169" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">230 V eff.</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="300" width="450" height="56" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="336" text-anchor="middle" font-size="23" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">U eff = U max / √2</text>
+            <rect x="10" y="364" width="450" height="46" rx="11" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="235" y="394" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">soit environ 0,707 × U max</text>
+            <rect x="10" y="418" width="450" height="42" rx="11" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="445" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">les valeurs annoncées sont toujours efficaces</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La définition — et c'est elle qui compte</h3>
+          <p style="font-size:17px">La valeur efficace d'un courant alternatif est la valeur du courant <b>continu</b> qui produirait le <b>même échauffement</b> dans la même résistance. Ce n'est pas une moyenne.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La relation</h3>
+          <p style="font-size:17px">Pour une <b>sinusoïde</b> : U<sub>eff</sub> = U<sub>max</sub> / √2, soit environ 0,707 × U<sub>max</sub>. Le facteur √2 n'est valable que pour une sinusoïde.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La conséquence concrète</h3>
+          <p style="font-size:17px">Le réseau à <b>230 V efficaces</b> atteint en réalité <b>325 V de crête</b>. Tous les appareils sont dimensionnés pour cette valeur maximale, pas pour 230.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">D'où sort le √2, et le piège</h3>
+          <p style="font-size:17px">La puissance dépend du <b>carré</b> de la tension. Or la moyenne du carré d'une sinusoïde vaut la <b>moitié</b> du carré du maximum. Prendre la racine de cette moyenne fait apparaître le 1/√2 — rien de mystérieux, c'est une moyenne de carré.</p>
+          <p style="font-size:17px"><b>Le piège :</b> comparer une valeur efficace à une valeur maximale. Toutes les valeurs annoncées sur les appareils et les prises sont <b>efficaces</b>, sauf mention contraire explicite.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "La tension du réseau, telle qu'un oscilloscope la montre.",
+      "Sa valeur de crête atteint 325 volts.",
+      "Et pourtant on parle de 230 volts : c'est la valeur efficace.",
+      "Elle vaut U max divisé par racine de 2, soit 0,707 fois le maximum.",
+      "<em>Le piège :</em> toutes les valeurs annoncées sont efficaces, jamais maximales."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH10-04 ==================== -->
+  <section class="slide" data-ref="ANIM-PH10-04" data-title="La puissance en alternatif" data-sub="Ce qui chauffe vraiment dans la résistance" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <rect x="10" y="24" width="218" height="130" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="119" y="50" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">alternatif</text>
+            <line x1="26" y1="100" x2="212" y2="100" stroke="#8A8F98" stroke-width="1.6"/><line x1="258" y1="100" x2="444" y2="100" stroke="#8A8F98" stroke-width="1.6"/>
+            <path d="M 26.0,74.0 L 26.8,74.1 L 27.6,74.3 L 28.3,74.7 L 29.1,75.3 L 29.9,76.0 L 30.6,76.8 L 31.4,77.8 L 32.2,79.0 L 33.0,80.2 L 33.8,81.6 L 34.5,83.1 L 35.3,84.7 L 36.1,86.4 L 36.9,88.2 L 37.6,90.1 L 38.4,92.0 L 39.2,93.9 L 40.0,95.9 L 40.7,98.0 L 41.5,100.0 L 42.3,102.0 L 43.0,104.1 L 43.8,106.1 L 44.6,108.0 L 45.4,109.9 L 46.1,111.8 L 46.9,113.6 L 47.7,115.3 L 48.5,116.9 L 49.2,118.4 L 50.0,119.8 L 50.8,121.0 L 51.6,122.2 L 52.4,123.2 L 53.1,124.0 L 53.9,124.7 L 54.7,125.3 L 55.5,125.7 L 56.2,125.9 L 57.0,126.0 L 57.8,125.9 L 58.5,125.7 L 59.3,125.3 L 60.1,124.7 L 60.9,124.0 L 61.6,123.2 L 62.4,122.2 L 63.2,121.0 L 64.0,119.8 L 64.8,118.4 L 65.5,116.9 L 66.3,115.3 L 67.1,113.6 L 67.8,111.8 L 68.6,109.9 L 69.4,108.0 L 70.2,106.1 L 71.0,104.1 L 71.7,102.0 L 72.5,100.0 L 73.3,98.0 L 74.0,95.9 L 74.8,93.9 L 75.6,92.0 L 76.4,90.1 L 77.2,88.2 L 77.9,86.4 L 78.7,84.7 L 79.5,83.1 L 80.2,81.6 L 81.0,80.2 L 81.8,79.0 L 82.6,77.8 L 83.3,76.8 L 84.1,76.0 L 84.9,75.3 L 85.7,74.7 L 86.5,74.3 L 87.2,74.1 L 88.0,74.0 L 88.8,74.1 L 89.5,74.3 L 90.3,74.7 L 91.1,75.3 L 91.9,76.0 L 92.7,76.8 L 93.4,77.8 L 94.2,79.0 L 95.0,80.2 L 95.8,81.6 L 96.5,83.1 L 97.3,84.7 L 98.1,86.4 L 98.8,88.2 L 99.6,90.1 L 100.4,92.0 L 101.2,93.9 L 102.0,95.9 L 102.7,98.0 L 103.5,100.0 L 104.3,102.0 L 105.0,104.1 L 105.8,106.1 L 106.6,108.0 L 107.4,109.9 L 108.2,111.8 L 108.9,113.6 L 109.7,115.3 L 110.5,116.9 L 111.2,118.4 L 112.0,119.8 L 112.8,121.0 L 113.6,122.2 L 114.3,123.2 L 115.1,124.0 L 115.9,124.7 L 116.7,125.3 L 117.5,125.7 L 118.2,125.9 L 119.0,126.0 L 119.8,125.9 L 120.5,125.7 L 121.3,125.3 L 122.1,124.7 L 122.9,124.0 L 123.7,123.2 L 124.4,122.2 L 125.2,121.0 L 126.0,119.8 L 126.8,118.4 L 127.5,116.9 L 128.3,115.3 L 129.1,113.6 L 129.8,111.8 L 130.6,109.9 L 131.4,108.0 L 132.2,106.1 L 132.9,104.1 L 133.7,102.0 L 134.5,100.0 L 135.3,98.0 L 136.1,95.9 L 136.8,93.9 L 137.6,92.0 L 138.4,90.1 L 139.2,88.2 L 139.9,86.4 L 140.7,84.7 L 141.5,83.1 L 142.2,81.6 L 143.0,80.2 L 143.8,79.0 L 144.6,77.8 L 145.3,76.8 L 146.1,76.0 L 146.9,75.3 L 147.7,74.7 L 148.4,74.3 L 149.2,74.1 L 150.0,74.0 L 150.8,74.1 L 151.6,74.3 L 152.3,74.7 L 153.1,75.3 L 153.9,76.0 L 154.7,76.8 L 155.4,77.8 L 156.2,79.0 L 157.0,80.2 L 157.8,81.6 L 158.5,83.1 L 159.3,84.7 L 160.1,86.4 L 160.8,88.2 L 161.6,90.1 L 162.4,92.0 L 163.2,93.9 L 163.9,95.9 L 164.7,98.0 L 165.5,100.0 L 166.3,102.0 L 167.1,104.1 L 167.8,106.1 L 168.6,108.0 L 169.4,109.9 L 170.2,111.8 L 170.9,113.6 L 171.7,115.3 L 172.5,116.9 L 173.2,118.4 L 174.0,119.8 L 174.8,121.0 L 175.6,122.2 L 176.3,123.2 L 177.1,124.0 L 177.9,124.7 L 178.7,125.3 L 179.4,125.7 L 180.2,125.9 L 181.0,126.0 L 181.8,125.9 L 182.6,125.7 L 183.3,125.3 L 184.1,124.7 L 184.9,124.0 L 185.7,123.2 L 186.4,122.2 L 187.2,121.0 L 188.0,119.8 L 188.8,118.4 L 189.5,116.9 L 190.3,115.3 L 191.1,113.6 L 191.8,111.8 L 192.6,109.9 L 193.4,108.0 L 194.2,106.1 L 194.9,104.1 L 195.7,102.0 L 196.5,100.0 L 197.3,98.0 L 198.1,95.9 L 198.8,93.9 L 199.6,92.0 L 200.4,90.1 L 201.2,88.2 L 201.9,86.4 L 202.7,84.7 L 203.5,83.1 L 204.2,81.6 L 205.0,80.2 L 205.8,79.0 L 206.6,77.8 L 207.3,76.8 L 208.1,76.0 L 208.9,75.3 L 209.7,74.7 L 210.4,74.3 L 211.2,74.1 L 212.0,74.0" fill="none" stroke="#C0261F" stroke-width="3"/>
+            <text x="119" y="140" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">U eff = 230 V</text>
+            <rect x="242" y="24" width="218" height="130" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="351" y="50" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">continu</text>
+            <line x1="258" y1="80" x2="444" y2="80" stroke="#C0261F" stroke-width="3"/>
+            <text x="351" y="140" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">U = 230 V</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="168" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="198" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">même échauffement, même résistance</text>
+          </g>
+          <g class="step s3">
+            <rect x="10" y="226" width="142" height="68" rx="11" fill="#F5D7D3"/>
+            <text x="81" y="266" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">U eff · I eff</text>
+            <rect x="164" y="226" width="142" height="68" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="266" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">R · I eff²</text>
+            <rect x="318" y="226" width="142" height="68" rx="11" fill="#F5D7D3"/>
+            <text x="389" y="266" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">U eff² / R</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="306" width="450" height="46" rx="11" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="235" y="336" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">toutes les formules du continu restent valables</text>
+            <rect x="10" y="360" width="450" height="96" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="390" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">c'est la raison d'être de la valeur efficace :</text>
+            <text x="235" y="418" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">elle a été définie pour que</text>
+            <text x="235" y="444" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">les formules de puissance ne changent pas</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les deux régimes, côte à côte</h3>
+          <p style="font-size:17px">Une sinusoïde de 230 V efficaces et un continu de 230 V produisent <b>le même échauffement</b> dans la même résistance. C'est la définition de PH10-03, reprise telle quelle.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les trois formules</h3>
+          <p style="font-size:17px">Avec les valeurs <b>efficaces</b>, toutes les formules du continu restent valables : P = U<sub>eff</sub> I<sub>eff</sub> = R I<sub>eff</sub>² = U<sub>eff</sub>² / R. Ce sont celles de PH9-04, inchangées.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi elles ne changent pas</h3>
+          <p style="font-size:17px">Ce n'est pas une coïncidence : la valeur efficace a été <b>définie pour cela</b>. On a choisi la grandeur qui rend les formules de puissance identiques — puis on a calculé ce qu'elle valait.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce que ça vous épargne</h3>
+          <p style="font-size:17px">Rien de nouveau à apprendre pour l'alternatif. <b>Une</b> grandeur nouvelle — la valeur efficace — et tout l'arsenal du continu redevient utilisable.</p>
+          <p style="font-size:17px">La seule discipline : vérifier que les valeurs manipulées sont bien des <b>valeurs efficaces</b>. Si l'énoncé donne un maximum, on divise par √2 <b>avant</b> d'entrer dans les formules de puissance, jamais après.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une sinusoïde de 230 V efficaces, et un continu de 230 V.",
+      "Les deux chauffent identiquement la même résistance.",
+      "Les trois formules de puissance du continu s'appliquent donc telles quelles.",
+      "Et ce n'est pas un hasard : la valeur efficace a été définie pour cela.",
+      "<em>La seule discipline :</em> diviser par √2 avant d'entrer dans les formules."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule PH10 — Les courants alternatifs · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule PH3-B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#C0261F;          /* bleu SFA */
+  --deep:#6E1410;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#FBECEA;         /* bleu 8 % */
+  --tint2:#F5D7D3;        /* bleu 18 % */
+  --surface:#FAF6F5;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-PH3-05 ==================== -->
+  <section class="slide" data-ref="ANIM-PH3-05" data-title="La loi en 1/r²" data-sub="Doubler la distance divise la force par quatre" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="32" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">deux masses s'attirent, toujours</text>
+            <circle cx="104" cy="92" r="32" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/>
+            <text x="104" y="99" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">m₁</text>
+            <circle cx="346" cy="92" r="21" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/>
+            <text x="346" y="99" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">m₂</text>
+            <line x1="146.0" y1="92.0" x2="190.0" y2="92.0" stroke="#C0261F" stroke-width="4.0" stroke-linecap="round" marker-end="url(#v1)"/><line x1="315.0" y1="92.0" x2="260.0" y2="92.0" stroke="#C0261F" stroke-width="4.0" stroke-linecap="round" marker-end="url(#v1)"/>
+            <line x1="104" y1="140" x2="346" y2="140" stroke="#8A8F98" stroke-width="2" stroke-dasharray="7 5"/>
+            <text x="225" y="166" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">r : de centre à centre</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="180" width="450" height="50" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="214" text-anchor="middle" font-size="23" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">F = G · m₁ · m₂ / r²</text>
+          </g>
+          <g class="step s3"><line x1="48" y1="424" x2="416" y2="424" stroke="#8A8F98" stroke-width="1.8"/><line x1="66" y1="238" x2="66" y2="442" stroke="#8A8F98" stroke-width="1.8"/><text x="416" y="450" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">r</text><text x="78" y="252" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">F</text>
+            <path d="M 158.0,274.0 L 159.0,277.3 L 160.1,280.5 L 161.1,283.6 L 162.1,286.6 L 163.2,289.6 L 164.2,292.4 L 165.2,295.1 L 166.3,297.7 L 167.3,300.3 L 168.4,302.8 L 169.4,305.2 L 170.4,307.6 L 171.5,309.8 L 172.5,312.0 L 173.5,314.2 L 174.6,316.3 L 175.6,318.3 L 176.6,320.3 L 177.7,322.2 L 178.7,324.0 L 179.7,325.9 L 180.8,327.6 L 181.8,329.3 L 182.8,331.0 L 183.9,332.6 L 184.9,334.2 L 185.9,335.8 L 187.0,337.3 L 188.0,338.7 L 189.1,340.1 L 190.1,341.5 L 191.1,342.9 L 192.2,344.2 L 193.2,345.5 L 194.2,346.8 L 195.3,348.0 L 196.3,349.2 L 197.3,350.4 L 198.4,351.5 L 199.4,352.7 L 200.4,353.8 L 201.5,354.8 L 202.5,355.9 L 203.5,356.9 L 204.6,357.9 L 205.6,358.9 L 206.6,359.8 L 207.7,360.8 L 208.7,361.7 L 209.8,362.6 L 210.8,363.4 L 211.8,364.3 L 212.9,365.1 L 213.9,366.0 L 214.9,366.8 L 216.0,367.5 L 217.0,368.3 L 218.0,369.1 L 219.1,369.8 L 220.1,370.5 L 221.1,371.2 L 222.2,371.9 L 223.2,372.6 L 224.2,373.3 L 225.3,374.0 L 226.3,374.6 L 227.3,375.2 L 228.4,375.8 L 229.4,376.5 L 230.5,377.1 L 231.5,377.6 L 232.5,378.2 L 233.6,378.8 L 234.6,379.3 L 235.6,379.9 L 236.7,380.4 L 237.7,380.9 L 238.7,381.4 L 239.8,382.0 L 240.8,382.4 L 241.8,382.9 L 242.9,383.4 L 243.9,383.9 L 244.9,384.3 L 246.0,384.8 L 247.0,385.3 L 248.0,385.7 L 249.1,386.1 L 250.1,386.5 L 251.2,387.0 L 252.2,387.4 L 253.2,387.8 L 254.3,388.2 L 255.3,388.6 L 256.3,389.0 L 257.4,389.3 L 258.4,389.7 L 259.4,390.1 L 260.5,390.4 L 261.5,390.8 L 262.5,391.1 L 263.6,391.5 L 264.6,391.8 L 265.6,392.1 L 266.7,392.5 L 267.7,392.8 L 268.7,393.1 L 269.8,393.4 L 270.8,393.7 L 271.9,394.0 L 272.9,394.3 L 273.9,394.6 L 275.0,394.9 L 276.0,395.2 L 277.0,395.5 L 278.1,395.8 L 279.1,396.0 L 280.1,396.3 L 281.2,396.6 L 282.2,396.8 L 283.2,397.1 L 284.3,397.4 L 285.3,397.6 L 286.3,397.8 L 287.4,398.1 L 288.4,398.3 L 289.4,398.6 L 290.5,398.8 L 291.5,399.0 L 292.5,399.3 L 293.6,399.5 L 294.6,399.7 L 295.7,399.9 L 296.7,400.1 L 297.7,400.4 L 298.8,400.6 L 299.8,400.8 L 300.8,401.0 L 301.9,401.2 L 302.9,401.4 L 303.9,401.6 L 305.0,401.8 L 306.0,402.0 L 307.0,402.1 L 308.1,402.3 L 309.1,402.5 L 310.1,402.7 L 311.2,402.9 L 312.2,403.1 L 313.2,403.2 L 314.3,403.4 L 315.3,403.6 L 316.4,403.7 L 317.4,403.9 L 318.4,404.1 L 319.5,404.2 L 320.5,404.4 L 321.5,404.6 L 322.6,404.7 L 323.6,404.9 L 324.6,405.0 L 325.7,405.2 L 326.7,405.3 L 327.7,405.5 L 328.8,405.6 L 329.8,405.8 L 330.8,405.9 L 331.9,406.0 L 332.9,406.2 L 334.0,406.3 L 335.0,406.5 L 336.0,406.6 L 337.1,406.7 L 338.1,406.9 L 339.1,407.0 L 340.2,407.1 L 341.2,407.2 L 342.2,407.4 L 343.3,407.5 L 344.3,407.6 L 345.3,407.7 L 346.4,407.8 L 347.4,408.0 L 348.4,408.1 L 349.5,408.2 L 350.5,408.3 L 351.5,408.4 L 352.6,408.5 L 353.6,408.7 L 354.7,408.8 L 355.7,408.9 L 356.7,409.0 L 357.8,409.1 L 358.8,409.2 L 359.8,409.3 L 360.9,409.4 L 361.9,409.5 L 362.9,409.6 L 364.0,409.7 L 365.0,409.8 L 366.0,409.9 L 367.1,410.0 L 368.1,410.1 L 369.1,410.2 L 370.2,410.3 L 371.2,410.4 L 372.2,410.5 L 373.3,410.6 L 374.3,410.6 L 375.3,410.7 L 376.4,410.8 L 377.4,410.9 L 378.5,411.0 L 379.5,411.1 L 380.5,411.2 L 381.6,411.3 L 382.6,411.3 L 383.6,411.4 L 384.7,411.5 L 385.7,411.6 L 386.7,411.7 L 387.8,411.7 L 388.8,411.8 L 389.8,411.9 L 390.9,412.0 L 391.9,412.0 L 392.9,412.1 L 394.0,412.2 L 395.0,412.3 L 396.1,412.3 L 397.1,412.4 L 398.1,412.5 L 399.2,412.6 L 400.2,412.6 L 401.2,412.7 L 402.3,412.8 L 403.3,412.8 L 404.3,412.9 L 405.4,413.0 L 406.4,413.0" fill="none" stroke="#C0261F" stroke-width="3.6"/>
+          </g>
+          <g class="step s4"><line x1="158.0" y1="274.0" x2="158.0" y2="424" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="5 4"/><circle cx="158.0" cy="274.0" r="6" fill="#C0261F"/><text x="158.0" y="260.0" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">F</text><text x="158.0" y="448" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">r</text><line x1="250.0" y1="386.5" x2="250.0" y2="424" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="5 4"/><circle cx="250.0" cy="386.5" r="6" fill="#C0261F"/><text x="250.0" y="372.5" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">F/4</text><text x="250.0" y="448" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">2r</text><line x1="342.0" y1="407.3" x2="342.0" y2="424" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="5 4"/><circle cx="342.0" cy="407.3" r="6" fill="#C0261F"/><text x="342.0" y="393.3" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">F/9</text><text x="342.0" y="448" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">3r</text></g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Deux masses s'attirent</h3>
+          <p style="font-size:17px">Toujours, et <b>toujours attractive</b> — il n'existe pas de gravitation répulsive. Chaque masse attire l'autre avec la <b>même</b> force, en sens opposés.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La loi</h3>
+          <p style="font-size:17px">F = G · m₁m₂ / r², avec G = 6,67 × 10⁻¹¹ (unités SI). Et r est la distance <b>de centre à centre</b>, pas de surface à surface.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi 1/r² écrase si vite</h3>
+          <p style="font-size:17px">La courbe plonge. On double r : la force est divisée par <b>quatre</b>. On la triple : par <b>neuf</b>. C'est le carré, pas la distance.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les deux pièges du concours</h3>
+          <p style="font-size:17px"><b>Premier :</b> diviser par deux au lieu de quatre. Le QCM propose systématiquement les deux réponses — F/2 et F/4 — et l'une des deux est là uniquement pour cueillir la lecture rapide.<br><br><b>Second :</b> prendre r de surface à surface. Pour deux planètes c'est une erreur colossale ; pour un objet au sol, r est le <b>rayon de la Terre</b>, pas zéro — sinon la force serait infinie.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Deux masses, quelle que soit leur taille, s'attirent mutuellement.",
+      "La loi : G fois le produit des masses, divisé par le carré de la distance.",
+      "Traçons F en fonction de r : la courbe plonge.",
+      "Distance doublée : force divisée par <b>quatre</b>. Triplée : par <b>neuf</b>.",
+      "<em>Le piège :</em> diviser par deux au lieu de quatre — le QCM propose les deux."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH3-06 ==================== -->
+  <section class="slide" data-ref="ANIM-PH3-06" data-title="D'où vient le 9,81" data-sub="g n'est pas une constante tombée du ciel" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><path d="M 55,440 A 180,180 0 0 1 415,440 L 415,468 L 55,468 Z" fill="#FBECEA" stroke="#6E1410" stroke-width="2.6"/>
+            <rect x="221" y="236" width="28" height="22" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.4"/>
+            <text x="268" y="252" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">masse m</text>
+            <line x1="235.0" y1="440.0" x2="235.0" y2="264.0" stroke="#1B3A8C" stroke-width="3.2" stroke-linecap="round" marker-end="url(#r2)"/>
+            <circle cx="235" cy="440" r="5" fill="#1B3A8C"/>
+            <text x="248" y="356" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">R de la Terre</text>
+            <text x="116" y="420" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">masse M</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="24" width="450" height="52" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="235" y="57" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">m · g = G · M · m / R²</text>
+          </g>
+          <g class="step s3">
+            <rect x="10" y="86" width="450" height="52" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="119" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">g = G · M / R²</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="148" width="450" height="64" rx="12" fill="#FFFFFF" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="235" y="176" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">6,67·10⁻¹¹ × 6·10²⁴ ÷ (6,4·10⁶)²</text>
+            <text x="235" y="202" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">≈ 9,8 m/s²</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le poids est une force de gravitation</h3>
+          <p style="font-size:17px">Un objet au sol est attiré par la Terre selon la loi de PH3-05, avec r = <b>R</b>, le rayon terrestre. Le poids n'est rien d'autre que cette force.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">On écrit la même force deux fois</h3>
+          <p style="font-size:17px">m · g d'un côté, G · M · m / R² de l'autre. La masse m de l'objet apparaît des deux côtés — donc elle <b>se simplifie</b>.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce qui reste</h3>
+          <p style="font-size:17px">g = G · M / R². Avec M ≈ 6 × 10²⁴ kg et R ≈ 6,4 × 10⁶ m, on retrouve <b>9,8</b>. Le 9,81 n'est pas une donnée : c'est un résultat.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce que cette ligne vous permet de répondre</h3>
+          <p style="font-size:17px">Puisque la masse de l'objet disparaît, <b>tous les corps tombent avec la même accélération</b> — la plume et le marteau, dans le vide. C'est la question posée telle quelle au concours.</p>
+          <p style="font-size:17px"><b>Et sur une autre planète :</b> g dépend de M et de R, pas de l'objet. Rayon doublé à masse égale → g divisé par quatre. Vous n'avez aucune valeur à retenir, vous avez la formule.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un objet posé au sol, et la Terre : masse M, rayon R.",
+      "On écrit deux fois la même force : m·g, et la loi de gravitation.",
+      "La masse m est des deux côtés : elle se simplifie.",
+      "Il reste g = G·M/R². Avec les valeurs de la Terre : 9,8.",
+      "<em>Conséquence :</em> tous les corps tombent avec la même accélération."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH3-07 ==================== -->
+  <section class="slide" data-ref="ANIM-PH3-07" data-title="Le satellite tombe en permanence" data-sub="Une orbite est une chute qui ne touche jamais le sol" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="30" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">un satellite en orbite circulaire</text>
+            <circle cx="150" cy="250" r="132" fill="none" stroke="#8A8F98" stroke-width="2" stroke-dasharray="8 6"/>
+            <circle cx="150" cy="250" r="62" fill="#FBECEA" stroke="#6E1410" stroke-width="2.6"/>
+            <text x="150" y="257" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">Terre</text>
+            <circle cx="225.7" cy="141.9" r="11" fill="#6E1410"/>
+          </g>
+          <g class="step s2"><line x1="225.7" y1="141.9" x2="161.8" y2="97.1" stroke="#C0261F" stroke-width="4.0" stroke-linecap="round" marker-end="url(#v3)"/><line x1="225.7" y1="141.9" x2="187.9" y2="195.9" stroke="#1B3A8C" stroke-width="4.0" stroke-linecap="round" marker-end="url(#r3)"/>
+            <text x="152" y="91" text-anchor="end" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">v</text>
+            <text x="178" y="218" text-anchor="end" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">F</text>
+          </g>
+          <g class="step s3">
+            <rect x="296" y="120" width="164" height="76" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="378" y="150" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">G·M·m / r²</text>
+            <text x="378" y="178" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">= m·v² / r</text>
+          </g>
+          <g class="step s4">
+            <rect x="296" y="208" width="164" height="76" rx="12" fill="#F5D7D3"/>
+            <text x="378" y="240" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">v = √(G·M/r)</text>
+            <text x="378" y="266" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">m a disparu</text>
+            <rect x="10" y="398" width="450" height="62" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="426" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">« il n'y a pas de gravité dans l'espace » : faux</text>
+            <text x="235" y="450" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">à 400 km, g vaut encore ≈ 90 % du sol</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le mouvement circulaire uniforme</h3>
+          <p style="font-size:17px">Vitesse de grandeur constante, direction qui tourne : il y a donc une accélération, dirigée vers le <b>centre</b>, de valeur v²/r.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Qui la fournit ?</h3>
+          <p style="font-size:17px">La gravitation, et elle seule. On écrit donc G·M·m/r² = m·v²/r : la force de gravitation <b>est</b> la force centripète.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce qu'on en tire</h3>
+          <p style="font-size:17px">v = √(G·M/r). La masse du satellite <b>se simplifie</b> : sa vitesse ne dépend pas de lui. Et plus l'orbite est haute, <b>plus il va lentement</b>.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'image juste, et le piège classique</h3>
+          <p style="font-size:17px"><b>L'image :</b> le satellite tombe en permanence. Simplement, sa vitesse horizontale est telle qu'il « rate » la Terre à chaque instant. L'orbite est une chute qui ne touche jamais le sol.</p>
+          <p style="font-size:17px"><b>Le piège :</b> « il n'y a pas de gravité dans l'espace ». À 400 km d'altitude, g vaut encore près de <b>90 %</b> de sa valeur au sol. L'apesanteur n'est pas l'absence de gravité, c'est la chute libre.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un satellite décrit une orbite circulaire autour de la Terre.",
+      "Sa vitesse est tangente ; la gravitation, elle, pointe vers le centre.",
+      "On écrit que la gravitation fournit exactement la force centripète.",
+      "La masse du satellite se simplifie : v ne dépend que de M et de r.",
+      "<em>Le piège :</em> la gravité ne disparaît pas en orbite — on y tombe, en permanence."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH3-08 ==================== -->
+  <section class="slide" data-ref="ANIM-PH3-08" data-title="Les ordres de grandeur sans calculatrice" data-sub="Séparer les mantisses des puissances de dix" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <rect x="10" y="20" width="450" height="64" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="235" y="46" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">à calculer, sans calculatrice</text>
+            <text x="235" y="72" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">6,67·10⁻¹¹ × 6·10²⁴ ÷ (6,4·10⁶)²</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="96" width="218" height="104" rx="12" fill="#F5D7D3"/>
+            <text x="119" y="124" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">les mantisses</text>
+            <text x="119" y="154" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">6,67 × 6 ÷ 41</text>
+            <text x="119" y="184" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">≈ 40 ÷ 41 ≈ 1</text>
+            <rect x="242" y="96" width="218" height="104" rx="12" fill="#F5D7D3"/>
+            <text x="351" y="124" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">les puissances</text>
+            <text x="351" y="154" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">−11 + 24 − 12</text>
+            <text x="351" y="184" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">= +1</text>
+          </g>
+          <g class="step s3">
+            <rect x="10" y="212" width="450" height="100" rx="12" fill="#FFFFFF" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="235" y="240" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">arrondir tôt, et franchement</text>
+            <text x="235" y="268" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">6,67 → 6,7   ·   6,7 × 6 → 40</text>
+            <text x="235" y="296" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">6,4² → 41   ·   (10⁶)² → 10¹²</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="324" width="450" height="58" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="360" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">≈ 1 × 10¹ = 10 m/s²</text>
+            <rect x="10" y="394" width="450" height="66" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="422" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">le contrôle final porte sur l'exposant,</text>
+            <text x="235" y="448" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">jamais sur la mantisse</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La contrainte est une méthode</h3>
+          <p style="font-size:17px">La calculatrice est <b>interdite</b>. Les énoncés de gravitation sont donc écrits pour être traités en ordre de grandeur — jamais pour un résultat exact.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le geste : séparer</h3>
+          <p style="font-size:17px">Les <b>mantisses</b> d'un côté, les <b>puissances de dix</b> de l'autre. On multiplie les premières, on <b>additionne les exposants</b> des secondes. C'est exactement la méthode d'A1 en maths.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Arrondir tôt</h3>
+          <p style="font-size:17px">6,67 devient 6,7, voire 7. 6,4² devient 41, voire 40. Arrondir <b>avant</b> de calculer, pas après : c'est ce qui rend le calcul faisable de tête.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Où se joue la réponse</h3>
+          <p style="font-size:17px">Sur l'<b>exposant</b>. Les propositions d'un QCM de gravitation diffèrent presque toujours d'un facteur dix ou plus : une mantisse à 20 % près suffit largement à trancher.</p>
+          <p style="font-size:17px">D'où la discipline : calculez l'exposant <b>séparément et proprement</b>, puis estimez la mantisse grossièrement. L'inverse — mantisse soignée, exposant bâclé — est la façon la plus fréquente de perdre le point.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Voici un calcul typique de gravitation. Calculatrice interdite.",
+      "On sépare : les mantisses d'un côté, les puissances de dix de l'autre.",
+      "On arrondit tôt — 6,67 devient 6,7, et 6,4² devient 41.",
+      "Résultat : environ 1 × 10¹, soit 10 m/s². L'ordre de grandeur est juste.",
+      "<em>Retenez :</em> le contrôle final porte sur l'exposant, jamais sur la mantisse."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule PH3-B — La gravitation universelle · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

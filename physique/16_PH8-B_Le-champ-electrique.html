@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule PH8-B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#C0261F;          /* bleu SFA */
+  --deep:#6E1410;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#FBECEA;         /* bleu 8 % */
+  --tint2:#F5D7D3;        /* bleu 18 % */
+  --surface:#FAF6F5;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-PH8-05 ==================== -->
+  <section class="slide" data-ref="ANIM-PH8-05" data-title="Du champ à la force" data-sub="E existe même quand il n'y a rien à pousser" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="132.0" y1="130.0" x2="188.0" y2="130.0" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v1)"/><line x1="122.6" y1="107.4" x2="162.2" y2="67.8" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v1)"/><line x1="100.0" y1="98.0" x2="100.0" y2="42.0" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v1)"/><line x1="77.4" y1="107.4" x2="37.8" y2="67.8" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v1)"/><line x1="68.0" y1="130.0" x2="12.0" y2="130.0" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v1)"/><line x1="77.4" y1="152.6" x2="37.8" y2="192.2" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v1)"/><line x1="100.0" y1="162.0" x2="100.0" y2="218.0" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v1)"/><line x1="122.6" y1="152.6" x2="162.2" y2="192.2" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v1)"/>
+            <circle cx="100" cy="130" r="26" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/>
+            <text x="100" y="139" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">+</text>
+            <text x="30" y="34" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">une charge modifie l'espace autour d'elle</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="240" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="270" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">E = k | q | / r²   ·   en V/m</text>
+          </g>
+          <g class="step s3">
+            <circle cx="322" cy="110" r="16" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.4"/>
+            <text x="322" y="116" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">+</text>
+            <line x1="344.0" y1="110.0" x2="412.0" y2="110.0" stroke="#C0261F" stroke-width="3.4" stroke-linecap="round" marker-end="url(#v1)"/>
+            <text x="266" y="80" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">charge + : F suit E</text>
+            <circle cx="322" cy="196" r="16" fill="#FFFFFF" stroke="#6E1410" stroke-width="2.4"/>
+            <text x="322" y="203" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">−</text>
+            <line x1="300.0" y1="196.0" x2="232.0" y2="196.0" stroke="#1B3A8C" stroke-width="3.4" stroke-linecap="round" marker-end="url(#r1)"/>
+            <text x="266" y="230" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">charge − : F inverse E</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="296" width="450" height="56" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="235" y="332" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">F = q · E</text>
+            <rect x="10" y="362" width="450" height="94" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="390" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">le champ ne dépend que de la charge qui le crée</text>
+            <text x="235" y="416" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">la force dépend aussi de celle qu'on y place</text>
+            <text x="235" y="444" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">le champ existe même sans rien à pousser</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Un changement de point de vue</h3>
+          <p style="font-size:17px">On cesse de décrire l'interaction <b>entre deux</b> charges, et on décrit ce qu'<b>une</b> charge fait à l'espace autour d'elle : elle y crée un <b>champ électrique</b>.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le champ d'une charge ponctuelle</h3>
+          <p style="font-size:17px">E = k |q| / r² — c'est la loi de Coulomb dont on a <b>retiré la seconde charge</b>. Unité : le <b>volt par mètre</b>, équivalent au newton par coulomb.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le sens de la force</h3>
+          <p style="font-size:17px">Pour une charge <b>positive</b>, la force a le <b>même sens</b> que le champ. Pour une charge <b>négative</b>, elle est de <b>sens opposé</b>. C'est la seule règle à ajouter.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi ce détour est payant, et le piège</h3>
+          <p style="font-size:17px">Une fois le champ connu en un point, la force sur <b>n'importe quelle</b> charge placée là se calcule en une multiplication : <b>F = q E</b>. On a factorisé le travail.</p>
+          <p style="font-size:17px"><b>Le piège :</b> confondre le champ et la force. Le champ ne dépend <b>que</b> de la charge qui le crée et du point considéré — il existe même si rien n'est là pour être poussé. La force, elle, dépend <b>en plus</b> de la charge qu'on y place.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une charge seule, et le champ qu'elle crée dans tout l'espace autour d'elle.",
+      "Sa valeur : k fois la charge, divisé par r au carré — en volts par mètre.",
+      "Plaçons-y une charge : positive, la force suit le champ ; négative, elle l'inverse.",
+      "Dans les deux cas, F = q E. Une seule multiplication.",
+      "<em>Le piège :</em> le champ existe sans force — il n'a besoin de rien à pousser."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH8-06 ==================== -->
+  <section class="slide" data-ref="ANIM-PH8-06" data-title="Les lignes de champ" data-sub="Elles partent du plus, arrivent au moins, et ne se croisent jamais" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="40" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">deux charges opposées, et leurs lignes de champ</text>
+            <circle cx="140" cy="200" r="22" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/>
+            <text x="140" y="209" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">+</text>
+            <circle cx="330" cy="200" r="22" fill="#FFFFFF" stroke="#6E1410" stroke-width="2.6"/>
+            <text x="330" y="210" text-anchor="middle" font-size="28" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">−</text>
+          </g>
+          <g class="step s2"><path d="M 162,200 Q 235,200 308,200" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="227.0" y1="200.0" x2="245.0" y2="200.0" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v2)"/><path d="M 162,200 Q 235,260 308,200" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="227.0" y1="230.0" x2="245.0" y2="230.0" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v2)"/><path d="M 162,200 Q 235,140 308,200" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="227.0" y1="170.0" x2="245.0" y2="170.0" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v2)"/></g>
+          <g class="step s3"><path d="M 162,200 Q 235,320 308,200" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="227.0" y1="260.0" x2="245.0" y2="260.0" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v2)"/><path d="M 162,200 Q 235,80 308,200" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="227.0" y1="140.0" x2="245.0" y2="140.0" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v2)"/><path d="M 162,200 Q 235,380 308,200" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="227.0" y1="290.0" x2="245.0" y2="290.0" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v2)"/><path d="M 162,200 Q 235,20 308,200" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="227.0" y1="110.0" x2="245.0" y2="110.0" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v2)"/></g>
+          <g class="step s4">
+            <rect x="10" y="330" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="360" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">elles partent du +, arrivent au −</text>
+            <rect x="10" y="384" width="450" height="72" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="412" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">elles ne se croisent jamais</text>
+            <text x="235" y="440" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">resserrées : le champ est fort</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce qu'est une ligne de champ</h3>
+          <p style="font-size:17px">Une courbe <b>tangente en chacun de ses points</b> au vecteur champ. Elle indique la direction de la force qu'une charge <b>positive</b> subirait si on la plaçait là.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Leur orientation</h3>
+          <p style="font-size:17px">Elles <b>partent</b> des charges positives et <b>arrivent</b> sur les charges négatives. C'est la convention, et elle suffit à orienter n'importe quelle figure.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Leur densité</h3>
+          <p style="font-size:17px">Elle indique l'<b>intensité</b> : lignes resserrées, champ fort ; lignes écartées, champ faible. Près des charges, elles se resserrent — et le champ y est maximal.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi elles ne se croisent jamais</h3>
+          <p style="font-size:17px">Ce n'est pas une convention, c'est une <b>nécessité</b> : en un point donné, le champ a une direction <b>unique</b>. Deux lignes qui se croiseraient en ce point en donneraient <b>deux</b>, ce qui est impossible.</p>
+          <p style="font-size:17px">C'est le genre de propriété que le QCM teste directement — « deux lignes de champ peuvent-elles se couper ? » — et la justification tient en une phrase. Autant la connaître plutôt que de retenir la règle sèche.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une charge positive, une charge négative.",
+      "Les lignes de champ partent de la positive et arrivent sur la négative.",
+      "On en trace d'autres : elles s'écartent sans jamais se rencontrer.",
+      "Là où elles sont resserrées, le champ est fort.",
+      "<em>Et elles ne se croisent jamais :</em> le champ n'a qu'une direction par point."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH8-07 ==================== -->
+  <section class="slide" data-ref="ANIM-PH8-07" data-title="Le champ uniforme entre deux plaques" data-sub="La seule géométrie qui tombe au concours" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="44" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">deux plaques parallèles, deux potentiels</text>
+            <rect x="60" y="100" width="350" height="12" fill="#6E1410"/>
+            <text x="72" y="138" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">+</text>
+            <rect x="60" y="280" width="350" height="12" fill="#6E1410"/>
+            <text x="72" y="272" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">−</text>
+          </g>
+          <g class="step s2"><line x1="90.0" y1="114.0" x2="90.0" y2="278.0" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v3)"/><line x1="140.0" y1="114.0" x2="140.0" y2="278.0" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v3)"/><line x1="190.0" y1="114.0" x2="190.0" y2="278.0" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v3)"/><line x1="240.0" y1="114.0" x2="240.0" y2="278.0" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v3)"/><line x1="290.0" y1="114.0" x2="290.0" y2="278.0" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v3)"/><line x1="340.0" y1="114.0" x2="340.0" y2="278.0" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v3)"/><line x1="390.0" y1="114.0" x2="390.0" y2="278.0" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v3)"/></g>
+          <g class="step s3"><line x1="432.0" y1="112.0" x2="432.0" y2="280.0" stroke="#1B3A8C" stroke-width="2.6" stroke-linecap="round" marker-end="url(#r3)"/><line x1="432.0" y1="280.0" x2="432.0" y2="112.0" stroke="#1B3A8C" stroke-width="2.6" stroke-linecap="round" marker-end="url(#r3)"/><line x1="42.0" y1="112.0" x2="42.0" y2="280.0" stroke="#6E1410" stroke-width="2.6" stroke-linecap="round" marker-end="url(#d3)"/><line x1="42.0" y1="280.0" x2="42.0" y2="112.0" stroke="#6E1410" stroke-width="2.6" stroke-linecap="round" marker-end="url(#d3)"/>
+            <text x="444" y="196" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">d</text>
+            <text x="26" y="196" text-anchor="end" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">U</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="306" width="450" height="56" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="342" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">E = U / d</text>
+            <rect x="10" y="372" width="450" height="84" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="235" y="398" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">même direction, même sens, même valeur</text>
+            <text x="235" y="422" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">droites parallèles et équidistantes</text>
+            <text x="235" y="446" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">orientées du + vers le −</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le champ uniforme</h3>
+          <p style="font-size:17px">Entre deux plaques parallèles portées à des potentiels différents, le champ est <b>uniforme</b> : même direction, même sens, <b>même valeur en tout point</b>.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ses lignes de champ</h3>
+          <p style="font-size:17px">Des <b>droites parallèles et équidistantes</b>, perpendiculaires aux plaques, orientées de la plaque <b>positive</b> vers la négative. L'équidistance <b>est</b> l'uniformité.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La relation à connaître</h3>
+          <p style="font-size:17px">E = U / d, avec U la <b>tension</b> entre les plaques et d leur <b>distance</b>. C'est de là que vient l'unité volt par mètre.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi c'est la seule géométrie à travailler</h3>
+          <p style="font-size:17px">C'est la <b>seule</b> configuration du programme où le champ ne dépend pas du point : plus de 1/r², plus de direction à chercher. Un nombre, une direction, et c'est fini.</p>
+          <p style="font-size:17px">Attention à une seule chose : la distance d est en <b>mètres</b>. Cinq centimètres valent 0,05 m, et l'oublier donne un champ <b>cent fois</b> trop faible. C'est l'unique difficulté du calcul, et elle suffit à faire manquer la question.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Deux plaques parallèles, l'une positive, l'autre négative.",
+      "Entre elles, les lignes de champ sont droites, parallèles et équidistantes.",
+      "On note U la tension entre les plaques, et d leur distance.",
+      "Le champ vaut alors simplement U divisé par d.",
+      "<em>La seule difficulté :</em> d est en mètres — 5 cm valent 0,05 m."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH8-08 ==================== -->
+  <section class="slide" data-ref="ANIM-PH8-08" data-title="Une charge lancée dans le champ" data-sub="C'est le mouvement du projectile, transposé" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="42" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">un champ uniforme, et une charge lancée</text>
+            <rect x="60" y="90" width="360" height="11" fill="#6E1410"/>
+            <rect x="60" y="310" width="360" height="11" fill="#6E1410"/>
+            <line x1="110.0" y1="104.0" x2="110.0" y2="306.0" stroke="#C0261F" stroke-width="2.2" stroke-linecap="round" marker-end="url(#v4)"/><line x1="190.0" y1="104.0" x2="190.0" y2="306.0" stroke="#C0261F" stroke-width="2.2" stroke-linecap="round" marker-end="url(#v4)"/><line x1="270.0" y1="104.0" x2="270.0" y2="306.0" stroke="#C0261F" stroke-width="2.2" stroke-linecap="round" marker-end="url(#v4)"/>
+          </g>
+          <g class="step s2"><line x1="26.0" y1="150.0" x2="56.0" y2="150.0" stroke="#6E1410" stroke-width="3.4" stroke-linecap="round" marker-end="url(#d4)"/>
+            <circle cx="60" cy="150" r="10" fill="#1B3A8C"/>
+            <text x="41" y="138" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">v₀</text>
+          </g>
+          <g class="step s3">
+            <path d="M 60.0,150.0 L 61.5,150.0 L 63.0,150.0 L 64.5,150.0 L 66.0,150.0 L 67.5,150.1 L 69.0,150.1 L 70.5,150.1 L 72.0,150.2 L 73.5,150.2 L 75.0,150.2 L 76.5,150.3 L 78.0,150.3 L 79.5,150.4 L 81.0,150.5 L 82.5,150.5 L 84.0,150.6 L 85.5,150.7 L 87.0,150.8 L 88.5,150.9 L 90.0,151.0 L 91.5,151.1 L 93.0,151.2 L 94.5,151.3 L 96.0,151.4 L 97.5,151.5 L 99.0,151.6 L 100.5,151.8 L 102.0,151.9 L 103.5,152.0 L 105.0,152.2 L 106.5,152.3 L 108.0,152.5 L 109.5,152.6 L 111.0,152.8 L 112.5,153.0 L 114.0,153.2 L 115.5,153.3 L 117.0,153.5 L 118.5,153.7 L 120.0,153.9 L 121.5,154.1 L 123.0,154.3 L 124.5,154.5 L 126.0,154.7 L 127.5,154.9 L 129.0,155.1 L 130.5,155.4 L 132.0,155.6 L 133.5,155.8 L 135.0,156.1 L 136.5,156.3 L 138.0,156.6 L 139.5,156.8 L 141.0,157.1 L 142.5,157.4 L 144.0,157.6 L 145.5,157.9 L 147.0,158.2 L 148.5,158.5 L 150.0,158.8 L 151.5,159.0 L 153.0,159.3 L 154.5,159.6 L 156.0,160.0 L 157.5,160.3 L 159.0,160.6 L 160.5,160.9 L 162.0,161.2 L 163.5,161.6 L 165.0,161.9 L 166.5,162.3 L 168.0,162.6 L 169.5,163.0 L 171.0,163.3 L 172.5,163.7 L 174.0,164.0 L 175.5,164.4 L 177.0,164.8 L 178.5,165.2 L 180.0,165.6 L 181.5,165.9 L 183.0,166.3 L 184.5,166.7 L 186.0,167.2 L 187.5,167.6 L 189.0,168.0 L 190.5,168.4 L 192.0,168.8 L 193.5,169.3 L 195.0,169.7 L 196.5,170.1 L 198.0,170.6 L 199.5,171.0 L 201.0,171.5 L 202.5,171.9 L 204.0,172.4 L 205.5,172.9 L 207.0,173.3 L 208.5,173.8 L 210.0,174.3 L 211.5,174.8 L 213.0,175.3 L 214.5,175.8 L 216.0,176.3 L 217.5,176.8 L 219.0,177.3 L 220.5,177.8 L 222.0,178.3 L 223.5,178.9 L 225.0,179.4 L 226.5,179.9 L 228.0,180.5 L 229.5,181.0 L 231.0,181.6 L 232.5,182.1 L 234.0,182.7 L 235.5,183.3 L 237.0,183.8 L 238.5,184.4 L 240.0,185.0 L 241.5,185.6 L 243.0,186.2 L 244.5,186.8 L 246.0,187.4 L 247.5,188.0 L 249.0,188.6 L 250.5,189.2 L 252.0,189.8 L 253.5,190.4 L 255.0,191.1 L 256.5,191.7 L 258.0,192.3 L 259.5,193.0 L 261.0,193.6 L 262.5,194.3 L 264.0,195.0 L 265.5,195.6 L 267.0,196.3 L 268.5,197.0 L 270.0,197.6 L 271.5,198.3 L 273.0,199.0 L 274.5,199.7 L 276.0,200.4 L 277.5,201.1 L 279.0,201.8 L 280.5,202.5 L 282.0,203.2 L 283.5,204.0 L 285.0,204.7 L 286.5,205.4 L 288.0,206.2 L 289.5,206.9 L 291.0,207.6 L 292.5,208.4 L 294.0,209.1 L 295.5,209.9 L 297.0,210.7 L 298.5,211.4 L 300.0,212.2 L 301.5,213.0 L 303.0,213.8 L 304.5,214.6 L 306.0,215.4 L 307.5,216.2 L 309.0,217.0 L 310.5,217.8 L 312.0,218.6 L 313.5,219.4 L 315.0,220.2 L 316.5,221.1 L 318.0,221.9 L 319.5,222.7 L 321.0,223.6 L 322.5,224.4 L 324.0,225.3 L 325.5,226.1 L 327.0,227.0 L 328.5,227.9 L 330.0,228.8 L 331.5,229.6 L 333.0,230.5 L 334.5,231.4 L 336.0,232.3 L 337.5,233.2 L 339.0,234.1 L 340.5,235.0 L 342.0,235.9 L 343.5,236.8 L 345.0,237.7 L 346.5,238.7 L 348.0,239.6 L 349.5,240.5 L 351.0,241.5 L 352.5,242.4 L 354.0,243.4 L 355.5,244.3 L 357.0,245.3 L 358.5,246.3 L 360.0,247.2 L 361.5,248.2 L 363.0,249.2 L 364.5,250.2 L 366.0,251.1 L 367.5,252.1 L 369.0,253.1 L 370.5,254.1 L 372.0,255.2 L 373.5,256.2 L 375.0,257.2 L 376.5,258.2 L 378.0,259.2 L 379.5,260.3 L 381.0,261.3 L 382.5,262.4 L 384.0,263.4 L 385.5,264.5 L 387.0,265.5 L 388.5,266.6 L 390.0,267.6 L 391.5,268.7 L 393.0,269.8 L 394.5,270.9 L 396.0,272.0 L 397.5,273.0 L 399.0,274.1 L 400.5,275.2 L 402.0,276.4 L 403.5,277.5 L 405.0,278.6 L 406.5,279.7 L 408.0,280.8 L 409.5,282.0 L 411.0,283.1 L 412.5,284.2 L 414.0,285.4 L 415.5,286.5 L 417.0,287.7 L 418.5,288.8 L 420.0,290.0" fill="none" stroke="#1B3A8C" stroke-width="3.6"/>
+            <circle cx="420" cy="290" r="10" fill="#1B3A8C"/>
+            <text x="414" y="196" text-anchor="end" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">une parabole</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="336" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="366" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">a = q E / m,  constante</text>
+            <rect x="10" y="392" width="450" height="66" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="420" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">le poids d'un électron est négligeable</text>
+            <text x="235" y="446" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">on ne tient pas compte de la pesanteur</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La force est constante</h3>
+          <p style="font-size:17px">Dans un champ uniforme, F = qE ne dépend pas du point. Donc l'<b>accélération</b> est constante elle aussi : a = qE / m.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">C'est PH1-B, mot pour mot</h3>
+          <p style="font-size:17px">Si la charge entre <b>perpendiculairement</b> au champ, on retrouve exactement le mouvement du projectile : <b>uniforme</b> sur un axe, <b>uniformément accéléré</b> sur l'autre. La trajectoire est une <b>parabole</b>.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La seule différence</h3>
+          <p style="font-size:17px">L'accélération vaut <b>qE/m</b> au lieu de g — et elle peut être dirigée <b>vers le haut</b> si la charge est négative. Tout le reste du raisonnement est identique.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège, et le chiffre qui le règle</h3>
+          <p style="font-size:17px">Oublier que le poids d'un électron est <b>totalement négligeable</b> devant la force électrique. Dans un champ de 500 V/m, l'accélération d'un électron atteint ≈ 9 × 10¹³ m/s² — <b>mille milliards de fois</b> g.</p>
+          <p style="font-size:17px">Donc on ne tient <b>pas</b> compte de la pesanteur dans ces exercices — et l'énoncé attend qu'on le <b>dise</b>. On le justifie une fois par ce calcul, on l'admet ensuite.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un champ uniforme entre deux plaques, et une charge qui entre par la gauche.",
+      "Elle entre perpendiculairement au champ, avec une vitesse v₀.",
+      "La force est constante : la trajectoire est une parabole. C'est PH1-B.",
+      "L'accélération vaut qE/m au lieu de g — et c'est la seule différence.",
+      "<em>Le piège :</em> le poids d'un électron est négligeable. On l'annonce."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule PH8-B — Le champ électrique · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

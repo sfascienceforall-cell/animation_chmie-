@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule PH9-A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#C0261F;          /* bleu SFA */
+  --deep:#6E1410;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#FBECEA;         /* bleu 8 % */
+  --tint2:#F5D7D3;        /* bleu 18 % */
+  --surface:#FAF6F5;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-PH9-01 ==================== -->
+  <section class="slide" data-ref="ANIM-PH9-01" data-title="Ce qui circule et ce qui pousse" data-sub="L'intensité est un débit, la tension une différence" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="60" y1="86" x2="192" y2="86" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="278" y1="86" x2="400" y2="86" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="400" y1="86" x2="400" y2="141" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="400" y1="181" x2="400" y2="236" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="400" y1="236" x2="60" y2="236" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="60" y1="236" x2="60" y2="170" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="60" y1="152" x2="60" y2="86" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="40" y1="152" x2="80" y2="152" stroke="#6E1410" stroke-width="4.4"/><line x1="50" y1="170" x2="70" y2="170" stroke="#6E1410" stroke-width="4.4"/><rect x="192" y="72" width="86" height="28" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><circle cx="400" cy="161" r="20" fill="#FFFFFF" stroke="#6E1410" stroke-width="2.8"/><text x="400" y="168" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">A</text>
+            <text x="235" y="40" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">un générateur, une résistance, deux appareils</text>
+            <text x="372" y="167" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">en série</text>
+          </g>
+          <g class="step s2"><line x1="202" y1="86" x2="202" y2="164" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="268" y1="86" x2="268" y2="164" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="202" y1="164" x2="215" y2="164" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="255" y1="164" x2="268" y2="164" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><circle cx="235" cy="164" r="20" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.8"/><text x="235" y="171" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">V</text>
+            <text x="235" y="206" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">en dérivation</text>
+          </g>
+          <g class="step s3">
+            <rect x="10" y="266" width="450" height="56" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="292" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">I : un débit de charges, en ampères</text>
+            <text x="235" y="312" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">on la mesure en traversant : ampèremètre en série</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="330" width="450" height="56" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="356" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">U : une différence de potentiel, en volts</text>
+            <text x="235" y="376" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">on la mesure en comparant : voltmètre en dérivation</text>
+            <rect x="10" y="394" width="450" height="66" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="422" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">le courant ne « s'use » pas</text>
+            <text x="235" y="448" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">c'est l'énergie qui est consommée</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'intensité est un débit</h3>
+          <p style="font-size:17px">La quantité de <b>charge</b> traversant une section par <b>seconde</b>. En ampères, mesurée avec un ampèremètre <b>en série</b> — on la mesure en <b>traversant</b>.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La tension est une différence</h3>
+          <p style="font-size:17px">Une <b>différence de potentiel entre deux points</b> : c'est elle qui met les charges en mouvement. En volts, mesurée avec un voltmètre <b>en dérivation</b> — on la mesure en <b>comparant</b>.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La conséquence immédiate</h3>
+          <p style="font-size:17px">Parler de « la tension <b>en</b> un point » n'a aucun sens. Une tension est toujours <b>entre</b> deux points — et la façon de brancher les appareils le dit mieux qu'une définition.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège qui survit à tout le secondaire</h3>
+          <p style="font-size:17px">Croire que le courant « <b>s'use</b> » en traversant les composants. L'intensité qui <b>sort</b> d'une lampe est <b>exactement</b> celle qui y entre.</p>
+          <p style="font-size:17px">C'est l'<b>énergie</b> qui est consommée, pas la <b>charge</b>. La charge se conserve — on l'a posé en PH8-A, et c'est la même conservation qui donnera la loi des nœuds en PH9-B. Trois chapitres, un seul principe.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un circuit simple : un générateur, une résistance, et un ampèremètre en série.",
+      "Le voltmètre, lui, se branche en dérivation — aux bornes de la résistance.",
+      "L'intensité est un débit : la charge qui traverse par seconde.",
+      "La tension est une différence entre deux points : elle pousse les charges.",
+      "<em>Le piège :</em> le courant ne s'use pas — c'est l'énergie qui est consommée."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH9-02 ==================== -->
+  <section class="slide" data-ref="ANIM-PH9-02" data-title="La loi d'Ohm" data-sub="Et ce qu'elle suppose, qu'on oublie toujours de dire" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="70" y1="86" x2="192" y2="86" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="278" y1="86" x2="400" y2="86" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><rect x="192" y="72" width="86" height="28" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><line x1="100.0" y1="86.0" x2="150.0" y2="86.0" stroke="#C0261F" stroke-width="3.4" stroke-linecap="round" marker-end="url(#v2)"/><line x1="192.0" y1="112.0" x2="278.0" y2="112.0" stroke="#1B3A8C" stroke-width="2.6" stroke-linecap="round" marker-end="url(#r1)"/><line x1="278.0" y1="112.0" x2="192.0" y2="112.0" stroke="#1B3A8C" stroke-width="2.6" stroke-linecap="round" marker-end="url(#r1)"/>
+            <text x="152" y="60" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">I</text>
+            <text x="235" y="140" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">U</text>
+            <text x="332" y="60" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">R</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="152" width="450" height="50" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="186" text-anchor="middle" font-size="23" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">U = R · I   ·   R en ohms</text>
+          </g>
+          <g class="step s3"><line x1="62" y1="380" x2="420" y2="380" stroke="#8A8F98" stroke-width="1.8"/><line x1="80" y1="200" x2="80" y2="398" stroke="#8A8F98" stroke-width="1.8"/><text x="420" y="406" text-anchor="end" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">I</text><text x="92" y="214" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">U</text>
+            <path d="M 80.0,380.0 L 81.2,379.4 L 82.5,378.8 L 83.8,378.1 L 85.0,377.5 L 86.2,376.9 L 87.5,376.2 L 88.8,375.6 L 90.0,375.0 L 91.2,374.4 L 92.5,373.8 L 93.8,373.1 L 95.0,372.5 L 96.2,371.9 L 97.5,371.2 L 98.8,370.6 L 100.0,370.0 L 101.2,369.4 L 102.5,368.8 L 103.8,368.1 L 105.0,367.5 L 106.2,366.9 L 107.5,366.2 L 108.8,365.6 L 110.0,365.0 L 111.2,364.4 L 112.5,363.8 L 113.8,363.1 L 115.0,362.5 L 116.2,361.9 L 117.5,361.2 L 118.8,360.6 L 120.0,360.0 L 121.2,359.4 L 122.5,358.8 L 123.8,358.1 L 125.0,357.5 L 126.2,356.9 L 127.5,356.2 L 128.8,355.6 L 130.0,355.0 L 131.2,354.4 L 132.5,353.8 L 133.8,353.1 L 135.0,352.5 L 136.2,351.9 L 137.5,351.2 L 138.8,350.6 L 140.0,350.0 L 141.2,349.4 L 142.5,348.8 L 143.8,348.1 L 145.0,347.5 L 146.2,346.9 L 147.5,346.2 L 148.8,345.6 L 150.0,345.0 L 151.2,344.4 L 152.5,343.8 L 153.8,343.1 L 155.0,342.5 L 156.2,341.9 L 157.5,341.2 L 158.8,340.6 L 160.0,340.0 L 161.2,339.4 L 162.5,338.8 L 163.8,338.1 L 165.0,337.5 L 166.2,336.9 L 167.5,336.2 L 168.8,335.6 L 170.0,335.0 L 171.2,334.4 L 172.5,333.8 L 173.8,333.1 L 175.0,332.5 L 176.2,331.9 L 177.5,331.2 L 178.8,330.6 L 180.0,330.0 L 181.2,329.4 L 182.5,328.8 L 183.8,328.1 L 185.0,327.5 L 186.2,326.9 L 187.5,326.2 L 188.8,325.6 L 190.0,325.0 L 191.2,324.4 L 192.5,323.8 L 193.8,323.1 L 195.0,322.5 L 196.2,321.9 L 197.5,321.2 L 198.8,320.6 L 200.0,320.0 L 201.2,319.4 L 202.5,318.8 L 203.8,318.1 L 205.0,317.5 L 206.2,316.9 L 207.5,316.2 L 208.8,315.6 L 210.0,315.0 L 211.2,314.4 L 212.5,313.8 L 213.8,313.1 L 215.0,312.5 L 216.2,311.9 L 217.5,311.2 L 218.8,310.6 L 220.0,310.0 L 221.2,309.4 L 222.5,308.8 L 223.8,308.1 L 225.0,307.5 L 226.2,306.9 L 227.5,306.2 L 228.8,305.6 L 230.0,305.0 L 231.2,304.4 L 232.5,303.8 L 233.8,303.1 L 235.0,302.5 L 236.2,301.9 L 237.5,301.2 L 238.8,300.6 L 240.0,300.0 L 241.2,299.4 L 242.5,298.8 L 243.7,298.1 L 245.0,297.5 L 246.2,296.9 L 247.5,296.2 L 248.8,295.6 L 250.0,295.0 L 251.2,294.4 L 252.5,293.8 L 253.8,293.1 L 255.0,292.5 L 256.2,291.9 L 257.5,291.2 L 258.8,290.6 L 260.0,290.0 L 261.2,289.4 L 262.5,288.8 L 263.8,288.1 L 265.0,287.5 L 266.2,286.9 L 267.5,286.2 L 268.8,285.6 L 270.0,285.0 L 271.2,284.4 L 272.5,283.8 L 273.8,283.1 L 275.0,282.5 L 276.2,281.9 L 277.5,281.2 L 278.8,280.6 L 280.0,280.0 L 281.2,279.4 L 282.5,278.8 L 283.8,278.1 L 285.0,277.5 L 286.2,276.9 L 287.5,276.2 L 288.8,275.6 L 290.0,275.0 L 291.2,274.4 L 292.5,273.8 L 293.8,273.1 L 295.0,272.5 L 296.2,271.9 L 297.5,271.2 L 298.8,270.6 L 300.0,270.0 L 301.2,269.4 L 302.5,268.8 L 303.8,268.1 L 305.0,267.5 L 306.2,266.9 L 307.5,266.2 L 308.8,265.6 L 310.0,265.0 L 311.2,264.4 L 312.5,263.8 L 313.8,263.1 L 315.0,262.5 L 316.2,261.9 L 317.5,261.2 L 318.8,260.6 L 320.0,260.0 L 321.2,259.4 L 322.5,258.8 L 323.8,258.1 L 325.0,257.5 L 326.2,256.9 L 327.5,256.2 L 328.8,255.6 L 330.0,255.0 L 331.2,254.4 L 332.5,253.8 L 333.8,253.1 L 335.0,252.5 L 336.2,251.9 L 337.5,251.2 L 338.8,250.6 L 340.0,250.0 L 341.2,249.4 L 342.5,248.8 L 343.8,248.1 L 345.0,247.5 L 346.2,246.9 L 347.5,246.2 L 348.8,245.6 L 350.0,245.0 L 351.2,244.4 L 352.5,243.8 L 353.8,243.1 L 355.0,242.5 L 356.2,241.9 L 357.5,241.2 L 358.8,240.6 L 360.0,240.0 L 361.2,239.4 L 362.5,238.8 L 363.8,238.1 L 365.0,237.5 L 366.2,236.9 L 367.5,236.2 L 368.8,235.6 L 370.0,235.0 L 371.2,234.4 L 372.5,233.8 L 373.8,233.1 L 375.0,232.5 L 376.2,231.9 L 377.5,231.2 L 378.8,230.6 L 380.0,230.0" fill="none" stroke="#C0261F" stroke-width="3.4"/>
+            <text x="120" y="226" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">ohmique : une droite par l'origine</text>
+          </g>
+          <g class="step s4">
+            <path d="M 80.0,380.0 L 81.2,380.0 L 82.5,380.0 L 83.8,380.0 L 85.0,379.9 L 86.2,379.9 L 87.5,379.9 L 88.8,379.8 L 90.0,379.8 L 91.2,379.7 L 92.5,379.6 L 93.8,379.6 L 95.0,379.5 L 96.2,379.4 L 97.5,379.3 L 98.8,379.2 L 100.0,379.1 L 101.2,379.0 L 102.5,378.9 L 103.8,378.8 L 105.0,378.7 L 106.2,378.5 L 107.5,378.4 L 108.8,378.3 L 110.0,378.1 L 111.2,378.0 L 112.5,377.8 L 113.8,377.6 L 115.0,377.5 L 116.2,377.3 L 117.5,377.1 L 118.8,376.9 L 120.0,376.7 L 121.2,376.5 L 122.5,376.3 L 123.8,376.1 L 125.0,375.9 L 126.2,375.7 L 127.5,375.5 L 128.8,375.2 L 130.0,375.0 L 131.2,374.8 L 132.5,374.5 L 133.8,374.3 L 135.0,374.0 L 136.2,373.8 L 137.5,373.5 L 138.8,373.2 L 140.0,373.0 L 141.2,372.7 L 142.5,372.4 L 143.8,372.1 L 145.0,371.8 L 146.2,371.5 L 147.5,371.2 L 148.8,370.9 L 150.0,370.6 L 151.2,370.2 L 152.5,369.9 L 153.8,369.6 L 155.0,369.2 L 156.2,368.9 L 157.5,368.5 L 158.8,368.2 L 160.0,367.8 L 161.2,367.5 L 162.5,367.1 L 163.8,366.7 L 165.0,366.3 L 166.2,366.0 L 167.5,365.6 L 168.8,365.2 L 170.0,364.8 L 171.2,364.4 L 172.5,364.0 L 173.8,363.5 L 175.0,363.1 L 176.2,362.7 L 177.5,362.3 L 178.8,361.8 L 180.0,361.4 L 181.2,361.0 L 182.5,360.5 L 183.8,360.1 L 185.0,359.6 L 186.2,359.1 L 187.5,358.7 L 188.8,358.2 L 190.0,357.7 L 191.2,357.2 L 192.5,356.7 L 193.8,356.2 L 195.0,355.7 L 196.2,355.2 L 197.5,354.7 L 198.8,354.2 L 200.0,353.7 L 201.2,353.2 L 202.5,352.6 L 203.8,352.1 L 205.0,351.6 L 206.2,351.0 L 207.5,350.5 L 208.8,349.9 L 210.0,349.4 L 211.2,348.8 L 212.5,348.2 L 213.8,347.7 L 215.0,347.1 L 216.2,346.5 L 217.5,345.9 L 218.8,345.3 L 220.0,344.7 L 221.2,344.1 L 222.5,343.5 L 223.8,342.9 L 225.0,342.3 L 226.2,341.7 L 227.5,341.1 L 228.8,340.4 L 230.0,339.8 L 231.2,339.2 L 232.5,338.5 L 233.8,337.9 L 235.0,337.2 L 236.2,336.6 L 237.5,335.9 L 238.8,335.2 L 240.0,334.6 L 241.2,333.9 L 242.5,333.2 L 243.7,332.5 L 245.0,331.8 L 246.2,331.1 L 247.5,330.4 L 248.8,329.7 L 250.0,329.0 L 251.2,328.3 L 252.5,327.6 L 253.8,326.9 L 255.0,326.1 L 256.2,325.4 L 257.5,324.7 L 258.8,323.9 L 260.0,323.2 L 261.2,322.4 L 262.5,321.7 L 263.8,320.9 L 265.0,320.1 L 266.2,319.4 L 267.5,318.6 L 268.8,317.8 L 270.0,317.0 L 271.2,316.2 L 272.5,315.4 L 273.8,314.6 L 275.0,313.8 L 276.2,313.0 L 277.5,312.2 L 278.8,311.4 L 280.0,310.6 L 281.2,309.7 L 282.5,308.9 L 283.8,308.1 L 285.0,307.2 L 286.2,306.4 L 287.5,305.5 L 288.8,304.7 L 290.0,303.8 L 291.2,303.0 L 292.5,302.1 L 293.8,301.2 L 295.0,300.3 L 296.2,299.5 L 297.5,298.6 L 298.8,297.7 L 300.0,296.8 L 301.2,295.9 L 302.5,295.0 L 303.8,294.1 L 305.0,293.2 L 306.2,292.2 L 307.5,291.3 L 308.8,290.4 L 310.0,289.5 L 311.2,288.5 L 312.5,287.6 L 313.8,286.6 L 315.0,285.7 L 316.2,284.7 L 317.5,283.8 L 318.8,282.8 L 320.0,281.8 L 321.2,280.9 L 322.5,279.9 L 323.8,278.9 L 325.0,277.9 L 326.2,276.9 L 327.5,275.9 L 328.8,274.9 L 330.0,273.9 L 331.2,272.9 L 332.5,271.9 L 333.8,270.9 L 335.0,269.8 L 336.2,268.8 L 337.5,267.8 L 338.8,266.8 L 340.0,265.7 L 341.2,264.7 L 342.5,263.6 L 343.8,262.6 L 345.0,261.5 L 346.2,260.4 L 347.5,259.4 L 348.8,258.3 L 350.0,257.2 L 351.2,256.1 L 352.5,255.0 L 353.8,254.0 L 355.0,252.9 L 356.2,251.8 L 357.5,250.7 L 358.8,249.5 L 360.0,248.4 L 361.2,247.3 L 362.5,246.2 L 363.8,245.1 L 365.0,243.9 L 366.2,242.8 L 367.5,241.7 L 368.8,240.5 L 370.0,239.4 L 371.2,238.2 L 372.5,237.0 L 373.8,235.9 L 375.0,234.7 L 376.2,233.5 L 377.5,232.4 L 378.8,231.2 L 380.0,230.0" fill="none" stroke="#1B3A8C" stroke-width="3.4"/>
+            <text x="120" y="250" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">une lampe : ce n'est pas une droite</text>
+            <rect x="10" y="420" width="450" height="40" rx="11" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="446" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">valable à température constante seulement</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'énoncé</h3>
+          <p style="font-size:17px">U = R I, où R est la <b>résistance</b> du conducteur, en <b>ohms</b>. C'est la relation la plus utilisée de tout le chapitre.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La lecture graphique</h3>
+          <p style="font-size:17px">Pour un conducteur ohmique, la caractéristique U en fonction de I est une <b>droite passant par l'origine</b>, de pente R. C'est la définition opératoire : si ce n'est pas une droite, ce n'est pas ohmique.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce qu'elle suppose</h3>
+          <p style="font-size:17px">Elle n'est valable que pour un conducteur <b>ohmique</b>, à <b>température constante</b>. Une lampe à incandescence ne la suit pas.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi la lampe échappe à la loi</h3>
+          <p style="font-size:17px">Son filament <b>chauffe</b> quand le courant augmente, et sa résistance <b>croît</b> avec la température. Le rapport U/I n'est donc pas constant : la caractéristique s'incurve.</p>
+          <p style="font-size:17px">C'est une question de QCM à part entière — « la loi d'Ohm s'applique-t-elle à une lampe ? » — et la réponse attendue est <b>non</b>. Dire la condition de validité en même temps que la loi coûte cinq mots et vaut un point.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une résistance traversée par un courant I, et la tension U à ses bornes.",
+      "La loi d'Ohm : U égale R fois I, avec R en ohms.",
+      "Graphiquement, c'est une droite passant par l'origine, de pente R.",
+      "Une lampe, elle, donne une courbe : sa résistance change avec la température.",
+      "<em>À dire avec la loi :</em> elle suppose un conducteur ohmique, à température constante."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH9-03 ==================== -->
+  <section class="slide" data-ref="ANIM-PH9-03" data-title="La loi de Pouillet" data-sub="La résistance se lit dans la forme du fil" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <rect x="70" y="70" width="280" height="30" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/>
+            <ellipse cx="350" cy="85" rx="9" ry="15" fill="#FBECEA" stroke="#6E1410" stroke-width="2.4"/>
+            <text x="372" y="92" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">S</text>
+            <line x1="70.0" y1="126.0" x2="350.0" y2="126.0" stroke="#1B3A8C" stroke-width="2.6" stroke-linecap="round" marker-end="url(#r3)"/><line x1="350.0" y1="126.0" x2="70.0" y2="126.0" stroke="#1B3A8C" stroke-width="2.6" stroke-linecap="round" marker-end="url(#r3)"/>
+            <text x="210" y="116" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">L</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="150" width="450" height="54" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="186" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">R = ρ · L / S</text>
+          </g>
+          <g class="step s3">
+            <rect x="70" y="216" width="300" height="14" rx="3" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.2"/>
+            <text x="70" y="256" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">long et fin : R grand</text>
+            <rect x="70" y="276" width="150" height="32" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.2"/>
+            <text x="70" y="334" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">court et épais : R petit</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="350" width="450" height="44" rx="11" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="235" y="378" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">l'analogie du tuyau est juste</text>
+            <rect x="10" y="404" width="450" height="56" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="430" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">la section est une surface :</text>
+            <text x="235" y="450" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">1 mm² = 10⁻⁶ m², pas 10⁻³</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les trois grandeurs du fil</h3>
+          <p style="font-size:17px">Sa <b>longueur</b> L, sa <b>section</b> S, et la <b>résistivité</b> ρ du matériau dont il est fait. Rien d'autre n'intervient.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'énoncé</h3>
+          <p style="font-size:17px">R = ρ L / S. La longueur est au <b>numérateur</b>, la section au <b>dénominateur</b> — et c'est tout ce qu'il faut retenir pour ne jamais l'inverser.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La lecture physique</h3>
+          <p style="font-size:17px">Un fil <b>long</b> résiste davantage, un fil <b>épais</b> résiste moins. C'est l'analogie du <b>tuyau</b>, et elle est juste : plus long et plus étroit, plus il faut pousser.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège d'unité, et il coûte un facteur mille</h3>
+          <p style="font-size:17px">La section est une <b>surface</b>. Un millimètre carré vaut <b>10⁻⁶ m²</b>, pas 10⁻³ — parce que le facteur 10⁻³ du millimètre est <b>élevé au carré</b>.</p>
+          <p style="font-size:17px">Le réflexe : dès qu'une unité porte un exposant, le facteur de conversion le porte aussi. Même règle pour un cm³ (10⁻⁶ m³) et pour un km/h converti en m/s. Écrire la conversion <b>avant</b> le calcul, jamais dedans.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un fil : une longueur L, une section S, et un matériau de résistivité ρ.",
+      "Sa résistance vaut ρ fois L divisé par S.",
+      "Long et fin : la résistance est grande. Court et épais : elle est petite.",
+      "C'est exactement l'analogie du tuyau, et elle ne trompe pas.",
+      "<em>Le piège :</em> la section est une surface — 1 mm² vaut 10⁻⁶ m²."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH9-04 ==================== -->
+  <section class="slide" data-ref="ANIM-PH9-04" data-title="La loi de Joule" data-sub="Où part l'énergie, et pourquoi le I²" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <rect x="10" y="24" width="142" height="72" rx="11" fill="#F5D7D3"/>
+            <text x="81" y="68" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">P = R I²</text>
+            <rect x="164" y="24" width="142" height="72" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="68" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">P = U I</text>
+            <rect x="318" y="24" width="142" height="72" rx="11" fill="#F5D7D3"/>
+            <text x="389" y="68" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">P = U² / R</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="110" width="450" height="46" rx="11" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="235" y="140" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">les trois sont la même loi, via U = R I</text>
+          </g>
+          <g class="step s3">
+            <text x="16" y="186" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">courant I</text>
+            <rect x="120" y="168" width="70" height="26" rx="6" fill="#C0261F"/>
+            <text x="206" y="186" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">échauffement × 1</text>
+            <text x="16" y="246" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">courant 2 I</text>
+            <rect x="120" y="228" width="280" height="26" rx="6" fill="#1B3A8C"/>
+            <text x="410" y="246" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">× 4</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="276" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="306" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">E = P · Δt — en joules, ou en kWh</text>
+            <rect x="10" y="334" width="450" height="122" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="364" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">doubler le courant quadruple l'échauffement</text>
+            <text x="235" y="398" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">d'où le transport de l'électricité</text>
+            <text x="235" y="430" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">en haute tension, faible intensité</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les trois écritures</h3>
+          <p style="font-size:17px">P = R I², P = U I, P = U² / R. Ce sont <b>la même loi</b>, transformée par U = R I. On choisit celle dont les grandeurs sont <b>données par l'énoncé</b>.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le I², et ce qu'il entraîne</h3>
+          <p style="font-size:17px">Doubler le courant <b>quadruple</b> l'échauffement. Exactement la lecture du v² de PH4-B, sur une autre grandeur — le carré gouverne, pas la grandeur.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'énergie</h3>
+          <p style="font-size:17px">E = P Δt, en <b>joules</b> — ou en <b>kilowattheures</b>, l'unité commerciale rencontrée en PH4-A. Le kWh est une énergie, jamais une puissance.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi les lignes haute tension existent</h3>
+          <p style="font-size:17px">La puissance transportée vaut U I, mais les pertes valent R I². Pour transporter la <b>même</b> puissance, on peut donc choisir : forte intensité et faible tension, ou l'inverse.</p>
+          <p style="font-size:17px">Diviser l'intensité par dix divise les pertes par <b>cent</b>, à puissance transportée identique. D'où le choix de la <b>haute tension</b> et de la <b>faible intensité</b> sur tout le réseau. C'est une question de QCM classique, et la justification tient dans le carré.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Trois écritures de la puissance dissipée : R I², U I, et U² sur R.",
+      "Ce sont la même loi : on passe de l'une à l'autre par U = R I.",
+      "Le carré commande : doubler le courant quadruple l'échauffement.",
+      "L'énergie, elle, est la puissance multipliée par la durée.",
+      "<em>D'où la haute tension :</em> diviser I par dix divise les pertes par cent."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule PH9-A — Tension, intensité, et les lois d'un dipôle · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

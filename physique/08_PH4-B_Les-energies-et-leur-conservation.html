@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule PH4-B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#C0261F;          /* bleu SFA */
+  --deep:#6E1410;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#FBECEA;         /* bleu 8 % */
+  --tint2:#F5D7D3;        /* bleu 18 % */
+  --surface:#FAF6F5;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-PH4-05 ==================== -->
+  <section class="slide" data-ref="ANIM-PH4-05" data-title="L'énergie cinétique et son v²" data-sub="Rouler deux fois plus vite, freiner quatre fois plus loin" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <rect x="10" y="18" width="450" height="52" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="52" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">E<tspan dy="5" font-size="16">c</tspan><tspan dy="-5"> = ½ · m · v²</tspan></text>
+          </g>
+          <g class="step s2">
+            <text x="40" y="102" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">à 50 km/h, distance de freinage</text>
+            <rect x="40" y="112" width="96" height="30" rx="6" fill="#C0261F"/>
+            <text x="88" y="132" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">d</text>
+          </g>
+          <g class="step s3">
+            <text x="40" y="182" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">à 100 km/h</text>
+            <rect x="40" y="192" width="384" height="30" rx="6" fill="#1B3A8C"/>
+            <text x="232" y="212" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">4 d</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="240" width="450" height="54" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="235" y="274" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">vitesse × 2  →  énergie × 4</text>
+            <rect x="10" y="302" width="450" height="70" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="330" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">quatre fois plus loin, pas deux</text>
+            <text x="235" y="356" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">c'est le carré, pas la vitesse</text>
+            <rect x="10" y="382" width="450" height="78" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="412" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">le théorème de l'énergie cinétique</text>
+            <text x="235" y="444" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">Δ E<tspan dy="5" font-size="14">c</tspan><tspan dy="-5"> = Σ W</tspan></text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La définition</h3>
+          <p style="font-size:17px">E<sub>c</sub> = ½ m v². Toujours <b>positive</b>, et nulle seulement à l'arrêt. Elle ne dépend pas du sens du mouvement — le carré l'efface.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le carré change tout</h3>
+          <p style="font-size:17px">Doubler la vitesse ne double pas l'énergie : il la <b>quadruple</b>. C'est ce résultat que le concours teste, sous une forme ou une autre, presque à chaque session.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La conséquence à citer</h3>
+          <p style="font-size:17px">La distance de freinage est proportionnelle au <b>carré</b> de la vitesse. À 100 km/h on freine <b>quatre fois</b> plus loin qu'à 50 — pas deux.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le pont entre les deux capsules</h3>
+          <p style="font-size:17px">Le <b>théorème de l'énergie cinétique</b> : la variation d'énergie cinétique est égale à la <b>somme des travaux</b> des forces appliquées. Δ E<sub>c</sub> = Σ W.</p>
+          <p style="font-size:17px">C'est exactement ce qui relie PH4-A à PH4-B : le travail d'un côté, l'énergie de l'autre, et une égalité entre les deux. Un freinage, c'est un travail résistant qui vide l'énergie cinétique — la distance de freinage s'en déduit sans équation de mouvement.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "L'énergie cinétique : un demi m v carré. Toujours positive.",
+      "À 50 km/h, la distance de freinage vaut d.",
+      "À 100 km/h, elle vaut 4 d — pas 2 d.",
+      "Vitesse doublée, énergie quadruplée : c'est le carré qui commande.",
+      "<em>Le pont :</em> la variation d'énergie cinétique égale la somme des travaux."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH4-06 ==================== -->
+  <section class="slide" data-ref="ANIM-PH4-06" data-title="L'énergie potentielle gravifique" data-sub="Le zéro se choisit, et seule la différence compte" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <rect x="10" y="20" width="450" height="50" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="54" text-anchor="middle" font-size="23" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">E<tspan dy="5" font-size="15">p</tspan><tspan dy="-5"> = m · g · h</tspan></text>
+            <line x1="40" y1="400" x2="286" y2="400" stroke="#6E1410" stroke-width="4"/>
+            <text x="40" y="390" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">le sol</text>
+            <line x1="120" y1="160" x2="120" y2="400" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="6 5"/>
+            <circle cx="120" cy="160" r="13" fill="#C0261F"/>
+            <text x="144" y="166" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">position 1 — 12 m</text>
+            <circle cx="120" cy="300" r="13" fill="#C0261F"/>
+            <text x="144" y="306" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">position 2 — 5 m</text>
+          </g>
+          <g class="step s2">
+            <rect x="296" y="132" width="164" height="96" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="378" y="158" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">référence : le sol</text>
+            <text x="378" y="184" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">12 mg  et  5 mg</text>
+            <text x="378" y="212" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">Δ = 7 mg</text>
+          </g>
+          <g class="step s3">
+            <line x1="60" y1="340" x2="246" y2="340" stroke="#C0261F" stroke-width="3" stroke-dasharray="8 6"/>
+            <text x="60" y="330" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">la table</text>
+            <rect x="296" y="244" width="164" height="96" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="378" y="270" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">référence : la table</text>
+            <text x="378" y="296" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">9 mg  et  2 mg</text>
+            <text x="378" y="324" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">Δ = 7 mg</text>
+          </g>
+          <g class="step s4"><line x1="86.0" y1="300.0" x2="86.0" y2="160.0" stroke="#1B3A8C" stroke-width="3.2" stroke-linecap="round" marker-end="url(#r2)"/>
+            <text x="78" y="236" text-anchor="end" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">Δh</text>
+            <rect x="10" y="412" width="450" height="48" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="442" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">seule la variation a un sens physique</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La définition</h3>
+          <p style="font-size:17px">E<sub>p</sub> = m · g · h, où h est la hauteur <b>au-dessus d'une référence</b>. Et c'est ce dernier mot qui déroute.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La référence se choisit</h3>
+          <p style="font-size:17px">Le sol, la table, le fond d'un puits : <b>n'importe quelle hauteur</b> peut servir de zéro. Ce n'est pas une donnée de l'énoncé, c'est une décision.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi ce n'est pas un problème</h3>
+          <p style="font-size:17px">Changez la référence : les deux énergies changent, mais leur <b>différence</b> est identique. Et seule la variation a un sens physique.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La conséquence pratique, à appliquer sans exception</h3>
+          <p style="font-size:17px">On <b>annonce la référence au début</b> de l'exercice — une ligne, à l'écrit — et on ne la change plus.</p>
+          <p style="font-size:17px">Une référence non déclarée est l'erreur la plus banale du chapitre : on calcule l'état initial depuis le sol et l'état final depuis la table, et la conservation de l'énergie donne n'importe quoi. Le choix est libre ; en changer en cours de route ne l'est pas.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "L'énergie potentielle vaut m g h, avec h mesuré depuis une référence.",
+      "Prenons le sol : 12 mg en position 1, 5 mg en position 2.",
+      "Prenons la table : 9 mg et 2 mg. Les valeurs ont changé.",
+      "Mais la différence, elle, vaut 7 mg dans les deux cas.",
+      "<em>D'où la règle :</em> on annonce la référence au début, et on n'y touche plus."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH4-07 ==================== -->
+  <section class="slide" data-ref="ANIM-PH4-07" data-title="Le ressort et son énergie élastique" data-sub="Encore une parabole, et ce n'est pas un hasard" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <rect x="24" y="44" width="12" height="52" fill="#6E1410"/>
+            <polyline points="40.0,70.0 48.3,85.0 56.7,55.0 65.0,85.0 73.3,55.0 81.7,85.0 90.0,55.0 98.3,85.0 106.7,55.0 115.0,85.0 123.3,55.0 131.7,85.0 140.0,55.0 148.3,85.0 156.7,55.0 165.0,85.0 173.3,55.0 181.7,85.0 190.0,70.0" fill="none" stroke="#6E1410" stroke-width="3" stroke-linejoin="round"/>
+            <rect x="190" y="50" width="34" height="40" rx="5" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.4"/>
+            <text x="238" y="76" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">au repos</text>
+          </g>
+          <g class="step s2">
+            <rect x="24" y="110" width="12" height="52" fill="#6E1410"/>
+            <polyline points="40.0,136.0 44.7,151.0 49.3,121.0 54.0,151.0 58.7,121.0 63.3,151.0 68.0,121.0 72.7,151.0 77.3,121.0 82.0,151.0 86.7,121.0 91.3,151.0 96.0,121.0 100.7,151.0 105.3,121.0 110.0,151.0 114.7,121.0 119.3,151.0 124.0,136.0" fill="none" stroke="#6E1410" stroke-width="3" stroke-linejoin="round"/>
+            <rect x="124" y="116" width="34" height="40" rx="5" fill="#F5D7D3" stroke="#1B3A8C" stroke-width="2.4"/>
+            <line x1="124.0" y1="170.0" x2="190.0" y2="170.0" stroke="#1B3A8C" stroke-width="3.0" stroke-linecap="round"/>
+            <text x="202" y="176" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">comprimé de x</text>
+            <rect x="10" y="190" width="450" height="46" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="222" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">E<tspan dy="5" font-size="14">p</tspan><tspan dy="-5"> = ½ · k · x²   ·   k en N/m</tspan></text>
+          </g>
+          <g class="step s3"><line x1="40" y1="440" x2="430" y2="440" stroke="#8A8F98" stroke-width="1.8"/><line x1="235" y1="236" x2="235" y2="300" stroke="#8A8F98" stroke-width="1.8"/><line x1="235" y1="352" x2="235" y2="458" stroke="#8A8F98" stroke-width="1.8"/>
+            <path d="M 49.0,260.0 L 50.5,263.0 L 52.1,265.9 L 53.7,268.9 L 55.2,271.8 L 56.8,274.7 L 58.3,277.5 L 59.8,280.4 L 61.4,283.2 L 63.0,286.0 L 64.5,288.8 L 66.0,291.5 L 67.6,294.2 L 69.2,296.9 L 70.7,299.6 L 72.2,302.2 L 73.8,304.8 L 75.3,307.4 L 76.9,310.0 L 78.5,312.5 L 80.0,315.0 L 81.5,317.5 L 83.1,319.9 L 84.7,322.4 L 86.2,324.8 L 87.8,327.2 L 89.3,329.5 L 90.8,331.9 L 92.4,334.2 L 94.0,336.5 L 95.5,338.8 L 97.0,341.0 L 98.6,343.2 L 100.2,345.4 L 101.7,347.6 L 103.2,349.7 L 104.8,351.8 L 106.3,353.9 L 107.9,355.9 L 109.5,358.0 L 111.0,360.0 L 112.5,362.0 L 114.1,363.9 L 115.6,365.9 L 117.2,367.8 L 118.8,369.7 L 120.3,371.6 L 121.9,373.4 L 123.4,375.2 L 125.0,377.0 L 126.5,378.8 L 128.1,380.5 L 129.6,382.2 L 131.1,383.9 L 132.7,385.6 L 134.2,387.2 L 135.8,388.8 L 137.4,390.4 L 138.9,391.9 L 140.4,393.5 L 142.0,395.0 L 143.6,396.5 L 145.1,397.9 L 146.6,399.4 L 148.2,400.8 L 149.8,402.2 L 151.3,403.6 L 152.9,404.9 L 154.4,406.2 L 155.9,407.5 L 157.5,408.8 L 159.1,410.0 L 160.6,411.2 L 162.1,412.4 L 163.7,413.6 L 165.2,414.7 L 166.8,415.8 L 168.4,416.9 L 169.9,417.9 L 171.4,419.0 L 173.0,420.0 L 174.6,421.0 L 176.1,421.9 L 177.7,422.9 L 179.2,423.8 L 180.8,424.7 L 182.3,425.6 L 183.8,426.4 L 185.4,427.2 L 186.9,428.0 L 188.5,428.8 L 190.1,429.5 L 191.6,430.2 L 193.2,430.9 L 194.7,431.6 L 196.2,432.2 L 197.8,432.8 L 199.3,433.4 L 200.9,433.9 L 202.4,434.5 L 204.0,435.0 L 205.5,435.5 L 207.1,435.9 L 208.7,436.4 L 210.2,436.8 L 211.8,437.2 L 213.3,437.6 L 214.8,437.9 L 216.4,438.2 L 218.0,438.5 L 219.5,438.8 L 221.0,439.0 L 222.6,439.2 L 224.2,439.4 L 225.7,439.6 L 227.2,439.7 L 228.8,439.8 L 230.3,439.9 L 231.9,439.9 L 233.5,440.0 L 235.0,440.0 L 236.5,440.0 L 238.1,439.9 L 239.7,439.9 L 241.2,439.8 L 242.8,439.7 L 244.3,439.6 L 245.8,439.4 L 247.4,439.2 L 249.0,439.0 L 250.5,438.8 L 252.0,438.5 L 253.6,438.2 L 255.2,437.9 L 256.7,437.6 L 258.2,437.2 L 259.8,436.8 L 261.3,436.4 L 262.9,435.9 L 264.4,435.5 L 266.0,435.0 L 267.6,434.5 L 269.1,433.9 L 270.7,433.4 L 272.2,432.8 L 273.8,432.2 L 275.3,431.6 L 276.8,430.9 L 278.4,430.2 L 279.9,429.5 L 281.5,428.8 L 283.1,428.0 L 284.6,427.2 L 286.2,426.4 L 287.7,425.6 L 289.2,424.7 L 290.8,423.8 L 292.3,422.9 L 293.9,421.9 L 295.4,421.0 L 297.0,420.0 L 298.6,419.0 L 300.1,417.9 L 301.6,416.9 L 303.2,415.8 L 304.8,414.7 L 306.3,413.5 L 307.9,412.4 L 309.4,411.2 L 310.9,410.0 L 312.5,408.8 L 314.1,407.5 L 315.6,406.2 L 317.1,404.9 L 318.7,403.6 L 320.2,402.2 L 321.8,400.8 L 323.4,399.4 L 324.9,397.9 L 326.4,396.5 L 328.0,395.0 L 329.6,393.5 L 331.1,391.9 L 332.6,390.4 L 334.2,388.8 L 335.8,387.2 L 337.3,385.5 L 338.9,383.9 L 340.4,382.2 L 341.9,380.5 L 343.5,378.8 L 345.1,377.0 L 346.6,375.2 L 348.1,373.4 L 349.7,371.6 L 351.2,369.7 L 352.8,367.8 L 354.4,365.9 L 355.9,363.9 L 357.4,362.0 L 359.0,360.0 L 360.6,358.0 L 362.1,355.9 L 363.6,353.9 L 365.2,351.8 L 366.8,349.7 L 368.3,347.5 L 369.9,345.4 L 371.4,343.2 L 372.9,341.0 L 374.5,338.8 L 376.1,336.5 L 377.6,334.2 L 379.1,331.9 L 380.7,329.6 L 382.2,327.2 L 383.8,324.8 L 385.4,322.4 L 386.9,319.9 L 388.4,317.5 L 390.0,315.0 L 391.6,312.5 L 393.1,310.0 L 394.6,307.4 L 396.2,304.8 L 397.8,302.2 L 399.3,299.5 L 400.9,296.9 L 402.4,294.2 L 403.9,291.5 L 405.5,288.8 L 407.1,286.0 L 408.6,283.2 L 410.1,280.4 L 411.7,277.6 L 413.2,274.7 L 414.8,271.8 L 416.4,268.9 L 417.9,265.9 L 419.4,263.0 L 421.0,260.0" fill="none" stroke="#C0261F" stroke-width="3.6"/>
+            <text x="359.0" y="460" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">x</text>
+            <text x="111.0" y="460" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">−x</text>
+          </g>
+          <g class="step s4">
+            <line x1="111.0" y1="360.0" x2="359.0" y2="360.0" stroke="#1B3A8C" stroke-width="2.4" stroke-dasharray="7 5"/>
+            <circle cx="359.0" cy="360.0" r="6" fill="#1B3A8C"/>
+            <circle cx="111.0" cy="360.0" r="6" fill="#1B3A8C"/>
+            <text x="235" y="344" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">même énergie</text>
+            <text x="235" y="318" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">le signe de x ne compte pas</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Un ressort stocke de l'énergie</h3>
+          <p style="font-size:17px">Comprimé ou étiré, il emmagasine du travail et peut le restituer. C'est l'énergie <b>potentielle élastique</b>.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La formule</h3>
+          <p style="font-size:17px">E<sub>p</sub> = ½ k x², avec k la <b>raideur</b> en N/m et x l'allongement ou la compression — mesuré depuis la position de repos.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le x² se lit comme le v²</h3>
+          <p style="font-size:17px">Comprimer <b>deux fois plus</b> stocke <b>quatre fois plus</b> d'énergie. Exactement la lecture de l'énergie cinétique, sur une autre grandeur.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce que la parabole vous dit gratuitement</h3>
+          <p style="font-size:17px">Le <b>signe de x n'a aucune importance</b> : comprimé ou étiré du même écart, le ressort stocke la même énergie. C'est la parabole de la capsule <b>D1-B</b> des mathématiques, symétrique par rapport à son axe.</p>
+          <p style="font-size:17px">Et c'est un contrôle immédiat : si un calcul donne une énergie élastique <b>négative</b>, il y a une erreur — un carré ne l'est jamais.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un ressort au repos, fixé à un mur.",
+      "On le comprime d'une longueur x : il stocke ½ k x².",
+      "Traçons cette énergie en fonction de x : c'est une parabole.",
+      "Même écart à gauche ou à droite : même énergie. Le signe ne compte pas.",
+      "<em>C'est la parabole de D1-B</em> — et une énergie élastique n'est jamais négative."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH4-08 ==================== -->
+  <section class="slide" data-ref="ANIM-PH4-08" data-title="Le toboggan : la forme ne compte pas" data-sub="Seule la hauteur décide de la vitesse d'arrivée" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="36" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">même hauteur de départ, deux formes</text>
+            <line x1="30" y1="60" x2="440" y2="60" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="7 5"/>
+            <line x1="30" y1="250" x2="440" y2="250" stroke="#6E1410" stroke-width="3.4"/>
+            <line x1="40" y1="60" x2="200" y2="250" stroke="#6E1410" stroke-width="4.4" stroke-linecap="round"/><path d="M 260,60 C 300,110 300,250 430,250" fill="none" stroke="#6E1410" stroke-width="4.4" stroke-linecap="round"/><line x1="24.0" y1="250.0" x2="24.0" y2="60.0" stroke="#1B3A8C" stroke-width="3.0" stroke-linecap="round" marker-end="url(#r4)"/>
+            <text x="36" y="161" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">h</text>
+            <circle cx="44" cy="52" r="11" fill="#C0261F"/>
+            <circle cx="264" cy="52" r="11" fill="#C0261F"/>
+            <text x="206" y="276" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">v</text>
+            <text x="426" y="276" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">v</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="292" width="450" height="50" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="324" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">E<tspan dy="5" font-size="14">m</tspan><tspan dy="-5"> = E</tspan><tspan dy="5" font-size="14">c</tspan><tspan dy="-5"> + E</tspan><tspan dy="5" font-size="14">p</tspan><tspan dy="-5"></tspan></text>
+          </g>
+          <g class="step s3">
+            <rect x="10" y="350" width="450" height="56" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="235" y="384" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">m g h = ½ m v²  →  v = √(2gh)</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="414" width="450" height="46" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="444" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">avec frottement, elle ne se conserve plus</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'énergie mécanique</h3>
+          <p style="font-size:17px">E<sub>m</sub> = E<sub>c</sub> + E<sub>p</sub>. En l'absence de frottement, elle <b>se conserve</b> : ce qui est perdu d'un côté est gagné de l'autre, exactement.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La méthode, en trois lignes</h3>
+          <p style="font-size:17px">E<sub>m</sub> à l'état <b>initial</b>, E<sub>m</sub> à l'état <b>final</b>, on les égale. Aucune force, aucune accélération, <b>aucun temps</b>.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le résultat qui surprend</h3>
+          <p style="font-size:17px">m g h = ½ m v² : la masse <b>se simplifie</b>. La vitesse d'arrivée ne dépend <b>ni de la masse, ni de la forme</b> du toboggan — seulement de la hauteur : v = √(2gh).</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Quand choisir l'énergie, et le piège unique</h3>
+          <p style="font-size:17px"><b>Le critère :</b> si l'énoncé ne demande <b>pas</b> le temps, la méthode énergétique est plus rapide. S'il le demande, il faut passer par les forces. C'est la capsule la plus rentable du programme pour cette seule raison.</p>
+          <p style="font-size:17px"><b>Le piège :</b> appliquer la conservation quand il y a du <b>frottement</b>. Elle ne vaut alors plus — la différence d'énergie mécanique est égale au travail des frottements, qui est négatif.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Deux toboggans, même hauteur de départ, formes très différentes.",
+      "L'énergie mécanique est la somme du cinétique et du potentiel.",
+      "On égale l'état initial et l'état final : la masse se simplifie.",
+      "v = racine de 2gh : ni la masse, ni la forme n'intervient.",
+      "<em>Le piège :</em> s'il y a du frottement, la conservation ne s'applique plus."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule PH4-B — Les énergies et leur conservation · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

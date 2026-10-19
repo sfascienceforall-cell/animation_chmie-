@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule PH9-B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#C0261F;          /* bleu SFA */
+  --deep:#6E1410;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#FBECEA;         /* bleu 8 % */
+  --tint2:#F5D7D3;        /* bleu 18 % */
+  --surface:#FAF6F5;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-PH9-05 ==================== -->
+  <section class="slide" data-ref="ANIM-PH9-05" data-title="En série : un seul chemin" data-sub="Même courant partout, tensions qui s'ajoutent" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="50" y1="240" x2="420" y2="240" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="420" y1="90" x2="420" y2="240" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="50" y1="240" x2="50" y2="174" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="50" y1="156" x2="50" y2="90" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="30" y1="156" x2="70" y2="156" stroke="#6E1410" stroke-width="4.4"/><line x1="40" y1="174" x2="60" y2="174" stroke="#6E1410" stroke-width="4.4"/><line x1="50" y1="90" x2="95" y2="90" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="165" y1="90" x2="200" y2="90" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="270" y1="90" x2="305" y2="90" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="375" y1="90" x2="420" y2="90" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><rect x="95" y="75" width="70" height="30" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><text x="130" y="95" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">R₁</text><rect x="200" y="75" width="70" height="30" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><text x="235" y="95" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">R₂</text><rect x="305" y="75" width="70" height="30" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><text x="340" y="95" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">R₃</text>
+            <text x="235" y="42" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">trois résistances, aucune bifurcation</text>
+          </g>
+          <g class="step s2"><line x1="300.0" y1="240.0" x2="230.0" y2="240.0" stroke="#C0261F" stroke-width="3.4" stroke-linecap="round" marker-end="url(#v1)"/>
+            <text x="265" y="272" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">I, le même partout</text>
+          </g>
+          <g class="step s3"><line x1="95.0" y1="140.0" x2="165.0" y2="140.0" stroke="#1B3A8C" stroke-width="2.4" stroke-linecap="round" marker-end="url(#r1)"/><line x1="165.0" y1="140.0" x2="95.0" y2="140.0" stroke="#1B3A8C" stroke-width="2.4" stroke-linecap="round" marker-end="url(#r1)"/><text x="130" y="164" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">U₁</text><line x1="200.0" y1="140.0" x2="270.0" y2="140.0" stroke="#1B3A8C" stroke-width="2.4" stroke-linecap="round" marker-end="url(#r1)"/><line x1="270.0" y1="140.0" x2="200.0" y2="140.0" stroke="#1B3A8C" stroke-width="2.4" stroke-linecap="round" marker-end="url(#r1)"/><text x="235" y="164" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">U₂</text><line x1="305.0" y1="140.0" x2="375.0" y2="140.0" stroke="#1B3A8C" stroke-width="2.4" stroke-linecap="round" marker-end="url(#r1)"/><line x1="375.0" y1="140.0" x2="305.0" y2="140.0" stroke="#1B3A8C" stroke-width="2.4" stroke-linecap="round" marker-end="url(#r1)"/><text x="340" y="164" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">U₃</text></g>
+          <g class="step s4">
+            <rect x="10" y="296" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="326" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">U = U₁ + U₂ + U₃</text>
+            <rect x="10" y="350" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="380" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">R équivalente = R₁ + R₂ + R₃</text>
+            <rect x="10" y="404" width="450" height="56" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="235" y="430" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">elle est donc plus grande</text>
+            <text x="235" y="450" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">que la plus grande des trois</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Un chemin unique</h3>
+          <p style="font-size:17px">En série, les composants sont sur un <b>seul chemin</b> : il n'y a <b>aucune bifurcation</b>. C'est la définition, et tout le reste en découle.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'intensité est la même partout</h3>
+          <p style="font-size:17px">Conséquence <b>directe</b> : la charge ne peut aller nulle part ailleurs. Ce n'est pas une règle à retenir, c'est la conservation de la charge appliquée à un fil sans embranchement.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les tensions s'additionnent</h3>
+          <p style="font-size:17px">U = U₁ + U₂ + U₃. La tension du générateur se <b>répartit</b> entre les composants, proportionnellement à leurs résistances.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La résistance équivalente, et le contrôle gratuit</h3>
+          <p style="font-size:17px">R<sub>éq</sub> = R₁ + R₂ + R₃. Elle est donc <b>plus grande que la plus grande</b> des trois — et c'est un contrôle immédiat de votre calcul.</p>
+          <p style="font-size:17px">Ajouter une résistance en série <b>freine</b> toujours le circuit : le courant total diminue. Si un calcul vous donne l'inverse, c'est faux, et vous le savez sans relire une ligne.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Trois résistances en série : un seul chemin, aucune bifurcation.",
+      "Le courant est donc le même partout — la charge ne peut aller ailleurs.",
+      "Chaque résistance prend sa part de tension : U₁, U₂, U₃.",
+      "Et leur somme redonne la tension du générateur.",
+      "<em>Le contrôle :</em> R équivalente est plus grande que la plus grande des trois."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH9-06 ==================== -->
+  <section class="slide" data-ref="ANIM-PH9-06" data-title="En parallèle : plusieurs chemins" data-sub="Même tension, courants qui s'ajoutent" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="140" y1="70" x2="140" y2="240" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="350" y1="70" x2="350" y2="240" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="140" y1="70" x2="225" y2="70" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="265" y1="70" x2="350" y2="70" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="236" y1="50" x2="236" y2="90" stroke="#6E1410" stroke-width="4.4"/><line x1="254" y1="60" x2="254" y2="80" stroke="#6E1410" stroke-width="4.4"/><line x1="140" y1="120" x2="210" y2="120" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="280" y1="120" x2="350" y2="120" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><rect x="210" y="105" width="70" height="30" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><line x1="140" y1="180" x2="210" y2="180" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="280" y1="180" x2="350" y2="180" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><rect x="210" y="165" width="70" height="30" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><line x1="140" y1="240" x2="210" y2="240" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="280" y1="240" x2="350" y2="240" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><rect x="210" y="225" width="70" height="30" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/>
+            <text x="235" y="30" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">trois branches entre les deux mêmes points</text>
+          </g>
+          <g class="step s2"><line x1="210.0" y1="70.0" x2="170.0" y2="70.0" stroke="#6E1410" stroke-width="3.4" stroke-linecap="round" marker-end="url(#d2)"/>
+            <text x="170" y="58" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">I</text>
+            <line x1="154.0" y1="120.0" x2="192.0" y2="120.0" stroke="#C0261F" stroke-width="2.8" stroke-linecap="round" marker-end="url(#v2)"/><line x1="154.0" y1="180.0" x2="192.0" y2="180.0" stroke="#C0261F" stroke-width="2.8" stroke-linecap="round" marker-end="url(#v2)"/><line x1="154.0" y1="240.0" x2="192.0" y2="240.0" stroke="#C0261F" stroke-width="2.8" stroke-linecap="round" marker-end="url(#v2)"/><text x="160" y="110" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">I₁</text><text x="160" y="170" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">I₂</text><text x="160" y="230" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">I₃</text>
+          </g>
+          <g class="step s3">
+            <rect x="10" y="276" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="306" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">même tension aux bornes de chacune</text>
+            <rect x="10" y="330" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="360" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">I = I₁ + I₂ + I₃</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="384" width="450" height="76" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="412" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">ce sont les inverses qui s'additionnent</text>
+            <text x="235" y="440" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">1/R = 1/R₁ + 1/R₂ + 1/R₃</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Plusieurs chemins</h3>
+          <p style="font-size:17px">En parallèle, les composants sont branchés <b>entre les deux mêmes points</b> : le courant a plusieurs chemins possibles.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La tension est la même</h3>
+          <p style="font-size:17px">Aux bornes de <b>chacun</b> — ils relient les deux mêmes points, donc la même différence de potentiel. Là encore, ce n'est pas une règle, c'est une évidence géométrique.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les intensités s'additionnent</h3>
+          <p style="font-size:17px">I = I₁ + I₂ + I₃. Le courant total se <b>répartit</b> entre les branches — davantage dans celles qui résistent le moins.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège, et le contrôle qui l'élimine</h3>
+          <p style="font-size:17px">Ce sont les <b>inverses</b> des résistances qui s'additionnent : 1/R<sub>éq</sub> = 1/R₁ + 1/R₂. La résistance équivalente est donc <b>plus petite que la plus petite</b>.</p>
+          <p style="font-size:17px"><b>Le piège :</b> additionner directement les résistances. <b>Le contrôle, immédiat et gratuit :</b> si le résultat n'est pas inférieur à la plus petite des résistances, c'est faux. Ouvrir un chemin supplémentaire ne peut que <b>faciliter</b> le passage du courant.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Trois résistances en parallèle : branchées entre les deux mêmes points.",
+      "Le courant total arrive, puis se répartit entre les trois branches.",
+      "La tension, elle, est la même aux bornes de chacune.",
+      "Et les intensités des branches s'additionnent pour redonner I.",
+      "<em>Le contrôle :</em> R équivalente est plus petite que la plus petite."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH9-07 ==================== -->
+  <section class="slide" data-ref="ANIM-PH9-07" data-title="Les deux lois de Kirchhoff" data-sub="Une aux nœuds, une aux mailles — et ce qu'elles conservent" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="60.0" y1="110.0" x2="148.0" y2="110.0" stroke="#6E1410" stroke-width="3.4" stroke-linecap="round" marker-end="url(#d3)"/><line x1="170.0" y1="104.0" x2="258.0" y2="70.0" stroke="#C0261F" stroke-width="3.0" stroke-linecap="round" marker-end="url(#v3)"/><line x1="170.0" y1="116.0" x2="258.0" y2="150.0" stroke="#C0261F" stroke-width="3.0" stroke-linecap="round" marker-end="url(#v3)"/><circle cx="160" cy="110" r="8" fill="#6E1410"/>
+            <text x="30" y="42" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">la loi des nœuds</text>
+            <text x="90" y="96" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">I</text>
+            <text x="268" y="68" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">I₁</text>
+            <text x="268" y="156" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">I₂</text>
+          </g>
+          <g class="step s2">
+            <text x="306" y="116" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">I = I₁ + I₂</text>
+          </g>
+          <g class="step s3"><line x1="60" y1="326" x2="330" y2="326" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="60" y1="326" x2="60" y2="280" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="60" y1="262" x2="60" y2="216" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="40" y1="262" x2="80" y2="262" stroke="#6E1410" stroke-width="4.4"/><line x1="50" y1="280" x2="70" y2="280" stroke="#6E1410" stroke-width="4.4"/><line x1="60" y1="216" x2="160" y2="216" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="230" y1="216" x2="330" y2="216" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><rect x="160" y="201" width="70" height="30" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><line x1="330" y1="216" x2="330" y2="236" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="330" y1="306" x2="330" y2="326" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><rect x="317" y="236" width="26" height="70" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><polyline points="221.0,249.1 217.7,245.7 214.0,242.8 209.8,240.4 205.4,238.6 200.7,237.5 196.0,237.0 191.2,237.2 186.5,238.1 182.0,239.6 177.7,241.7 173.8,244.4 170.3,247.7 167.2,251.4 164.8,255.4 162.9,259.8 161.6,264.4 161.0,269.2 161.1,274.0 161.9,278.7 163.3,283.2 165.3,287.6 167.9,291.6 171.1,295.2 174.7,298.3 178.7,300.8 183.1,302.8 187.6,304.2 192.4,304.9 197.1,304.9 201.9,304.3 206.5,303.0 210.8,301.1 214.9,298.6 218.6,295.5 221.8,292.0 224.4,288.0" fill="none" stroke="#1B3A8C" stroke-width="2.6"/><line x1="221.8" y1="292.0" x2="224.4" y2="288.0" stroke="#1B3A8C" stroke-width="2.6" stroke-linecap="round" marker-end="url(#r3)"/>
+            <text x="30" y="196" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">la loi des mailles</text>
+            <text x="352" y="265" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">sens choisi</text>
+            <text x="352" y="295" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">Σ U = 0</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="352" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="382" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">aux nœuds : la charge se conserve</text>
+            <rect x="10" y="406" width="450" height="54" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="235" y="430" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">sur une maille : l'énergie se conserve</text>
+            <text x="235" y="450" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">on repart d'où l'on est parti</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La loi des nœuds</h3>
+          <p style="font-size:17px">La somme des intensités qui <b>entrent</b> dans un nœud est égale à la somme de celles qui en <b>sortent</b>. C'est la <b>conservation de la charge</b> — rien de nouveau depuis PH8-A.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La loi des mailles</h3>
+          <p style="font-size:17px">Sur toute <b>boucle fermée</b>, la somme algébrique des tensions est <b>nulle</b>. C'est la <b>conservation de l'énergie</b> : on repart du point d'où l'on est parti, donc au même potentiel.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La méthode d'écriture</h3>
+          <p style="font-size:17px">On choisit un <b>sens de parcours</b> pour la maille, on l'indique par une <b>flèche</b> sur le schéma, et on affecte un signe aux tensions selon qu'on traverse le composant dans ce sens ou non.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce ne sont pas des règles arbitraires</h3>
+          <p style="font-size:17px">Les deux lois traduisent <b>deux conservations</b> : la charge aux nœuds, l'énergie sur les mailles. Les voir ainsi évite de les apprendre comme deux recettes sans origine.</p>
+          <p style="font-size:17px"><b>Et elles suffisent</b> à résoudre n'importe quel circuit du programme : elles fournissent <b>autant d'équations qu'il y a d'inconnues</b>. Ce qui reste est un système linéaire — la capsule A2-B des mathématiques, rien de plus.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un nœud : un courant entre, deux courants sortent.",
+      "La loi des nœuds : ce qui entre égale ce qui sort. La charge se conserve.",
+      "Une maille : une boucle fermée, et un sens de parcours qu'on choisit.",
+      "La loi des mailles : la somme algébrique des tensions y est nulle.",
+      "<em>Deux conservations :</em> la charge aux nœuds, l'énergie sur les mailles."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH9-08 ==================== -->
+  <section class="slide" data-ref="ANIM-PH9-08" data-title="Réduire un circuit mixte" data-sub="De l'intérieur vers l'extérieur, jamais l'inverse" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="40" y1="104" x2="90" y2="104" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><rect x="90" y="89" width="70" height="30" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><text x="125" y="109" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">R₁</text><line x1="160" y1="104" x2="200" y2="104" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="200" y1="62" x2="200" y2="146" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="300" y1="62" x2="300" y2="146" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="200" y1="62" x2="215" y2="62" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="285" y1="62" x2="300" y2="62" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><rect x="215" y="47" width="70" height="30" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><text x="250" y="67" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">R₂</text><line x1="200" y1="146" x2="215" y2="146" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><line x1="285" y1="146" x2="300" y2="146" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><rect x="215" y="131" width="70" height="30" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><text x="250" y="151" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">R₃</text><line x1="300" y1="104" x2="400" y2="104" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/>
+            <text x="408" y="30" text-anchor="end" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">le circuit de départ</text>
+          </g>
+          <g class="step s2"><line x1="40" y1="234" x2="90" y2="234" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><rect x="90" y="219" width="70" height="30" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><text x="125" y="239" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">R₁</text><line x1="160" y1="234" x2="210" y2="234" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><rect x="210" y="219" width="90" height="30" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><text x="255" y="239" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">R₂₃</text><line x1="300" y1="234" x2="400" y2="234" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/>
+            <text x="408" y="188" text-anchor="end" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">R₂ et R₃ remplacées</text>
+          </g>
+          <g class="step s3"><line x1="40" y1="316" x2="150" y2="316" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/><rect x="150" y="301" width="140" height="30" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/><text x="220" y="321" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">R équivalente</text><line x1="290" y1="316" x2="400" y2="316" stroke="#6E1410" stroke-width="2.8" stroke-linecap="square"/>
+            <text x="408" y="272" text-anchor="end" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">puis la série, en une seule</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="352" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="382" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">de l'intérieur vers l'extérieur, jamais l'inverse</text>
+            <rect x="10" y="406" width="450" height="54" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="430" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">puis on redescend : I total,</text>
+            <text x="235" y="450" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">puis chaque groupe, un à la fois</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La méthode est mécanique</h3>
+          <p style="font-size:17px">On repère les groupes <b>purement série</b> ou <b>purement parallèle</b> les plus <b>intérieurs</b>, on les remplace par leur équivalent, et on recommence. Ici : R₂ ∥ R₃ d'abord.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">On remonte</h3>
+          <p style="font-size:17px">Le circuit devient R₁ <b>en série</b> avec R₂₃ — un cas simple. On applique alors la règle de la série, et il ne reste qu'une résistance.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Puis on redescend</h3>
+          <p style="font-size:17px">Une fois la résistance <b>totale</b> connue, on calcule le <b>courant total</b>, puis on <b>redistribue</b> tension et courant groupe par groupe, en remontant le chemin inverse.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le contrôle final, et il est obligatoire</h3>
+          <p style="font-size:17px">La somme des courants dans les branches parallèles doit <b>redonner</b> le courant total, et la somme des tensions sur une maille doit <b>redonner</b> la tension du générateur. Deux sommes, deux vérifications gratuites.</p>
+          <p style="font-size:17px"><b>Le piège :</b> vouloir traiter tout le circuit d'un coup. On procède <b>un groupe à la fois</b>, en <b>redessinant</b> le circuit simplifié à chaque étape. C'est plus long à dire qu'à faire — et c'est ce qui évite toute erreur.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un circuit mixte : R₁ en série avec R₂ et R₃ en parallèle.",
+      "On commence par l'intérieur : R₂ et R₃ deviennent une seule résistance.",
+      "Il reste deux résistances en série : on les additionne.",
+      "Le circuit est réduit à une seule résistance équivalente.",
+      "<em>Puis on redescend</em> — et on vérifie par les sommes, qui doivent tomber juste."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule PH9-B — Série, parallèle et lois de Kirchhoff · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

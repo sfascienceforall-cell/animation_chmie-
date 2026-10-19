@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SFA — Animations capsule D5-B</title>
+<title>SFA — Animations capsule D5-A</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
@@ -158,8 +158,8 @@ body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
 
   <div class="body">
 
-  <!-- ==================== ANIM-D5-05 ==================== -->
-  <section class="slide" data-ref="ANIM-D5-05" data-title="L'aire se remplit sous la courbe" data-sub="Des rectangles de plus en plus fins, puis la valeur exacte" data-steps="5">
+  <!-- ==================== ANIM-D5-01 ==================== -->
+  <section class="slide" data-ref="ANIM-D5-01" data-title="Des rectangles de plus en plus fins" data-sub="La somme qui devient l'intégrale" data-steps="5">
     <div class="mid"><div class="split">
       <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
         <svg viewBox="0 0 470 315" width="452" height="303">
@@ -184,14 +184,15 @@ body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
       </div>
       <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
         <div class="card step s2 h4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">On approche par des rectangles</h3>
-          <p style="font-size:17px">Quatre rectangles donnent déjà une idée de l'aire : c'est grossier, mais c'est <b>calculable</b> — des largeurs fois des hauteurs.</p></div>
-        <div class="card acc step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et le calcul tient en une ligne</h3>
-          <div class="expr" style="font-size:22px;text-align:left;line-height:1.3">∫ de a à b = <b style="color:var(--sfa)">F(b) − F(a)</b></div>
-          <p style="font-size:17px;margin-top:4px">F est <b>n'importe quelle</b> primitive de f : la constante s'élimine dans la soustraction. C'est pour cela qu'il n'y a pas de « + C » ici.</p></div>
-        <div class="card step s5" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La discipline d'écriture</h3>
-          <p style="font-size:17px">On écrit la primitive <b>entre crochets, avec ses bornes</b>, avant de remplacer. Vingt secondes de plus, et on n'inverse jamais F(b) et F(a).</p></div>
-        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les propriétés utiles, et un piège de notation</h3>
-          <p style="font-size:17px"><b>Linéarité</b> · <b>relation de Chasles</b>, qui permet de découper l'intervalle · inverser les bornes change le signe · l'intégrale de a à a vaut 0.<br><br><b>Une intégrale définie est un nombre, pas une fonction.</b> Le « + C » ne concerne que les primitives ; l'écrire ici est une faute.</p></div>
+          <p style="font-size:17px">Quatre rectangles donnent déjà une idée : c'est grossier, mais c'est <b>calculable</b> — des largeurs fois des hauteurs. L'aire d'un rectangle, on sait faire ; celle d'une zone courbe, non.</p></div>
+        <div class="card step s3 h4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">On affine</h3>
+          <p style="font-size:17px">Quatorze rectangles collent bien mieux à la courbe. La méthode n'a pas changé d'un mot : seule la largeur a diminué.</p></div>
+        <div class="card acc step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">À la limite, c'est l'intégrale</h3>
+          <div class="expr" style="font-size:22px;text-align:left;line-height:1.3">∫ de a à b de f(x) dx</div>
+          <p style="font-size:17px;margin-top:4px">Quand la largeur tend vers zéro, la somme tend vers <b>un nombre unique</b> : l'aire exacte. Ce nombre est l'intégrale de f entre a et b.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La notation garde la trace du procédé</h3>
+          <p style="font-size:17px">Le signe ∫ est un <b>S allongé</b> — un S de « somme ». Et le <b>dx</b> est la largeur du rectangle, devenue infiniment petite. La notation n'est pas décorative : elle raconte la construction qu'on vient de faire.</p>
+          <p style="font-size:17px">Retenez surtout ceci : une intégrale définie est <b>un nombre</b>, pas une fonction. Il n'y a donc jamais de « + C » ici — ce signe appartient aux primitives, qu'on verra à la capsule suivante.</p></div>
       </div>
     </div></div>
     <script type="application/json" class="caps">[
@@ -199,16 +200,69 @@ body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
       "Premier essai : quatre rectangles. Approximatif, mais calculable.",
       "On les affine : quatorze rectangles collent déjà bien mieux à la courbe.",
       "À la limite, l'approximation devient exacte — et ce nombre-là, c'est l'<b>intégrale</b>.",
-      "<em>Et le calcul est immédiat :</em> F(b) − F(a), avec n'importe quelle primitive."
+      "<em>La notation le dit :</em> le ∫ est un S de somme, et le dx une largeur devenue infime."
     ]</script>
   </section>
 
-  <!-- ==================== ANIM-D5-06 ==================== -->
-  <section class="slide" data-ref="ANIM-D5-06" data-title="LE piège : la courbe passe sous l'axe" data-sub="L'intégrale et l'aire cessent d'être la même chose" data-steps="5">
+  <!-- ==================== ANIM-D5-02 ==================== -->
+  <section class="slide" data-ref="ANIM-D5-02" data-title="L'aire qui s'accroît a pour dérivée la fonction" data-sub="D'où vient le F(b) − F(a)" data-steps="5">
     <div class="mid"><div class="split">
       <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
         <svg viewBox="0 0 470 315" width="452" height="303">
           <defs><marker id="b2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <g class="step s1">
+            <line x1="50" y1="270" x2="460" y2="270" stroke="#8A8F98" stroke-width="1.6"/>
+            <line x1="70" y1="45" x2="70" y2="292" stroke="#8A8F98" stroke-width="1.6"/>
+            <path d="M 134.0,270.0 L 134.0,142.0 L 134.8,141.2 L 135.5,140.5 L 136.3,139.7 L 137.1,139.0 L 137.8,138.2 L 138.6,137.5 L 139.4,136.7 L 140.1,136.0 L 140.9,135.3 L 141.7,134.6 L 142.4,133.8 L 143.2,133.1 L 144.0,132.4 L 144.8,131.7 L 145.5,131.0 L 146.3,130.3 L 147.1,129.6 L 147.8,128.9 L 148.6,128.2 L 149.4,127.6 L 150.1,126.9 L 150.9,126.2 L 151.7,125.6 L 152.4,124.9 L 153.2,124.2 L 154.0,123.6 L 154.7,122.9 L 155.5,122.3 L 156.3,121.7 L 157.0,121.0 L 157.8,120.4 L 158.6,119.8 L 159.3,119.2 L 160.1,118.6 L 160.9,117.9 L 161.6,117.3 L 162.4,116.7 L 163.2,116.1 L 164.0,115.6 L 164.7,115.0 L 165.5,114.4 L 166.3,113.8 L 167.0,113.2 L 167.8,112.7 L 168.6,112.1 L 169.3,111.5 L 170.1,111.0 L 170.9,110.4 L 171.6,109.9 L 172.4,109.4 L 173.2,108.8 L 173.9,108.3 L 174.7,107.8 L 175.5,107.2 L 176.2,106.7 L 177.0,106.2 L 177.8,105.7 L 178.5,105.2 L 179.3,104.7 L 180.1,104.2 L 180.8,103.7 L 181.6,103.2 L 182.4,102.8 L 183.2,102.3 L 183.9,101.8 L 184.7,101.3 L 185.5,100.9 L 186.2,100.4 L 187.0,100.0 L 187.8,99.5 L 188.5,99.1 L 189.3,98.6 L 190.1,98.2 L 190.8,97.8 L 191.6,97.4 L 192.4,96.9 L 193.1,96.5 L 193.9,96.1 L 194.7,95.7 L 195.4,95.3 L 196.2,94.9 L 197.0,94.5 L 197.7,94.1 L 198.5,93.7 L 199.3,93.4 L 200.0,93.0 L 200.8,92.6 L 201.6,92.3 L 202.4,91.9 L 203.1,91.5 L 203.9,91.2 L 204.7,90.8 L 205.4,90.5 L 206.2,90.2 L 207.0,89.8 L 207.7,89.5 L 208.5,89.2 L 209.3,88.9 L 210.0,88.5 L 210.8,88.2 L 211.6,87.9 L 212.3,87.6 L 213.1,87.3 L 213.9,87.0 L 214.6,86.8 L 215.4,86.5 L 216.2,86.2 L 216.9,85.9 L 217.7,85.7 L 218.5,85.4 L 219.2,85.1 L 220.0,84.9 L 220.8,84.6 L 221.6,84.4 L 222.3,84.2 L 223.1,83.9 L 223.9,83.7 L 224.6,83.5 L 225.4,83.2 L 226.2,83.0 L 226.9,82.8 L 227.7,82.6 L 228.5,82.4 L 229.2,82.2 L 230.0,82.0 L 230.8,81.8 L 231.5,81.6 L 232.3,81.4 L 233.1,81.3 L 233.8,81.1 L 234.6,80.9 L 235.4,80.8 L 236.1,80.6 L 236.9,80.5 L 237.7,80.3 L 238.4,80.2 L 239.2,80.0 L 240.0,79.9 L 240.8,79.8 L 241.5,79.6 L 242.3,79.5 L 243.1,79.4 L 243.8,79.3 L 244.6,79.2 L 245.4,79.1 L 246.1,79.0 L 246.9,78.9 L 247.7,78.8 L 248.4,78.7 L 249.2,78.6 L 250.0,78.6 L 250.7,78.5 L 251.5,78.4 L 252.3,78.4 L 253.0,78.3 L 253.8,78.3 L 254.6,78.2 L 255.3,78.2 L 256.1,78.1 L 256.9,78.1 L 257.6,78.1 L 258.4,78.1 L 259.2,78.0 L 260.0,78.0 L 260.7,78.0 L 261.5,78.0 L 262.3,78.0 L 263.0,78.0 L 263.8,78.0 L 264.6,78.0 L 265.3,78.0 L 266.1,78.1 L 266.9,78.1 L 267.6,78.1 L 268.4,78.2 L 269.2,78.2 L 269.9,78.2 L 270.7,78.3 L 271.5,78.4 L 272.2,78.4 L 273.0,78.5 L 273.8,78.5 L 274.5,78.6 L 275.3,78.7 L 276.1,78.8 L 276.8,78.9 L 277.6,79.0 L 278.4,79.0 L 279.2,79.1 L 279.9,79.3 L 280.7,79.4 L 281.5,79.5 L 282.2,79.6 L 283.0,79.7 L 283.8,79.8 L 284.5,80.0 L 285.3,80.1 L 286.1,80.3 L 286.8,80.4 L 287.6,80.6 L 287.6,270.0 Z" fill="#1D4ED8" opacity="0.22"/>
+            <path d="M 95.6,186.2 L 97.0,184.4 L 98.4,182.6 L 99.8,180.8 L 101.1,179.1 L 102.5,177.3 L 103.9,175.6 L 105.3,173.9 L 106.7,172.2 L 108.1,170.5 L 109.5,168.9 L 110.9,167.2 L 112.2,165.6 L 113.6,164.0 L 115.0,162.4 L 116.4,160.8 L 117.8,159.2 L 119.2,157.7 L 120.6,156.1 L 121.9,154.6 L 123.3,153.1 L 124.7,151.6 L 126.1,150.1 L 127.5,148.7 L 128.9,147.2 L 130.3,145.8 L 131.7,144.4 L 133.0,143.0 L 134.4,141.6 L 135.8,140.2 L 137.2,138.8 L 138.6,137.5 L 140.0,136.2 L 141.4,134.9 L 142.7,133.6 L 144.1,132.3 L 145.5,131.0 L 146.9,129.7 L 148.3,128.5 L 149.7,127.3 L 151.1,126.1 L 152.5,124.9 L 153.8,123.7 L 155.2,122.5 L 156.6,121.4 L 158.0,120.2 L 159.4,119.1 L 160.8,118.0 L 162.2,116.9 L 163.5,115.9 L 164.9,114.8 L 166.3,113.8 L 167.7,112.7 L 169.1,111.7 L 170.5,110.7 L 171.9,109.7 L 173.3,108.8 L 174.6,107.8 L 176.0,106.9 L 177.4,105.9 L 178.8,105.0 L 180.2,104.1 L 181.6,103.3 L 183.0,102.4 L 184.3,101.6 L 185.7,100.7 L 187.1,99.9 L 188.5,99.1 L 189.9,98.3 L 191.3,97.5 L 192.7,96.8 L 194.1,96.0 L 195.4,95.3 L 196.8,94.6 L 198.2,93.9 L 199.6,93.2 L 201.0,92.5 L 202.4,91.9 L 203.8,91.2 L 205.1,90.6 L 206.5,90.0 L 207.9,89.4 L 209.3,88.8 L 210.7,88.3 L 212.1,87.7 L 213.5,87.2 L 214.9,86.7 L 216.2,86.2 L 217.6,85.7 L 219.0,85.2 L 220.4,84.8 L 221.8,84.3 L 223.2,83.9 L 224.6,83.5 L 225.9,83.1 L 227.3,82.7 L 228.7,82.3 L 230.1,82.0 L 231.5,81.6 L 232.9,81.3 L 234.3,81.0 L 235.7,80.7 L 237.0,80.4 L 238.4,80.2 L 239.8,79.9 L 241.2,79.7 L 242.6,79.5 L 244.0,79.3 L 245.4,79.1 L 246.7,78.9 L 248.1,78.8 L 249.5,78.6 L 250.9,78.5 L 252.3,78.4 L 253.7,78.3 L 255.1,78.2 L 256.5,78.1 L 257.8,78.1 L 259.2,78.0 L 260.6,78.0 L 262.0,78.0 L 263.4,78.0 L 264.8,78.0 L 266.2,78.1 L 267.5,78.1 L 268.9,78.2 L 270.3,78.3 L 271.7,78.4 L 273.1,78.5 L 274.5,78.6 L 275.9,78.8 L 277.3,78.9 L 278.6,79.1 L 280.0,79.3 L 281.4,79.5 L 282.8,79.7 L 284.2,79.9 L 285.6,80.2 L 287.0,80.4 L 288.3,80.7 L 289.7,81.0 L 291.1,81.3 L 292.5,81.6 L 293.9,82.0 L 295.3,82.3 L 296.7,82.7 L 298.1,83.1 L 299.4,83.5 L 300.8,83.9 L 302.2,84.3 L 303.6,84.8 L 305.0,85.2 L 306.4,85.7 L 307.8,86.2 L 309.1,86.7 L 310.5,87.2 L 311.9,87.7 L 313.3,88.3 L 314.7,88.8 L 316.1,89.4 L 317.5,90.0 L 318.9,90.6 L 320.2,91.2 L 321.6,91.9 L 323.0,92.5 L 324.4,93.2 L 325.8,93.9 L 327.2,94.6 L 328.6,95.3 L 329.9,96.0 L 331.3,96.8 L 332.7,97.5 L 334.1,98.3 L 335.5,99.1 L 336.9,99.9 L 338.3,100.7 L 339.7,101.6 L 341.0,102.4 L 342.4,103.3 L 343.8,104.1 L 345.2,105.0 L 346.6,105.9 L 348.0,106.9 L 349.4,107.8 L 350.7,108.8 L 352.1,109.7 L 353.5,110.7 L 354.9,111.7 L 356.3,112.7 L 357.7,113.8 L 359.1,114.8 L 360.5,115.9 L 361.8,116.9 L 363.2,118.0 L 364.6,119.1 L 366.0,120.2 L 367.4,121.4 L 368.8,122.5 L 370.2,123.7 L 371.5,124.9 L 372.9,126.1 L 374.3,127.3 L 375.7,128.5 L 377.1,129.7 L 378.5,131.0 L 379.9,132.3 L 381.3,133.6 L 382.6,134.9 L 384.0,136.2 L 385.4,137.5 L 386.8,138.8 L 388.2,140.2 L 389.6,141.6 L 391.0,143.0 L 392.3,144.4 L 393.7,145.8 L 395.1,147.2 L 396.5,148.7 L 397.9,150.1 L 399.3,151.6 L 400.7,153.1 L 402.1,154.6 L 403.4,156.1 L 404.8,157.7 L 406.2,159.2 L 407.6,160.8 L 409.0,162.4 L 410.4,164.0 L 411.8,165.6 L 413.1,167.2 L 414.5,168.9 L 415.9,170.5 L 417.3,172.2 L 418.7,173.9 L 420.1,175.6 L 421.5,177.3 L 422.9,179.1 L 424.2,180.8 L 425.6,182.6 L 427.0,184.4 L 428.4,186.2" fill="none" stroke="#1D4ED8" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="134.0" y1="186" x2="134.0" y2="276" stroke="#8A8F98" stroke-width="2" stroke-dasharray="6 5"/>
+            <line x1="287.6" y1="80.6" x2="287.6" y2="276" stroke="#8A8F98" stroke-width="2" stroke-dasharray="6 5"/>
+            <text x="134.0" y="294" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">a</text>
+            <text x="287.6" y="294" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#111" font-weight="700">x</text>
+            <text x="205" y="210" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">A(x)</text>
+          </g>
+          <g class="step s2">
+            <path d="M 287.6,270.0 L 287.6,80.6 L 287.8,80.6 L 288.0,80.6 L 288.1,80.7 L 288.3,80.7 L 288.5,80.7 L 288.7,80.8 L 288.8,80.8 L 289.0,80.8 L 289.2,80.9 L 289.4,80.9 L 289.5,81.0 L 289.7,81.0 L 289.9,81.0 L 290.1,81.1 L 290.2,81.1 L 290.4,81.2 L 290.6,81.2 L 290.8,81.2 L 290.9,81.3 L 291.1,81.3 L 291.3,81.4 L 291.5,81.4 L 291.6,81.4 L 291.8,81.5 L 292.0,81.5 L 292.2,81.6 L 292.4,81.6 L 292.5,81.6 L 292.7,81.7 L 292.9,81.7 L 293.1,81.8 L 293.2,81.8 L 293.4,81.9 L 293.6,81.9 L 293.8,81.9 L 293.9,82.0 L 294.1,82.0 L 294.3,82.1 L 294.5,82.1 L 294.6,82.2 L 294.8,82.2 L 295.0,82.3 L 295.2,82.3 L 295.3,82.3 L 295.5,82.4 L 295.7,82.4 L 295.9,82.5 L 296.0,82.5 L 296.2,82.6 L 296.4,82.6 L 296.6,82.7 L 296.8,82.7 L 296.9,82.8 L 297.1,82.8 L 297.3,82.9 L 297.5,82.9 L 297.6,83.0 L 297.8,83.0 L 298.0,83.1 L 298.2,83.1 L 298.3,83.2 L 298.5,83.2 L 298.7,83.3 L 298.9,83.3 L 299.0,83.4 L 299.2,83.4 L 299.4,83.5 L 299.6,83.5 L 299.7,83.6 L 299.9,83.6 L 300.1,83.7 L 300.3,83.7 L 300.4,83.8 L 300.6,83.8 L 300.8,83.9 L 301.0,83.9 L 301.2,84.0 L 301.3,84.0 L 301.5,84.1 L 301.7,84.2 L 301.9,84.2 L 302.0,84.3 L 302.2,84.3 L 302.4,84.4 L 302.6,84.4 L 302.7,84.5 L 302.9,84.5 L 303.1,84.6 L 303.3,84.7 L 303.4,84.7 L 303.6,84.8 L 303.8,84.8 L 304.0,84.9 L 304.1,84.9 L 304.3,85.0 L 304.5,85.1 L 304.7,85.1 L 304.8,85.2 L 305.0,85.2 L 305.2,85.3 L 305.4,85.3 L 305.6,85.4 L 305.7,85.5 L 305.9,85.5 L 306.1,85.6 L 306.3,85.7 L 306.4,85.7 L 306.6,85.8 L 306.8,85.8 L 307.0,85.9 L 307.1,86.0 L 307.3,86.0 L 307.5,86.1 L 307.7,86.1 L 307.8,86.2 L 308.0,86.3 L 308.2,86.3 L 308.4,86.4 L 308.5,86.5 L 308.7,86.5 L 308.9,86.6 L 309.1,86.7 L 309.2,86.7 L 309.4,86.8 L 309.6,86.9 L 309.8,86.9 L 310.0,87.0 L 310.1,87.0 L 310.3,87.1 L 310.5,87.2 L 310.7,87.2 L 310.8,87.3 L 311.0,87.4 L 311.2,87.4 L 311.4,87.5 L 311.5,87.6 L 311.7,87.7 L 311.9,87.7 L 312.1,87.8 L 312.2,87.9 L 312.4,87.9 L 312.6,88.0 L 312.8,88.1 L 312.9,88.1 L 313.1,88.2 L 313.3,88.3 L 313.5,88.3 L 313.6,88.4 L 313.8,88.5 L 314.0,88.6 L 314.2,88.6 L 314.4,88.7 L 314.5,88.8 L 314.7,88.9 L 314.9,88.9 L 315.1,89.0 L 315.2,89.1 L 315.4,89.1 L 315.6,89.2 L 315.8,89.3 L 315.9,89.4 L 316.1,89.4 L 316.3,89.5 L 316.5,89.6 L 316.6,89.7 L 316.8,89.7 L 317.0,89.8 L 317.2,89.9 L 317.3,90.0 L 317.5,90.0 L 317.7,90.1 L 317.9,90.2 L 318.0,90.3 L 318.2,90.3 L 318.4,90.4 L 318.6,90.5 L 318.8,90.6 L 318.9,90.7 L 319.1,90.7 L 319.3,90.8 L 319.5,90.9 L 319.6,91.0 L 319.8,91.1 L 320.0,91.1 L 320.2,91.2 L 320.3,91.3 L 320.5,91.4 L 320.7,91.5 L 320.9,91.5 L 321.0,91.6 L 321.2,91.7 L 321.4,91.8 L 321.6,91.9 L 321.7,91.9 L 321.9,92.0 L 322.1,92.1 L 322.3,92.2 L 322.4,92.3 L 322.6,92.4 L 322.8,92.4 L 322.8,270.0 Z" fill="#0A2A6E" opacity="0.55"/>
+            <text x="305.2" y="252" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#font-family="Be Vietnam Pro,Arial"font-family="Be Vietnam Pro,Arial"font-family="Be Vietnam Pro,Arial"" font-weight="700">h</text>
+          </g>
+          <g class="step s3"><rect x="287.6" y="80.6" width="35.2" height="189.4" fill="none" stroke="#0A2A6E" stroke-width="2.4" stroke-dasharray="7 5"/>
+            <text x="330.8" y="86.6" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">f(x)</text>
+            <text x="96" y="36" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#0A2A6E" font-weight="700">A(x + h) − A(x) ≈ h × f(x)</text>
+          </g>
+          <g class="step s4">
+            <text x="96" y="64" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">donc A′(x) = f(x)</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'aire accumulée est une fonction</h3>
+          <p style="font-size:17px">Notons <b>A(x)</b> l'aire sous la courbe depuis a jusqu'à x. Quand x avance, A(x) grandit : c'est bien une fonction de x, et on peut donc la dériver.</p></div>
+        <div class="card step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">On avance d'un petit pas h</h3>
+          <p style="font-size:17px">L'aire gagne une <b>bande étroite</b> de largeur h. Sa hauteur vaut partout à peu près f(x) : sur si peu, la courbe n'a pas le temps de varier.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">D'où une égalité approchée</h3>
+          <div class="expr" style="font-size:21px;text-align:left;line-height:1.3">A(x + h) − A(x) ≈ h × f(x)</div>
+          <p style="font-size:17px;margin-top:4px">On divise par h : le <b>taux d'accroissement</b> de A vaut à peu près f(x). Et plus h est petit, meilleure est l'approximation.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et tout le chapitre en découle</h3>
+          <p style="font-size:17px">Quand h tend vers zéro, l'approximation devient exacte : <b>A′(x) = f(x)</b>. L'aire accumulée est donc <b>une primitive de f</b>.</p>
+          <p style="font-size:17px">Donc l'intégrale de a à b vaut <b>F(b) − F(a)</b>, pour n'importe quelle primitive F : la constante s'élimine dans la soustraction.</p>
+          <p style="font-size:17px"><b>La discipline :</b> on pose la primitive entre crochets, avec ses bornes, <b>avant</b> de remplacer. On n'inverse alors jamais F(b) et F(a).</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "L'aire accumulée depuis a jusqu'à x : appelons-la A(x).",
+      "On avance d'un petit pas h : l'aire gagne une bande étroite.",
+      "Cette bande est presque un rectangle, de largeur h et de hauteur f(x).",
+      "On divise par h, on fait tendre h vers zéro : <b>A′(x) = f(x)</b>.",
+      "<em>Donc l'intégrale vaut F(b) − F(a)</em> — et on sait enfin pourquoi."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-D5-03 ==================== -->
+  <section class="slide" data-ref="ANIM-D5-03" data-title="LE piège : la courbe passe sous l'axe" data-sub="L'intégrale et l'aire cessent d'être la même chose" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 315" width="452" height="303">
+          <defs><marker id="b3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
           <g class="step s1">
             <line x1="70" y1="150" x2="420" y2="150" stroke="#8A8F98" stroke-width="1.6"/>
             <line x1="110" y1="22" x2="110" y2="252" stroke="#8A8F98" stroke-width="1.6"/>
@@ -253,12 +307,12 @@ body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
     ]</script>
   </section>
 
-  <!-- ==================== ANIM-D5-07 ==================== -->
-  <section class="slide" data-ref="ANIM-D5-07" data-title="L'aire entre deux courbes" data-sub="Celle du dessus moins celle du dessous" data-steps="5">
+  <!-- ==================== ANIM-D5-04 ==================== -->
+  <section class="slide" data-ref="ANIM-D5-04" data-title="L'aire entre deux courbes" data-sub="Celle du dessus moins celle du dessous" data-steps="5">
     <div class="mid"><div class="split">
       <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
         <svg viewBox="0 0 470 315" width="452" height="303">
-          <defs><marker id="b3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <defs><marker id="b4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
           <g class="step s1">
             <line x1="60" y1="210" x2="425" y2="210" stroke="#8A8F98" stroke-width="1.6"/>
             <line x1="245" y1="72" x2="245" y2="305" stroke="#8A8F98" stroke-width="1.6"/>
@@ -302,18 +356,15 @@ body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
     ]</script>
   </section>
 
-  <!-- ==================== ANIM-D5-08 ==================== -->
-  <section class="slide" data-ref="ANIM-D5-08" data-title="Le coureur, dans l'autre sens" data-sub="L'aire sous la vitesse redonne la distance" data-steps="5">
+  <!-- ==================== ANIM-D5-05 ==================== -->
+  <section class="slide" data-ref="ANIM-D5-05" data-title="Le coureur, dans l'autre sens" data-sub="L'aire sous la vitesse redonne la distance" data-steps="5">
     <div class="mid"><div class="split">
       <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
         <svg viewBox="0 0 470 315" width="452" height="303">
-          <defs><marker id="b4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
+          <defs><marker id="b5" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1D4ED8"/></marker><marker id="d5" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#0A2A6E"/></marker></defs>
           <g class="step s1">
+            <g fill="#E3E7EE"><rect x="135.5" y="34" width="1" height="251"/><rect x="211.5" y="34" width="1" height="251"/><rect x="287.5" y="34" width="1" height="251"/><rect x="363.5" y="34" width="1" height="251"/><rect x="439.5" y="34" width="1" height="251"/><rect x="60" y="144.5" width="392" height="1"/><rect x="60" y="214.5" width="392" height="1"/></g>
             <g stroke="#E3E7EE" stroke-width="1">
-              <line x1="136" y1="34" x2="136" y2="285"/><line x1="212" y1="34" x2="212" y2="285"/>
-              <line x1="288" y1="34" x2="288" y2="285"/><line x1="364" y1="34" x2="364" y2="285"/>
-              <line x1="440" y1="34" x2="440" y2="285"/>
-              <line x1="60" y1="145" x2="452" y2="145"/><line x1="60" y1="215" x2="452" y2="215"/>
             </g>
             <line x1="45" y1="285" x2="458" y2="285" stroke="#8A8F98" stroke-width="1.6"/>
             <line x1="60" y1="32" x2="60" y2="300" stroke="#8A8F98" stroke-width="1.6"/>
@@ -321,13 +372,13 @@ body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
               <text x="212" y="302" text-anchor="middle">2</text><text x="440" y="302" text-anchor="middle">5</text>
               <text x="54" y="149" text-anchor="end">200</text><text x="54" y="219" text-anchor="end">100</text>
               <text x="122" y="302">t (min)</text>
-              <text x="458" y="46" text-anchor="end">vitesse (m/min)</text>
+              <text x="458" y="24" text-anchor="end">vitesse (m/min)</text>
             </g>
             <path d="M 60.0,47.0 L 61.6,48.3 L 63.2,49.7 L 64.8,51.0 L 66.3,52.3 L 67.9,53.7 L 69.5,55.0 L 71.1,56.3 L 72.7,57.6 L 74.2,58.9 L 75.8,60.2 L 77.4,61.5 L 79.0,62.8 L 80.6,64.1 L 82.2,65.4 L 83.8,66.7 L 85.3,68.0 L 86.9,69.3 L 88.5,70.6 L 90.1,71.8 L 91.7,73.1 L 93.2,74.4 L 94.8,75.6 L 96.4,76.9 L 98.0,78.2 L 99.6,79.4 L 101.2,80.7 L 102.8,81.9 L 104.3,83.1 L 105.9,84.4 L 107.5,85.6 L 109.1,86.8 L 110.7,88.1 L 112.2,89.3 L 113.8,90.5 L 115.4,91.7 L 117.0,92.9 L 118.6,94.1 L 120.2,95.4 L 121.8,96.6 L 123.3,97.8 L 124.9,98.9 L 126.5,100.1 L 128.1,101.3 L 129.7,102.5 L 131.2,103.7 L 132.8,104.9 L 134.4,106.0 L 136.0,107.2 L 137.6,108.4 L 139.2,109.5 L 140.8,110.7 L 142.3,111.8 L 143.9,113.0 L 145.5,114.1 L 147.1,115.3 L 148.7,116.4 L 150.2,117.6 L 151.8,118.7 L 153.4,119.8 L 155.0,120.9 L 156.6,122.1 L 158.2,123.2 L 159.8,124.3 L 161.3,125.4 L 162.9,126.5 L 164.5,127.6 L 166.1,128.7 L 167.7,129.8 L 169.2,130.9 L 170.8,132.0 L 172.4,133.1 L 174.0,134.2 L 175.6,135.2 L 177.2,136.3 L 178.8,137.4 L 180.3,138.4 L 181.9,139.5 L 183.5,140.6 L 185.1,141.6 L 186.7,142.7 L 188.2,143.7 L 189.8,144.8 L 191.4,145.8 L 193.0,146.8 L 194.6,147.9 L 196.2,148.9 L 197.8,149.9 L 199.3,151.0 L 200.9,152.0 L 202.5,153.0 L 204.1,154.0 L 205.7,155.0 L 207.2,156.0 L 208.8,157.0 L 210.4,158.0 L 212.0,159.0 L 213.6,160.0 L 215.2,161.0 L 216.8,162.0 L 218.3,162.9 L 219.9,163.9 L 221.5,164.9 L 223.1,165.9 L 224.7,166.8 L 226.2,167.8 L 227.8,168.7 L 229.4,169.7 L 231.0,170.6 L 232.6,171.6 L 234.2,172.5 L 235.8,173.5 L 237.3,174.4 L 238.9,175.3 L 240.5,176.3 L 242.1,177.2 L 243.7,178.1 L 245.2,179.0 L 246.8,179.9 L 248.4,180.8 L 250.0,181.8 L 251.6,182.7 L 253.2,183.6 L 254.8,184.4 L 256.3,185.3 L 257.9,186.2 L 259.5,187.1 L 261.1,188.0 L 262.7,188.9 L 264.2,189.7 L 265.8,190.6 L 267.4,191.5 L 269.0,192.3 L 270.6,193.2 L 272.2,194.1 L 273.8,194.9 L 275.3,195.8 L 276.9,196.6 L 278.5,197.4 L 280.1,198.3 L 281.7,199.1 L 283.2,199.9 L 284.8,200.8 L 286.4,201.6 L 288.0,202.4 L 289.6,203.2 L 291.2,204.0 L 292.8,204.8 L 294.3,205.6 L 295.9,206.4 L 297.5,207.2 L 299.1,208.0 L 300.7,208.8 L 302.2,209.6 L 303.8,210.4 L 305.4,211.2 L 307.0,211.9 L 308.6,212.7 L 310.2,213.5 L 311.8,214.2 L 313.3,215.0 L 314.9,215.8 L 316.5,216.5 L 318.1,217.3 L 319.7,218.0 L 321.2,218.7 L 322.8,219.5 L 324.4,220.2 L 326.0,220.9 L 327.6,221.7 L 329.2,222.4 L 330.8,223.1 L 332.3,223.8 L 333.9,224.6 L 335.5,225.3 L 337.1,226.0 L 338.7,226.7 L 340.2,227.4 L 341.8,228.1 L 343.4,228.8 L 345.0,229.4 L 346.6,230.1 L 348.2,230.8 L 349.8,231.5 L 351.3,232.2 L 352.9,232.8 L 354.5,233.5 L 356.1,234.1 L 357.7,234.8 L 359.2,235.5 L 360.8,236.1 L 362.4,236.8 L 364.0,237.4 L 365.6,238.0 L 367.2,238.7 L 368.8,239.3 L 370.3,239.9 L 371.9,240.6 L 373.5,241.2 L 375.1,241.8 L 376.7,242.4 L 378.2,243.0 L 379.8,243.6 L 381.4,244.2 L 383.0,244.8 L 384.6,245.4 L 386.2,246.0 L 387.8,246.6 L 389.3,247.2 L 390.9,247.8 L 392.5,248.4 L 394.1,248.9 L 395.7,249.5 L 397.2,250.1 L 398.8,250.6 L 400.4,251.2 L 402.0,251.8 L 403.6,252.3 L 405.2,252.9 L 406.8,253.4 L 408.3,253.9 L 409.9,254.5 L 411.5,255.0 L 413.1,255.5 L 414.7,256.1 L 416.2,256.6 L 417.8,257.1 L 419.4,257.6 L 421.0,258.1 L 422.6,258.6 L 424.2,259.2 L 425.8,259.7 L 427.3,260.1 L 428.9,260.6 L 430.5,261.1 L 432.1,261.6 L 433.7,262.1 L 435.2,262.6 L 436.8,263.1 L 438.4,263.5 L 440.0,264.0" fill="none" stroke="#0A2A6E" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
           </g>
           <g class="step s2">
             <circle cx="212" cy="159" r="9" fill="#1D4ED8"/>
-            <text x="226" y="142" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">180 m/min à 2 min</text>
+            <rect x="214" y="121" width="174" height="30" rx="6" fill="#font-family="Be Vietnam Pro,Arial"font-family="Be Vietnam Pro,Arial"font-family="Be Vietnam Pro,Arial""/><text x="226" y="142" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1D4ED8" font-weight="700">180 m/min à 2 min</text>
           </g>
           <g class="step s3">
             <path d="M 60.0,285.0 L 60.0,47.0 L 61.9,48.6 L 63.8,50.2 L 65.7,51.8 L 67.6,53.4 L 69.5,55.0 L 71.4,56.6 L 73.3,58.1 L 75.2,59.7 L 77.1,61.3 L 79.0,62.8 L 80.9,64.4 L 82.8,65.9 L 84.7,67.5 L 86.6,69.0 L 88.5,70.6 L 90.4,72.1 L 92.3,73.6 L 94.2,75.1 L 96.1,76.6 L 98.0,78.2 L 99.9,79.7 L 101.8,81.1 L 103.7,82.6 L 105.6,84.1 L 107.5,85.6 L 109.4,87.1 L 111.3,88.6 L 113.2,90.0 L 115.1,91.5 L 117.0,92.9 L 118.9,94.4 L 120.8,95.8 L 122.7,97.3 L 124.6,98.7 L 126.5,100.1 L 128.4,101.6 L 130.3,103.0 L 132.2,104.4 L 134.1,105.8 L 136.0,107.2 L 137.9,108.6 L 139.8,110.0 L 141.7,111.4 L 143.6,112.8 L 145.5,114.1 L 147.4,115.5 L 149.3,116.9 L 151.2,118.2 L 153.1,119.6 L 155.0,120.9 L 156.9,122.3 L 158.8,123.6 L 160.7,125.0 L 162.6,126.3 L 164.5,127.6 L 166.4,128.9 L 168.3,130.2 L 170.2,131.5 L 172.1,132.9 L 174.0,134.2 L 175.9,135.4 L 177.8,136.7 L 179.7,138.0 L 181.6,139.3 L 183.5,140.6 L 185.4,141.8 L 187.3,143.1 L 189.2,144.3 L 191.1,145.6 L 193.0,146.8 L 194.9,148.1 L 196.8,149.3 L 198.7,150.5 L 200.6,151.8 L 202.5,153.0 L 204.4,154.2 L 206.3,155.4 L 208.2,156.6 L 210.1,157.8 L 212.0,159.0 L 213.9,160.2 L 215.8,161.4 L 217.7,162.5 L 219.6,163.7 L 221.5,164.9 L 223.4,166.0 L 225.3,167.2 L 227.2,168.4 L 229.1,169.5 L 231.0,170.6 L 232.9,171.8 L 234.8,172.9 L 236.7,174.0 L 238.6,175.1 L 240.5,176.3 L 242.4,177.4 L 244.3,178.5 L 246.2,179.6 L 248.1,180.7 L 250.0,181.8 L 251.9,182.8 L 253.8,183.9 L 255.7,185.0 L 257.6,186.0 L 259.5,187.1 L 261.4,188.2 L 263.3,189.2 L 265.2,190.3 L 267.1,191.3 L 269.0,192.3 L 270.9,193.4 L 272.8,194.4 L 274.7,195.4 L 276.6,196.4 L 278.5,197.4 L 280.4,198.4 L 282.3,199.4 L 284.2,200.4 L 286.1,201.4 L 288.0,202.4 L 289.9,203.4 L 291.8,204.3 L 293.7,205.3 L 295.6,206.3 L 297.5,207.2 L 299.4,208.2 L 301.3,209.1 L 303.2,210.1 L 305.1,211.0 L 307.0,211.9 L 308.9,212.9 L 310.8,213.8 L 312.7,214.7 L 314.6,215.6 L 316.5,216.5 L 318.4,217.4 L 320.3,218.3 L 322.2,219.2 L 324.1,220.1 L 326.0,220.9 L 327.9,221.8 L 329.8,222.7 L 331.7,223.6 L 333.6,224.4 L 335.5,225.3 L 337.4,226.1 L 339.3,226.9 L 341.2,227.8 L 343.1,228.6 L 345.0,229.4 L 346.9,230.3 L 348.8,231.1 L 350.7,231.9 L 352.6,232.7 L 354.5,233.5 L 356.4,234.3 L 358.3,235.1 L 360.2,235.8 L 362.1,236.6 L 364.0,237.4 L 365.9,238.2 L 367.8,238.9 L 369.7,239.7 L 371.6,240.4 L 373.5,241.2 L 375.4,241.9 L 377.3,242.7 L 379.2,243.4 L 381.1,244.1 L 383.0,244.8 L 384.9,245.6 L 386.8,246.3 L 388.7,247.0 L 390.6,247.7 L 392.5,248.4 L 394.4,249.0 L 396.3,249.7 L 398.2,250.4 L 400.1,251.1 L 402.0,251.8 L 403.9,252.4 L 405.8,253.1 L 407.7,253.7 L 409.6,254.4 L 411.5,255.0 L 413.4,255.6 L 415.3,256.3 L 417.2,256.9 L 419.1,257.5 L 421.0,258.1 L 422.9,258.7 L 424.8,259.4 L 426.7,260.0 L 428.6,260.5 L 430.5,261.1 L 432.4,261.7 L 434.3,262.3 L 436.2,262.9 L 438.1,263.4 L 440.0,264.0 L 440.0,285.0 Z" fill="#1D4ED8" opacity="0.28"/>
@@ -369,7 +420,7 @@ body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
   <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
 </div></div>
 
-<div id="toc"><h2>Capsule D5-B — L'intégrale définie et les aires · 4 animations</h2><ul id="toclist"></ul></div>
+<div id="toc"><h2>Capsule D5-A — L'intégrale : l'aire sous la courbe · 5 animations</h2><ul id="toclist"></ul></div>
 
 <script>
 (function(){

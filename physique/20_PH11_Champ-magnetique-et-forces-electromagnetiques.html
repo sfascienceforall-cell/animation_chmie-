@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule PH11</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#C0261F;          /* bleu SFA */
+  --deep:#6E1410;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#FBECEA;         /* bleu 8 % */
+  --tint2:#F5D7D3;        /* bleu 18 % */
+  --surface:#FAF6F5;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-PH11-01 ==================== -->
+  <section class="slide" data-ref="ANIM-PH11-01" data-title="L'aimant et ses deux pôles" data-sub="Le champ B se voit, et on ne sépare jamais les pôles" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><rect x="160" y="170" width="75" height="52" rx="3" fill="#1B3A8C" stroke="#6E1410" stroke-width="2.6"/><rect x="235" y="170" width="75" height="52" rx="3" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.6"/>
+            <text x="197" y="205" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">N</text>
+            <text x="272" y="205" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">S</text>
+            <text x="235" y="36" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">tout aimant possède deux pôles</text>
+          </g>
+          <g class="step s2"><path d="M 160,196 C 80,126 390,126 310,196" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="226.0" y1="143.5" x2="246.0" y2="143.5" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v1)"/><path d="M 160,196 C 50,86 420,86 310,196" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="226.0" y1="113.5" x2="246.0" y2="113.5" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v1)"/><path d="M 160,196 C 20,46 450,46 310,196" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="226.0" y1="83.5" x2="246.0" y2="83.5" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v1)"/></g>
+          <g class="step s3"><path d="M 160,196 C 80,266 390,266 310,196" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="226.0" y1="248.5" x2="246.0" y2="248.5" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v1)"/><path d="M 160,196 C 50,306 420,306 310,196" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="226.0" y1="278.5" x2="246.0" y2="278.5" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v1)"/><path d="M 160,196 C 20,346 450,346 310,196" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="226.0" y1="308.5" x2="246.0" y2="308.5" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v1)"/></g>
+          <g class="step s4">
+            <rect x="10" y="346" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="376" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">elles sortent du nord et entrent par le sud</text>
+            <rect x="10" y="400" width="450" height="60" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="428" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">on ne peut pas isoler un pôle :</text>
+            <text x="235" y="450" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">couper donne deux aimants complets</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Deux pôles, toujours</h3>
+          <p style="font-size:17px">Tout aimant possède un pôle <b>nord</b> et un pôle <b>sud</b>. Les pôles de <b>même nom se repoussent</b>, ceux de noms contraires s'attirent — comme les charges.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les lignes de champ</h3>
+          <p style="font-size:17px">À l'extérieur de l'aimant, elles <b>sortent du nord</b> et <b>entrent par le sud</b>. Même convention de lecture que pour les lignes de champ électrique de PH8-06.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Elles sont fermées</h3>
+          <p style="font-size:17px">Contrairement aux lignes de champ électrique, qui partent d'une charge et arrivent sur une autre, celles-ci se <b>referment</b> à l'intérieur de l'aimant. Elles n'ont ni début ni fin.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">On ne sépare jamais les pôles</h3>
+          <p style="font-size:17px">Couper un aimant en deux donne <b>deux aimants complets</b>, chacun avec ses deux pôles. On peut recommencer indéfiniment : il n'existe pas de pôle isolé.</p>
+          <p style="font-size:17px">C'est une <b>différence profonde</b> avec les charges électriques, qui s'isolent très bien — un électron seul existe, un pôle nord seul, non. Le QCM pose la question telle quelle.</p>
+          <p style="font-size:17px"><b>L'unité :</b> le <b>tesla</b> (T). Très grande : le champ terrestre vaut environ <b>5 × 10⁻⁵ T</b>.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un aimant droit : un pôle nord, un pôle sud.",
+      "Les lignes de champ sortent du nord et contournent l'aimant par le haut.",
+      "Et par le bas de la même façon : elles sont fermées.",
+      "Elles entrent toutes par le pôle sud, puis se referment dans l'aimant.",
+      "<em>On ne peut pas isoler un pôle :</em> couper donne deux aimants complets."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH11-02 ==================== -->
+  <section class="slide" data-ref="ANIM-PH11-02" data-title="Un courant crée un champ" data-sub="La règle de la main droite, une fois pour toutes" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <line x1="120" y1="40" x2="120" y2="280" stroke="#6E1410" stroke-width="4.4"/>
+            <line x1="120.0" y1="260.0" x2="120.0" y2="46.0" stroke="#1B3A8C" stroke-width="4.4" stroke-linecap="round" marker-end="url(#r2)"/>
+            <text x="132" y="56" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">I</text>
+            <text x="20" y="30" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">un fil rectiligne</text>
+          </g>
+          <g class="step s2"><ellipse cx="120" cy="100" rx="66" ry="18" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="110.0" y1="118.0" x2="132.0" y2="118.0" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v2)"/><ellipse cx="120" cy="160" rx="66" ry="18" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="110.0" y1="178.0" x2="132.0" y2="178.0" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v2)"/><ellipse cx="120" cy="220" rx="66" ry="18" fill="none" stroke="#C0261F" stroke-width="2.4"/><line x1="110.0" y1="238.0" x2="132.0" y2="238.0" stroke="#C0261F" stroke-width="2.4" stroke-linecap="round" marker-end="url(#v2)"/></g>
+          <g class="step s3"><ellipse cx="256" cy="170" rx="11" ry="42" fill="none" stroke="#6E1410" stroke-width="2.6"/><ellipse cx="284" cy="170" rx="11" ry="42" fill="none" stroke="#6E1410" stroke-width="2.6"/><ellipse cx="312" cy="170" rx="11" ry="42" fill="none" stroke="#6E1410" stroke-width="2.6"/><ellipse cx="340" cy="170" rx="11" ry="42" fill="none" stroke="#6E1410" stroke-width="2.6"/><ellipse cx="368" cy="170" rx="11" ry="42" fill="none" stroke="#6E1410" stroke-width="2.6"/><ellipse cx="396" cy="170" rx="11" ry="42" fill="none" stroke="#6E1410" stroke-width="2.6"/><ellipse cx="424" cy="170" rx="11" ry="42" fill="none" stroke="#6E1410" stroke-width="2.6"/><line x1="252.0" y1="170.0" x2="432.0" y2="170.0" stroke="#1B3A8C" stroke-width="3.2" stroke-linecap="round" marker-end="url(#r2)"/>
+            <text x="340" y="104" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">une bobine</text>
+            <text x="340" y="244" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">B quasi uniforme</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="300" width="450" height="60" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="326" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">règle de la main droite :</text>
+            <text x="235" y="350" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">pouce = courant, doigts repliés = champ</text>
+            <rect x="10" y="368" width="450" height="44" rx="11" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="235" y="396" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">autour d'un fil : des cercles concentriques</text>
+            <rect x="10" y="420" width="450" height="40" rx="11" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="446" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">le champ terrestre vaut ≈ 5 × 10⁻⁵ tesla</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le résultat fondateur</h3>
+          <p style="font-size:17px">Un <b>courant électrique crée un champ magnétique</b>. Électricité et magnétisme sont deux faces du même phénomène — c'est la découverte qui ouvre tout le chapitre.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Autour d'un fil rectiligne</h3>
+          <p style="font-size:17px">Les lignes de champ sont des <b>cercles concentriques</b> centrés sur le fil, dans un plan <b>perpendiculaire</b> à celui-ci. Aucune ligne ne pointe vers le fil ou s'en éloigne.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Dans une bobine</h3>
+          <p style="font-size:17px">Les contributions de chaque spire <b>s'ajoutent</b> : le champ intérieur est <b>quasi uniforme</b>, et la bobine se comporte comme un <b>aimant droit</b> — avec un nord et un sud.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La règle de la main droite, et rien d'autre</h3>
+          <p style="font-size:17px"><b>Le pouce</b> dans le sens du courant, <b>les doigts repliés</b> donnent le sens du champ. Une seule règle, appliquée partout : au fil droit comme à la bobine.</p>
+          <p style="font-size:17px">Faites le geste à l'examen — réellement, avec la main. C'est plus rapide et plus sûr que n'importe quelle reconstruction mentale, et c'est la seule chose de ce chapitre qui doive devenir un <b>automatisme corporel</b>.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un fil rectiligne parcouru par un courant I, de bas en haut.",
+      "Autour de lui, les lignes de champ sont des cercles concentriques.",
+      "Dans une bobine, les spires s'ajoutent : le champ intérieur est uniforme.",
+      "La bobine se comporte alors exactement comme un aimant droit.",
+      "<em>La règle de la main droite :</em> pouce = courant, doigts repliés = champ."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH11-03 ==================== -->
+  <section class="slide" data-ref="ANIM-PH11-03" data-title="La force sur un conducteur parcouru par un courant" data-sub="Trois directions perpendiculaires, et le moteur électrique" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><circle cx="100" cy="100" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="93.7" y1="93.7" x2="106.3" y2="106.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="93.7" y1="106.3" x2="106.3" y2="93.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="100" cy="212" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="93.7" y1="205.7" x2="106.3" y2="218.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="93.7" y1="218.3" x2="106.3" y2="205.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="160" cy="100" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="153.7" y1="93.7" x2="166.3" y2="106.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="153.7" y1="106.3" x2="166.3" y2="93.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="160" cy="212" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="153.7" y1="205.7" x2="166.3" y2="218.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="153.7" y1="218.3" x2="166.3" y2="205.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="220" cy="100" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="213.7" y1="93.7" x2="226.3" y2="106.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="213.7" y1="106.3" x2="226.3" y2="93.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="220" cy="212" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="213.7" y1="205.7" x2="226.3" y2="218.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="213.7" y1="218.3" x2="226.3" y2="205.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="280" cy="100" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="273.7" y1="93.7" x2="286.3" y2="106.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="273.7" y1="106.3" x2="286.3" y2="93.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="280" cy="212" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="273.7" y1="205.7" x2="286.3" y2="218.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="273.7" y1="218.3" x2="286.3" y2="205.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="340" cy="100" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="333.7" y1="93.7" x2="346.3" y2="106.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="333.7" y1="106.3" x2="346.3" y2="93.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="340" cy="212" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="333.7" y1="205.7" x2="346.3" y2="218.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="333.7" y1="218.3" x2="346.3" y2="205.7" stroke="#8A8F98" stroke-width="2.2"/>
+            <text x="30" y="40" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">B entrant dans la feuille</text>
+          </g>
+          <g class="step s2"><rect x="40" y="147" width="380" height="16" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.2"/><line x1="150.0" y1="155.0" x2="232.0" y2="155.0" stroke="#1B3A8C" stroke-width="3.4" stroke-linecap="round" marker-end="url(#r3)"/>
+            <text x="244" y="144" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">I</text>
+          </g>
+          <g class="step s3"><line x1="320.0" y1="142.0" x2="320.0" y2="78.0" stroke="#C0261F" stroke-width="4.0" stroke-linecap="round" marker-end="url(#v3)"/>
+            <text x="334" y="104" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">F</text>
+            <rect x="10" y="240" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="270" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">F = B · I · L · sin θ</text>
+          </g>
+          <g class="step s4"><rect x="130" y="300" width="200" height="70" fill="none" stroke="#6E1410" stroke-width="3.4"/><line x1="130.0" y1="332.0" x2="130.0" y2="284.0" stroke="#C0261F" stroke-width="3.4" stroke-linecap="round" marker-end="url(#v3)"/><line x1="330.0" y1="338.0" x2="330.0" y2="386.0" stroke="#C0261F" stroke-width="3.4" stroke-linecap="round" marker-end="url(#v3)"/>
+            <rect x="10" y="402" width="450" height="58" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="235" y="428" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">deux forces opposées sur les côtés : un couple</text>
+            <text x="235" y="450" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">c'est le moteur électrique</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La force de Laplace</h3>
+          <p style="font-size:17px">Un conducteur parcouru par un courant, <b>placé dans un champ magnétique</b>, subit une force. Pas de courant, pas de force.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Sa grandeur</h3>
+          <p style="font-size:17px">F = B I L sin θ, où θ est l'angle entre le <b>conducteur</b> et le <b>champ</b>. Elle est <b>maximale</b> quand ils sont perpendiculaires, et <b>nulle</b> quand ils sont parallèles.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Sa direction</h3>
+          <p style="font-size:17px">Perpendiculaire <b>à la fois</b> au courant <b>et</b> au champ. Les trois directions forment un <b>trièdre</b> — et c'est pourquoi ce chapitre ne se traite jamais sans figure.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'application à citer : le moteur électrique</h3>
+          <p style="font-size:17px">Une <b>spire</b> parcourue par un courant dans un champ subit <b>deux forces opposées</b> sur ses côtés opposés — le courant y circule en sens inverse. Résultante nulle, moment non nul.</p>
+          <p style="font-size:17px">C'est très exactement le <b>couple de forces</b> de PH3-A : il ne déplace pas la spire, il la fait <b>tourner</b>. Tout moteur électrique tient dans cette phrase, et la relier à PH3-A vaut mieux que de l'apprendre à part.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un champ magnétique uniforme, entrant dans la feuille.",
+      "On y place un conducteur parcouru par un courant I.",
+      "Il subit une force perpendiculaire au courant et au champ à la fois.",
+      "Sa grandeur : B fois I fois L fois le sinus de l'angle.",
+      "<em>Sur une spire :</em> deux forces opposées — un couple, et ça tourne."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH11-04 ==================== -->
+  <section class="slide" data-ref="ANIM-PH11-04" data-title="La force sur une charge en mouvement" data-sub="Pourquoi elle ne travaille jamais" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><circle cx="70" cy="90" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="63.7" y1="83.7" x2="76.3" y2="96.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="63.7" y1="96.3" x2="76.3" y2="83.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="70" cy="290" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="63.7" y1="283.7" x2="76.3" y2="296.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="63.7" y1="296.3" x2="76.3" y2="283.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="410" cy="90" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="403.7" y1="83.7" x2="416.3" y2="96.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="403.7" y1="96.3" x2="416.3" y2="83.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="410" cy="290" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="403.7" y1="283.7" x2="416.3" y2="296.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="403.7" y1="296.3" x2="416.3" y2="283.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="240" cy="66" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="233.7" y1="59.7" x2="246.3" y2="72.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="233.7" y1="72.3" x2="246.3" y2="59.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="240" cy="314" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="233.7" y1="307.7" x2="246.3" y2="320.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="233.7" y1="320.3" x2="246.3" y2="307.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="66" cy="190" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="59.7" y1="183.7" x2="72.3" y2="196.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="59.7" y1="196.3" x2="72.3" y2="183.7" stroke="#8A8F98" stroke-width="2.2"/><circle cx="414" cy="190" r="9" fill="none" stroke="#8A8F98" stroke-width="2.2"/><line x1="407.7" y1="183.7" x2="420.3" y2="196.3" stroke="#8A8F98" stroke-width="2.2"/><line x1="407.7" y1="196.3" x2="420.3" y2="183.7" stroke="#8A8F98" stroke-width="2.2"/>
+            <text x="30" y="34" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">B entrant, et une charge lancée</text>
+          </g>
+          <g class="step s2">
+            <circle cx="340" cy="190" r="11" fill="#6E1410"/>
+            <line x1="340.0" y1="184.0" x2="340.0" y2="120.0" stroke="#C0261F" stroke-width="3.6" stroke-linecap="round" marker-end="url(#v4)"/>
+            <text x="352" y="114" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">v</text>
+          </g>
+          <g class="step s3"><line x1="328.0" y1="190.0" x2="264.0" y2="190.0" stroke="#1B3A8C" stroke-width="3.6" stroke-linecap="round" marker-end="url(#r4)"/>
+            <text x="258" y="180" text-anchor="end" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">F</text>
+          </g>
+          <g class="step s4"><circle cx="240" cy="190" r="100" fill="none" stroke="#8A8F98" stroke-width="2.6" stroke-dasharray="9 6"/>
+            <rect x="10" y="342" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="372" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">F = q · v · B · sin θ</text>
+            <rect x="10" y="396" width="450" height="64" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="424" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">son travail est nul : jamais elle n'accélère</text>
+            <text x="235" y="448" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">elle ne fait que courber la trajectoire</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La force</h3>
+          <p style="font-size:17px">Une charge <b>en mouvement</b> dans un champ magnétique subit une force de grandeur F = q v B sin θ, <b>perpendiculaire à la fois</b> à la vitesse et au champ.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Une charge immobile ne subit rien</h3>
+          <p style="font-size:17px">v = 0 donne F = 0. C'est la <b>différence</b> avec le champ électrique, qui agit sur toute charge, <b>même au repos</b>. Le magnétisme ne voit que ce qui bouge.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La trajectoire</h3>
+          <p style="font-size:17px">Une particule entrant <b>perpendiculairement</b> à un champ uniforme décrit un <b>cercle</b>, à vitesse constante en grandeur. La force est toujours centripète.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La conséquence décisive, et le piège</h3>
+          <p style="font-size:17px">Cette force étant <b>perpendiculaire à la vitesse</b>, son <b>travail est nul</b> — c'est exactement le résultat de PH4-A. Elle ne peut donc <b>jamais</b> modifier la <b>valeur</b> de la vitesse.</p>
+          <p style="font-size:17px"><b>Le piège :</b> croire que la force magnétique accélère la particule. Elle change sa <b>direction</b>, jamais sa vitesse. C'est le seul point du chapitre qui demande un vrai raisonnement — et il tombe régulièrement, précisément pour cela.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un champ magnétique uniforme, entrant dans la feuille.",
+      "Une charge y entre perpendiculairement, avec une vitesse v.",
+      "La force qu'elle subit est perpendiculaire à v : elle pointe vers le centre.",
+      "La trajectoire est donc un cercle, parcouru à vitesse constante.",
+      "<em>Le piège :</em> cette force ne travaille pas — elle courbe, elle n'accélère pas."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule PH11 — Champ magnétique et forces électromagnétiques · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

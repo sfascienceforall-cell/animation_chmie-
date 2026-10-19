@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule PH7-B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#C0261F;          /* bleu SFA */
+  --deep:#6E1410;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#FBECEA;         /* bleu 8 % */
+  --tint2:#F5D7D3;        /* bleu 18 % */
+  --surface:#FAF6F5;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-PH7-05 ==================== -->
+  <section class="slide" data-ref="ANIM-PH7-05" data-title="La formule, et sa convention de signes" data-sub="La seule difficulté réelle du chapitre" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <rect x="10" y="22" width="450" height="56" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="58" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">1/d₀ + 1/dᵢ = 1/f</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="94" width="142" height="96" rx="11" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="81" y="124" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">d₀ &gt; 0</text>
+            <text x="81" y="150" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">objet réel</text>
+            <text x="81" y="174" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">toujours</text>
+            <rect x="164" y="94" width="142" height="96" rx="11" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="235" y="124" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">dᵢ &gt; 0</text>
+            <text x="235" y="150" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">image réelle</text>
+            <text x="235" y="174" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">de l'autre côté</text>
+            <rect x="318" y="94" width="142" height="96" rx="11" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.2"/>
+            <text x="389" y="124" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">dᵢ &lt; 0</text>
+            <text x="389" y="150" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">image virtuelle</text>
+            <text x="389" y="174" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">du même côté</text>
+          </g>
+          <g class="step s3">
+            <rect x="10" y="206" width="450" height="56" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="241" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">f &gt; 0 convergente  ·  f &lt; 0 divergente</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="276" width="450" height="76" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="306" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">un dᵢ négatif n'est pas une erreur</text>
+            <text x="235" y="334" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">c'est une image virtuelle</text>
+            <rect x="10" y="366" width="450" height="90" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="396" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">on annonce la convention au début,</text>
+            <text x="235" y="422" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">et on n'en change plus</text>
+            <text x="235" y="446" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">en mélanger deux ne marche jamais</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La formule</h3>
+          <p style="font-size:17px">1/d₀ + 1/dᵢ = 1/f, où d₀ est la distance objet-lentille, dᵢ la distance image-lentille, f la distance focale. Le calcul tient en une ligne.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les signes des distances</h3>
+          <p style="font-size:17px">d₀ &gt; 0 pour un objet réel. dᵢ &gt; <b>0</b> pour une image <b>réelle</b>, de l'autre côté. dᵢ &lt; 0 pour une image <b>virtuelle</b>, du même côté que l'objet.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et le signe de f</h3>
+          <p style="font-size:17px">Positive pour une <b>convergente</b>, négative pour une <b>divergente</b> — exactement la convention posée en PH7-01.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce que le signe du résultat raconte</h3>
+          <p style="font-size:17px">Si le calcul donne dᵢ <b>négatif</b>, ce n'est <b>pas</b> une erreur : c'est que l'image est virtuelle. Le calcul répond à une question qu'on ne lui avait pas posée — il faut le <b>lire</b>, pas le refaire.</p>
+          <p style="font-size:17px"><b>Le piège :</b> changer de convention en cours d'exercice, ou en emprunter une à un autre cours. N'importe quelle convention <b>cohérente</b> fonctionne ; en mélanger deux ne fonctionne jamais. On l'annonce à la première ligne et on s'y tient.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "La formule des lentilles : un sur d₀ plus un sur dᵢ égale un sur f.",
+      "Les signes : objet réel positif, image réelle positive, image virtuelle négative.",
+      "Et f : positive pour une convergente, négative pour une divergente.",
+      "Un dᵢ négatif n'est donc pas une faute : c'est une image virtuelle.",
+      "<em>La seule règle :</em> une convention, annoncée au début, jamais changée."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH7-06 ==================== -->
+  <section class="slide" data-ref="ANIM-PH7-06" data-title="Le grandissement" data-sub="Son signe dit si l'image est droite ou renversée" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <rect x="10" y="20" width="450" height="56" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="46" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">γ = − dᵢ / d₀</text>
+            <text x="235" y="68" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">= taille de l'image / taille de l'objet</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="88" width="218" height="76" rx="11" fill="#FBECEA" stroke="#C0261F" stroke-width="2.2"/>
+            <text x="119" y="118" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">γ &gt; 0</text>
+            <text x="119" y="146" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">image droite</text>
+            <rect x="242" y="88" width="218" height="76" rx="11" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.2"/>
+            <text x="351" y="118" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">γ &lt; 0</text>
+            <text x="351" y="146" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">image renversée</text>
+          </g>
+          <g class="step s3">
+            <rect x="10" y="176" width="218" height="76" rx="11" fill="#F5D7D3"/>
+            <text x="119" y="206" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">| γ | &gt; 1</text>
+            <text x="119" y="234" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">agrandie</text>
+            <rect x="242" y="176" width="218" height="76" rx="11" fill="#F5D7D3"/>
+            <text x="351" y="206" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">| γ | &lt; 1</text>
+            <text x="351" y="234" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">réduite</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="264" width="450" height="90" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="235" y="296" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">réelle  →  renversée  →  γ négatif</text>
+            <text x="235" y="332" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">virtuelle  →  droite  →  γ positif</text>
+            <rect x="10" y="366" width="450" height="94" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="396" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">si les deux se contredisent,</text>
+            <text x="235" y="422" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">il y a une erreur de signe</text>
+            <text x="235" y="448" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">γ est un rapport : il est sans unité</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La définition</h3>
+          <p style="font-size:17px">γ = − dᵢ / d₀, et cela vaut aussi le rapport de la <b>taille</b> de l'image à celle de l'objet. C'est un rapport : il est <b>sans unité</b>.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le signe</h3>
+          <p style="font-size:17px">γ &gt; 0 → image <b>droite</b>. γ &lt; 0 → image <b>renversée</b>. Le signe porte donc autant d'information que la valeur.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La valeur absolue</h3>
+          <p style="font-size:17px">|γ| &gt; 1 → image <b>agrandie</b>. |γ| &lt; 1 → image <b>réduite</b>. Les deux informations — sens et taille — se lisent donc sur un seul nombre.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le contrôle systématique, à faire à chaque fois</h3>
+          <p style="font-size:17px">Une image <b>réelle</b> est toujours renversée, donc γ doit être <b>négatif</b>. Une image <b>virtuelle</b> est toujours droite, donc γ <b>positif</b>.</p>
+          <p style="font-size:17px">Vous avez donc deux chemins indépendants vers la même information : le <b>signe de dᵢ</b> et le <b>signe de γ</b>. S'ils se contredisent, il y a une erreur de signe quelque part — et vous le savez avant de regarder les propositions du QCM.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Le grandissement est moins dᵢ sur d₀ — un rapport, sans unité.",
+      "Son signe donne le sens : positif droite, négatif renversée.",
+      "Sa valeur absolue donne la taille : au-dessus de 1 agrandie, en dessous réduite.",
+      "Et les deux informations se recoupent : réelle va avec renversée.",
+      "<em>Le contrôle :</em> si dᵢ et γ se contredisent, il y a une erreur de signe."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH7-07 ==================== -->
+  <section class="slide" data-ref="ANIM-PH7-07" data-title="L'œil, la loupe, le microscope" data-sub="Trois instruments, une seule construction" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="20.0" y1="51.0" x2="62.0" y2="60.1" stroke="#C0261F" stroke-width="2.4"/><line x1="62.0" y1="60.1" x2="142.0" y2="75.0" stroke="#C0261F" stroke-width="2.4"/><line x1="20.0" y1="99.0" x2="62.0" y2="89.9" stroke="#C0261F" stroke-width="2.4"/><line x1="62.0" y1="89.9" x2="142.0" y2="75.0" stroke="#C0261F" stroke-width="2.4"/><circle cx="100" cy="75" r="46" fill="#FBECEA" stroke="#6E1410" stroke-width="2.4"/><polyline points="121.6,115.6 124.7,113.8 127.6,111.8 130.4,109.6 132.9,107.1 135.3,104.5 137.5,101.7 139.4,98.7 141.1,95.6 142.6,92.3 143.8,89.0 144.8,85.6 145.5,82.1 145.9,78.6 146.0,75.0 145.9,71.4 145.5,67.9 144.8,64.4 143.8,61.0 142.6,57.7 141.1,54.4 139.4,51.3 137.5,48.3 135.3,45.5 132.9,42.9 130.4,40.4 127.6,38.2 124.7,36.2 121.6,34.4" fill="none" stroke="#1B3A8C" stroke-width="4"/><path d="M 60,49 Q 78,75 60,101 Q 42,75 60,49 Z" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.2"/>
+            <text x="216" y="56" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">l'œil</text>
+            <text x="216" y="82" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">cristallin : focale variable</text>
+            <text x="216" y="104" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">image réelle sur la rétine</text>
+            <text x="216" y="126" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">le cerveau la redresse</text>
+          </g>
+          <g class="step s2"><line x1="20" y1="195" x2="200" y2="195" stroke="#8A8F98" stroke-width="1.6" stroke-dasharray="7 5"/><path d="M 112,163 Q 138,195 112,227 Q 86,195 112,163 Z" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.2"/><line x1="88.0" y1="195.0" x2="88.0" y2="177.0" stroke="#C0261F" stroke-width="3.0" stroke-linecap="round" marker-end="url(#v3)"/><line x1="44" y1="195" x2="44" y2="159" stroke="#1B3A8C" stroke-width="2.6" stroke-dasharray="6 5"/><path d="M 44,160 l -6,12 l 12,0 z" fill="#1B3A8C"/>
+            <text x="216" y="176" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">la loupe</text>
+            <text x="216" y="202" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">objet en deçà du foyer</text>
+            <text x="216" y="224" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">image virtuelle agrandie</text>
+          </g>
+          <g class="step s3"><line x1="20" y1="315" x2="204" y2="315" stroke="#8A8F98" stroke-width="1.6" stroke-dasharray="7 5"/><path d="M 72,285 Q 98,315 72,345 Q 46,315 72,285 Z" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.2"/><path d="M 164,285 Q 190,315 164,345 Q 138,315 164,285 Z" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.2"/><line x1="34.0" y1="315.0" x2="34.0" y2="299.0" stroke="#C0261F" stroke-width="3.0" stroke-linecap="round" marker-end="url(#v3)"/><line x1="120" y1="315" x2="120" y2="341" stroke="#1B3A8C" stroke-width="2.6" stroke-dasharray="6 5"/><path d="M 120,340 l -6,-12 l 12,0 z" fill="#1B3A8C"/>
+            <text x="228" y="296" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">le microscope</text>
+            <text x="228" y="322" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">deux convergentes en série</text>
+            <text x="228" y="344" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">l'objectif, puis l'oculaire</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="380" width="450" height="80" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="408" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">l'image de la première lentille</text>
+            <text x="235" y="432" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">est l'objet de la seconde</text>
+            <text x="235" y="450" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">deux constructions, aucune formule nouvelle</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'œil</h3>
+          <p style="font-size:17px">Le <b>cristallin</b> est une lentille convergente à focale <b>variable</b> : c'est ce qui permet d'accommoder. L'image se forme sur la <b>rétine</b>, réelle et renversée — c'est le cerveau qui la redresse.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La loupe</h3>
+          <p style="font-size:17px">Une convergente utilisée avec l'objet <b>en deçà du foyer</b>, pour obtenir une image virtuelle agrandie. C'est exactement le quatrième cas de PH7-03.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le microscope</h3>
+          <p style="font-size:17px">Deux convergentes en série. L'<b>objectif</b> donne une image réelle agrandie, qui sert d'<b>objet</b> pour l'<b>oculaire</b> — lequel fonctionne en loupe.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La méthode pour deux lentilles</h3>
+          <p style="font-size:17px">Il n'y a <b>aucune formule nouvelle</b> à apprendre. L'image de la première lentille <b>est l'objet</b> de la seconde : on enchaîne deux constructions identiques à celle de PH7-02.</p>
+          <p style="font-size:17px">C'est pour cela que le chapitre tient en une seule construction. Trois instruments, trois positions d'objet par rapport au foyer — et le même dessin à chaque fois.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "L'œil : un cristallin convergent, et une image réelle sur la rétine.",
+      "La loupe : une convergente, l'objet placé en deçà de son foyer.",
+      "Le microscope : deux convergentes, l'une après l'autre.",
+      "L'image de l'objectif sert d'objet à l'oculaire, qui fonctionne en loupe.",
+      "<em>Aucune formule nouvelle :</em> on enchaîne deux constructions identiques."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH7-08 ==================== -->
+  <section class="slide" data-ref="ANIM-PH7-08" data-title="Myopie et hypermétropie" data-sub="Quelle lentille corrige quoi, et pourquoi" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="28.0" y1="96.0" x2="100.0" y2="105.6" stroke="#C0261F" stroke-width="2.4"/><line x1="100.0" y1="105.6" x2="176.0" y2="120.0" stroke="#C0261F" stroke-width="2.4"/><line x1="176.0" y1="120.0" x2="206.0" y2="127.2" stroke="#1B3A8C" stroke-width="2.2"/><line x1="28.0" y1="144.0" x2="100.0" y2="134.4" stroke="#C0261F" stroke-width="2.4"/><line x1="100.0" y1="134.4" x2="176.0" y2="120.0" stroke="#C0261F" stroke-width="2.4"/><line x1="176.0" y1="120.0" x2="206.0" y2="112.8" stroke="#1B3A8C" stroke-width="2.2"/><circle cx="150" cy="120" r="58" fill="#FBECEA" stroke="#6E1410" stroke-width="2.4"/><polyline points="177.2,171.2 181.1,169.0 184.8,166.4 188.3,163.6 191.5,160.5 194.5,157.2 197.3,153.6 199.7,149.9 201.9,145.9 203.7,141.9 205.2,137.6 206.4,133.3 207.3,128.9 207.8,124.5 208.0,120.0 207.8,115.5 207.3,111.1 206.4,106.7 205.2,102.4 203.7,98.1 201.9,94.1 199.7,90.1 197.3,86.4 194.5,82.8 191.5,79.5 188.3,76.4 184.8,73.6 181.1,71.0 177.2,68.8" fill="none" stroke="#1B3A8C" stroke-width="4"/><path d="M 98,94 Q 116,120 98,146 Q 80,120 98,94 Z" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.2"/>
+            <circle cx="176" cy="120" r="6" fill="#1B3A8C"/>
+            <text x="250" y="86" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">myopie</text>
+            <text x="250" y="110" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">œil trop convergent</text>
+            <text x="250" y="132" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">image avant la rétine</text>
+          </g>
+          <g class="step s2"><line x1="180.0" y1="86.0" x2="204.0" y2="86.0" stroke="#6E1410" stroke-width="3.0" stroke-linecap="round" marker-end="url(#d4)"/>
+            <text x="250" y="156" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">→ lentille divergente</text>
+            <text x="250" y="178" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">vergence négative</text>
+          </g>
+          <g class="step s3"><line x1="28.0" y1="296.0" x2="100.0" y2="305.6" stroke="#C0261F" stroke-width="2.4"/><line x1="100.0" y1="305.6" x2="206.0" y2="314.5" stroke="#C0261F" stroke-width="2.4"/><line x1="206.0" y1="314.5" x2="240.0" y2="320.0" stroke="#8A8F98" stroke-width="2.0" stroke-dasharray="6 5"/><line x1="28.0" y1="344.0" x2="100.0" y2="334.4" stroke="#C0261F" stroke-width="2.4"/><line x1="100.0" y1="334.4" x2="206.0" y2="325.5" stroke="#C0261F" stroke-width="2.4"/><line x1="206.0" y1="325.5" x2="240.0" y2="320.0" stroke="#8A8F98" stroke-width="2.0" stroke-dasharray="6 5"/><circle cx="150" cy="320" r="58" fill="#FBECEA" stroke="#6E1410" stroke-width="2.4"/><polyline points="177.2,371.2 181.1,369.0 184.8,366.4 188.3,363.6 191.5,360.5 194.5,357.2 197.3,353.6 199.7,349.9 201.9,345.9 203.7,341.9 205.2,337.6 206.4,333.3 207.3,328.9 207.8,324.5 208.0,320.0 207.8,315.5 207.3,311.1 206.4,306.7 205.2,302.4 203.7,298.1 201.9,294.1 199.7,290.1 197.3,286.4 194.5,282.8 191.5,279.5 188.3,276.4 184.8,273.6 181.1,271.0 177.2,268.8" fill="none" stroke="#1B3A8C" stroke-width="4"/><path d="M 98,294 Q 116,320 98,346 Q 80,320 98,294 Z" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.2"/>
+            <circle cx="240" cy="320" r="6" fill="none" stroke="#1B3A8C" stroke-width="2.4"/>
+            <line x1="240.0" y1="286.0" x2="212.0" y2="286.0" stroke="#6E1410" stroke-width="3.0" stroke-linecap="round" marker-end="url(#d4)"/>
+            <text x="250" y="256" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">hypermétropie</text>
+            <text x="250" y="280" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">pas assez convergent</text>
+            <text x="250" y="302" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">image derrière la rétine</text>
+            <text x="250" y="326" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">→ lentille convergente</text>
+            <text x="250" y="348" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">vergence positive</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="414" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="443" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">− 2 dioptries → f = − 0,5 m → divergente → myope</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La myopie</h3>
+          <p style="font-size:17px">L'œil est <b>trop convergent</b> : l'image se forme <b>avant</b> la rétine, et arrive floue sur elle. On corrige avec une lentille <b>divergente</b>, de vergence négative.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'hypermétropie</h3>
+          <p style="font-size:17px">L'œil n'est <b>pas assez convergent</b> : l'image se formerait <b>derrière</b> la rétine. On corrige avec une lentille <b>convergente</b>, de vergence positive.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le moyen de ne pas se tromper</h3>
+          <p style="font-size:17px">On <b>ne mémorise pas</b> la correspondance, on la <b>reconstruit</b> : trop convergent, donc on retire de la convergence — donc une divergente. Deux secondes, et aucun risque d'inversion.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Lire une ordonnance, en trois temps</h3>
+          <p style="font-size:17px">« <b>− 2 dioptries</b> » : la vergence est négative, donc f = 1/(−2) = <b>− 0,5 m</b>, donc la lentille est <b>divergente</b>, donc elle corrige un œil trop convergent — donc un <b>myope</b>.</p>
+          <p style="font-size:17px">La chaîne se parcourt toujours dans le même ordre : <b>signe de la vergence → nature de la lentille → défaut corrigé</b>. Parcourue ainsi, elle n'a pas besoin d'être mémorisée, et elle fonctionne dans les deux sens.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un œil myope est trop convergent : l'image se forme avant la rétine.",
+      "Il faut donc retirer de la convergence : une lentille divergente.",
+      "Un œil hypermétrope ne l'est pas assez : l'image se formerait derrière.",
+      "Il faut donc en ajouter : une lentille convergente, de vergence positive.",
+      "<em>Et une ordonnance se lit ainsi :</em> − 2 dioptries, donc divergente, donc myope."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule PH7-B — La formule des lentilles et les instruments · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

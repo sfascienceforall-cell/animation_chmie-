@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule PH3-A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#C0261F;          /* bleu SFA */
+  --deep:#6E1410;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#FBECEA;         /* bleu 8 % */
+  --tint2:#F5D7D3;        /* bleu 18 % */
+  --surface:#FAF6F5;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-PH3-01 ==================== -->
+  <section class="slide" data-ref="ANIM-PH3-01" data-title="L'équilibre a deux conditions, pas une" data-sub="Somme des forces nulle ET somme des moments nulle" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <rect x="12" y="30" width="446" height="92" rx="14" fill="#FBECEA" stroke="#C0261F" stroke-width="2.6"/>
+            <text x="235" y="66" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">Σ F = 0</text>
+            <text x="235" y="102" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">équilibre en translation : il ne se déplace pas</text>
+          </g>
+          <g class="step s2">
+            <rect x="12" y="138" width="446" height="92" rx="14" fill="#FBECEA" stroke="#C0261F" stroke-width="2.6"/>
+            <text x="235" y="174" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">Σ M = 0</text>
+            <text x="235" y="210" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">équilibre en rotation : il ne tourne pas</text>
+          </g>
+          <g class="step s3">
+            <text x="235" y="266" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">deux forces opposées, appliquées en deux points</text>
+            <rect x="130" y="286" width="210" height="46" rx="8" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.2"/>
+            <line x1="130" y1="286" x2="60" y2="286" stroke="#1B3A8C" stroke-width="4" marker-end="url(#r1)"/>
+            <line x1="340" y1="332" x2="410" y2="332" stroke="#1B3A8C" stroke-width="4" marker-end="url(#r1)"/>
+            <text x="235" y="366" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">résultante nulle, et pourtant ça tourne</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="390" width="450" height="70" rx="13" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.6"/>
+            <text x="235" y="420" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">la première condition ne suffit jamais</text>
+            <text x="235" y="448" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">c'est la seconde qui donne la réponse</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Première condition</h3>
+          <p style="font-size:17px">La somme <b>vectorielle</b> des forces est nulle. C'est l'équilibre <b>en translation</b> : le centre de gravité ne bouge pas.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Seconde condition</h3>
+          <p style="font-size:17px">La somme des <b>moments</b> est nulle. C'est l'équilibre <b>en rotation</b> : l'objet ne tourne pas. Elle est indépendante de la première.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi la première ne suffit pas</h3>
+          <p style="font-size:17px">Deux forces égales et opposées appliquées en <b>deux points différents</b> donnent une résultante nulle — et font pourtant tourner l'objet.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège, et il est systématique au concours</h3>
+          <p style="font-size:17px">Conclure à l'équilibre parce que les forces se compensent. C'est une condition <b>nécessaire</b>, jamais suffisante.<br><br>L'énoncé est presque toujours construit pour que ce soit la <b>seconde</b> condition qui donne la réponse : la première est vérifiée d'emblée, et sert d'appât. Vérifier les deux prend dix secondes de plus et change le résultat.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Première condition : la somme des forces est nulle. L'objet ne se déplace pas.",
+      "Seconde : la somme des moments est nulle. L'objet ne <b>tourne</b> pas.",
+      "Voici pourquoi la première ne suffit pas : deux forces opposées, deux points d'application.",
+      "La résultante est nulle — et l'objet tourne quand même.",
+      "<em>Au concours :</em> c'est presque toujours la seconde condition qui donne la réponse."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH3-02 ==================== -->
+  <section class="slide" data-ref="ANIM-PH3-02" data-title="Le moment de force : F × d⊥" data-sub="Le bras de levier, et pourquoi la perpendiculaire" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="34" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">une force oblique appliquée au bout d'une barre</text>
+            <text x="70" y="152" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">axe</text>
+            <line x1="70" y1="186" x2="320" y2="186" stroke="#6E1410" stroke-width="7" stroke-linecap="round"/>
+            <circle cx="70" cy="186" r="22" fill="#FFFFFF" stroke="#6E1410" stroke-width="2.4"/>
+            <circle cx="70" cy="186" r="11" fill="#6E1410"/>
+          </g>
+          <g class="step s2"><line x1="320.0" y1="186.0" x2="417.1" y2="134.4" stroke="#C0261F" stroke-width="4.4" stroke-linecap="round" marker-end="url(#v2)"/>
+            <text x="429" y="140" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">F</text>
+          </g>
+          <g class="step s3"><line x1="116.3" y1="294.3" x2="433.0" y2="125.9" stroke="#8A8F98" stroke-width="2" stroke-dasharray="8 6"/>
+            <text x="124" y="318" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">la droite d'action</text>
+          </g>
+          <g class="step s4"><line x1="70" y1="186" x2="125.1" y2="289.6" stroke="#1B3A8C" stroke-width="3.4"/>
+            <text x="84" y="246" text-anchor="end" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">d⊥</text>
+            <rect x="10" y="340" width="450" height="56" rx="13" fill="#F5D7D3"/>
+            <text x="235" y="376" text-anchor="middle" font-size="23" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">M = F · d⊥ = F · d · sin θ</text>
+            <rect x="10" y="404" width="450" height="56" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="439" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">droite d'action par l'axe → moment nul</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La définition du programme</h3>
+          <p style="font-size:17px">M = F · d<sub>⊥</sub>, où d<sub>⊥</sub> est la distance <b>perpendiculaire</b> entre l'axe de rotation et la <b>droite d'action</b> de la force.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le mot « perpendiculaire » est toute la formule</h3>
+          <p style="font-size:17px">Ce n'est pas la distance jusqu'au <b>point d'application</b> : c'est la distance jusqu'à la <b>droite</b> qui porte la force. Les deux ne coïncident que si la force est perpendiculaire à la barre.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Deux façons de calculer, une seule valeur</h3>
+          <p style="font-size:17px">Soit on prend le <b>bras de levier</b>, soit on projette la force perpendiculairement et on prend la distance directe. Dans les deux cas : M = F · d · sin θ.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'unité, la convention, et le piège</h3>
+          <p style="font-size:17px"><b>Le newton-mètre</b> — et ce n'est <b>pas</b> un joule, bien que le produit soit dimensionnellement identique. C'est un moment, pas une énergie.<br><br><b>La convention :</b> on choisit un sens positif de rotation et on s'y tient ; les moments inverses sont négatifs.<br><br><b>Le piège :</b> une force dont la droite d'action <b>passe par l'axe</b> a un moment nul, quelle que soit son intensité. On ne fait pas tourner une porte en poussant sur ses gonds.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une barre, un axe de rotation à gauche, et une force appliquée au bout.",
+      "La force est oblique : sa distance à l'axe n'est pas son bras de levier.",
+      "On prolonge sa <b>droite d'action</b>.",
+      "Le bras de levier est la distance <b>perpendiculaire</b> de l'axe à cette droite.",
+      "<em>D'où le piège :</em> une droite d'action qui passe par l'axe donne un moment nul."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH3-03 ==================== -->
+  <section class="slide" data-ref="ANIM-PH3-03" data-title="Le couple de forces" data-sub="Résultante nulle, et pourtant ça tourne" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <circle cx="235" cy="195" r="104" fill="#FBECEA" stroke="#6E1410" stroke-width="3"/>
+            <circle cx="235" cy="195" r="12" fill="#6E1410"/>
+            <text x="235" y="32" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">un volant, tenu à deux mains</text>
+          </g>
+          <g class="step s2">
+            <line x1="96" y1="140" x2="374" y2="140" stroke="#C0261F" stroke-width="4.4" marker-end="url(#v3)"/>
+            <line x1="374" y1="250" x2="96" y2="250" stroke="#C0261F" stroke-width="4.4" marker-end="url(#v3)"/>
+            <text x="96" y="126" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">F</text>
+            <text x="374" y="280" text-anchor="end" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">F</text>
+          </g>
+          <g class="step s3">
+            <line x1="235" y1="140" x2="235" y2="250" stroke="#1B3A8C" stroke-width="3"/>
+            <text x="248" y="201" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">d</text>
+            <text x="235" y="336" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">résultante nulle : il ne se déplace pas</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="356" width="450" height="52" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="390" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">M = F × d</text>
+            <rect x="10" y="418" width="450" height="46" rx="12" fill="#FFFFFF" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="235" y="447" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">le même quel que soit l'axe choisi</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce qu'est un couple</h3>
+          <p style="font-size:17px">Deux forces de <b>même grandeur</b>, de <b>sens opposés</b>, portées par deux droites <b>parallèles distinctes</b>. Les trois conditions comptent.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Résultante nulle, moment non nul</h3>
+          <p style="font-size:17px">Il ne <b>déplace</b> pas l'objet — la somme des forces est nulle. Mais il le fait <b>tourner</b> : c'est exactement le contre-exemple de PH3-01.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Son moment</h3>
+          <p style="font-size:17px">M = F × d, où d est la distance <b>entre les deux droites d'action</b>. Et il est le <b>même quel que soit l'axe choisi</b> — une propriété unique du couple.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi cette indépendance de l'axe est remarquable</h3>
+          <p style="font-size:17px">Pour une force isolée, changer d'axe change le moment. Pour un couple, non : les deux variations se compensent exactement.<br><br>C'est ce qui le rend si pratique — et c'est le geste qu'on fait sans y penser : le <b>volant</b>, le <b>tournevis</b>, le <b>robinet</b>. À chaque fois deux mains, deux forces opposées, et une rotation sans déplacement.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un volant, et deux mains qui le tiennent.",
+      "Deux forces de même grandeur, de sens opposés, sur deux droites parallèles.",
+      "Leur résultante est nulle : le volant ne se déplace pas.",
+      "Mais son moment vaut F fois la distance d — et il tourne.",
+      "<em>Et ce moment ne dépend pas de l'axe choisi</em> : c'est propre au couple."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH3-04 ==================== -->
+  <section class="slide" data-ref="ANIM-PH3-04" data-title="Centre de gravité et stabilité" data-sub="Pourquoi un objet bas et large ne bascule pas" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <line x1="20" y1="300" x2="450" y2="300" stroke="#8A8F98" stroke-width="2.4"/>
+            <text x="235" y="32" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">même masse, deux formes</text>
+            <rect x="42" y="208" width="150" height="92" rx="6" fill="#FBECEA" stroke="#6E1410" stroke-width="2.6"/><line x1="117.0" y1="254.0" x2="117.0" y2="316" stroke="#C0261F" stroke-width="2.4" stroke-dasharray="6 5"/><circle cx="117.0" cy="254.0" r="9" fill="#C0261F"/><line x1="42" y1="300" x2="192" y2="300" stroke="#C0261F" stroke-width="5"/>
+            <text x="117" y="344" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">bas et large</text>
+            <text x="117" y="368" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">stable</text>
+          </g>
+          <g class="step s2"><rect x="300" y="102" width="62" height="198" rx="6" fill="#FBECEA" stroke="#6E1410" stroke-width="2.6"/><line x1="331.0" y1="201.0" x2="331.0" y2="316" stroke="#1B3A8C" stroke-width="2.4" stroke-dasharray="6 5"/><circle cx="331.0" cy="201.0" r="9" fill="#1B3A8C"/><line x1="300" y1="300" x2="362" y2="300" stroke="#1B3A8C" stroke-width="5"/>
+            <text x="331" y="344" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">haut et étroit</text>
+            <text x="331" y="368" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">il bascule vite</text>
+          </g>
+          <g class="step s3">
+            <rect x="10" y="390" width="450" height="70" rx="13" fill="#F5D7D3"/>
+            <text x="235" y="420" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">il bascule dès que la verticale du centre</text>
+            <text x="235" y="448" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">sort de la base de sustentation</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le centre de gravité</h3>
+          <p style="font-size:17px">Le point où s'applique le poids — le point unique par lequel on peut remplacer le poids de <b>toutes</b> les parties du corps.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Où il se trouve</h3>
+          <p style="font-size:17px">Pour un corps <b>homogène et symétrique</b>, au centre géométrique. C'est le seul cas qui tombe au concours — on ne calcule jamais un barycentre.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les trois équilibres</h3>
+          <p style="font-size:17px"><b>Stable</b> : écarté, l'objet y revient — son centre de gravité <b>monte</b> quand on l'écarte. <b>Instable</b> : il <b>descend</b>, et l'objet s'éloigne. <b>Indifférent</b> : il reste à la même hauteur.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La règle du basculement, et pourquoi elle marche</h3>
+          <p style="font-size:17px">Un objet bascule dès que la <b>verticale passant par son centre de gravité</b> sort de sa <b>base de sustentation</b>.<br><br>La raison est dans PH3-02 : tant que cette verticale tombe dans la base, le poids crée un moment qui <b>ramène</b> l'objet ; dès qu'elle en sort, le moment change de signe et le fait <b>tomber</b>. Base large et centre bas, il faut l'incliner beaucoup pour franchir cette limite.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Deux objets de même masse, posés sur le même sol.",
+      "Le premier est bas et large : son centre de gravité est près du sol.",
+      "Le second est haut et étroit : le sien est beaucoup plus haut.",
+      "Incliné, le premier ramène sa verticale dans sa base. Le second, non.",
+      "<em>La règle :</em> il bascule dès que la verticale du centre sort de la base."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule PH3-A — L'équilibre et le moment de force · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

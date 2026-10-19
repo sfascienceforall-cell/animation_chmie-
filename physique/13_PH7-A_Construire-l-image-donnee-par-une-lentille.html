@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule PH7-A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#C0261F;          /* bleu SFA */
+  --deep:#6E1410;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#FBECEA;         /* bleu 8 % */
+  --tint2:#F5D7D3;        /* bleu 18 % */
+  --surface:#FAF6F5;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-PH7-01 ==================== -->
+  <section class="slide" data-ref="ANIM-PH7-01" data-title="Convergente, divergente, et le foyer" data-sub="Ce que la lentille fait aux rayons parallèles" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <text x="30" y="56" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">convergente — épaisse au centre</text>
+            <line x1="30" y1="120" x2="440" y2="120" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="9 6"/><path d="M 235,72 Q 265,120 235,168 Q 205,120 235,72 Z" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.4"/>
+          </g>
+          <g class="step s2"><line x1="30.0" y1="86.0" x2="235.0" y2="86.0" stroke="#C0261F" stroke-width="2.8"/><line x1="235.0" y1="86.0" x2="430.0" y2="168.9" stroke="#C0261F" stroke-width="2.8"/><line x1="30.0" y1="120.0" x2="235.0" y2="120.0" stroke="#C0261F" stroke-width="2.8"/><line x1="235.0" y1="120.0" x2="430.0" y2="120.0" stroke="#C0261F" stroke-width="2.8"/><line x1="30.0" y1="154.0" x2="235.0" y2="154.0" stroke="#C0261F" stroke-width="2.8"/><line x1="235.0" y1="154.0" x2="430.0" y2="71.1" stroke="#C0261F" stroke-width="2.8"/>
+            <circle cx="315" cy="120" r="6" fill="#1B3A8C"/>
+            <text x="315" y="144" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">F′</text>
+          </g>
+          <g class="step s3">
+            <text x="30" y="266" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">divergente — mince au centre</text>
+            <line x1="30" y1="330" x2="440" y2="330" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="9 6"/><path d="M 222,296 L 248,296 Q 222,330 248,364 L 222,364 Q 248,330 222,296 Z" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.4"/><line x1="30.0" y1="308.0" x2="235.0" y2="308.0" stroke="#C0261F" stroke-width="2.8"/><line x1="235.0" y1="308.0" x2="410.0" y2="259.9" stroke="#C0261F" stroke-width="2.8"/><line x1="235.0" y1="308.0" x2="155.0" y2="330.0" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="7 5"/><line x1="30.0" y1="330.0" x2="235.0" y2="330.0" stroke="#C0261F" stroke-width="2.8"/><line x1="235.0" y1="330.0" x2="410.0" y2="330.0" stroke="#C0261F" stroke-width="2.8"/><line x1="235.0" y1="330.0" x2="155.0" y2="330.0" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="7 5"/><line x1="30.0" y1="352.0" x2="235.0" y2="352.0" stroke="#C0261F" stroke-width="2.8"/><line x1="235.0" y1="352.0" x2="410.0" y2="400.1" stroke="#C0261F" stroke-width="2.8"/><line x1="235.0" y1="352.0" x2="155.0" y2="330.0" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="7 5"/>
+            <circle cx="155" cy="330" r="6" fill="none" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="155" y="376" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">F′ virtuel</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="410" width="450" height="50" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="430" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">f &gt; 0 convergente  ·  f &lt; 0 divergente</text>
+            <text x="235" y="450" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">vergence C = 1 / f, en dioptries</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La lentille convergente</h3>
+          <p style="font-size:17px">Plus <b>épaisse au centre</b>. Elle rassemble un faisceau parallèle en un point : le <b>foyer image F′</b>. Ce foyer est réel — on peut y mettre un écran.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La lentille divergente</h3>
+          <p style="font-size:17px">Plus <b>mince au centre</b>. Elle écarte le faisceau ; ce sont les <b>prolongements</b> des rayons qui se croisent. Le foyer est donc <b>virtuel</b>.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La distance focale</h3>
+          <p style="font-size:17px">f est la distance du centre optique au foyer. Comptée <b>positive</b> pour une convergente, <b>négative</b> pour une divergente — et ce signe portera tout le chapitre.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La vergence, et pourquoi elle tombe au concours</h3>
+          <p style="font-size:17px">C = 1 / f, en <b>dioptries</b> quand f est en <b>mètres</b>. C'est l'unité des opticiens : une ordonnance ne donne jamais une focale, elle donne une vergence.</p>
+          <p style="font-size:17px">Deux conséquences immédiates. <b>Une</b> : le signe de la vergence est celui de la focale, donc il dit la nature de la lentille. <b>Deux</b> : plus la vergence est grande, plus la lentille est <b>courte</b> — et puissante. On y revient en PH7-08.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une lentille convergente, plus épaisse au centre, et son axe optique.",
+      "Un faisceau parallèle en ressort rassemblé en un point : le foyer image F′.",
+      "Une divergente, elle, écarte le faisceau : son foyer est virtuel.",
+      "La focale est positive pour l'une, négative pour l'autre.",
+      "<em>Et la vergence C = 1/f</em> est ce que lit un opticien, en dioptries."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH7-02 ==================== -->
+  <section class="slide" data-ref="ANIM-PH7-02" data-title="Les trois rayons qui construisent toute image" data-sub="Deux suffisent, le troisième vérifie" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="30" y1="250" x2="440" y2="250" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="9 6"/><path d="M 235,150 Q 265,250 235,350 Q 205,250 235,150 Z" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.4"/><line x1="85.0" y1="250.0" x2="85.0" y2="180.0" stroke="#C0261F" stroke-width="4.0" stroke-linecap="round" marker-end="url(#v2)"/>
+            <circle cx="165" cy="250" r="5" fill="#8A8F98"/>
+            <text x="165" y="274" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">F</text>
+            <circle cx="305" cy="250" r="5" fill="#8A8F98"/>
+            <text x="305" y="274" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">F′</text>
+            <text x="73" y="186" text-anchor="end" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">objet</text>
+          </g>
+          <g class="step s2"><line x1="85.0" y1="180.0" x2="235.0" y2="180.0" stroke="#C0261F" stroke-width="2.8"/><line x1="235.0" y1="180.0" x2="420.0" y2="365.0" stroke="#C0261F" stroke-width="2.8"/>
+            <text x="60" y="170" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">1</text>
+          </g>
+          <g class="step s3"><line x1="85.0" y1="180.0" x2="420.0" y2="336.3" stroke="#6E1410" stroke-width="2.8"/><line x1="366.2" y1="250.0" x2="366.2" y2="311.2" stroke="#1B3A8C" stroke-width="4.0" stroke-linecap="round" marker-end="url(#r2)"/>
+            <text x="390" y="347" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">image</text>
+          </g>
+          <g class="step s4"><line x1="85.0" y1="180.0" x2="235.0" y2="311.2" stroke="#1B3A8C" stroke-width="2.8"/><line x1="235.0" y1="311.2" x2="420.0" y2="311.2" stroke="#1B3A8C" stroke-width="2.8"/>
+            <rect x="10" y="372" width="450" height="88" rx="12" fill="#F5D7D3"/>
+            <text x="28" y="398" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">1 · parallèle à l'axe  →  ressort par F′</text>
+            <text x="28" y="424" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">2 · par le centre optique  →  non dévié</text>
+            <text x="28" y="450" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">3 · par F  →  ressort parallèle à l'axe</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le dispositif</h3>
+          <p style="font-size:17px">Un objet, une lentille convergente, son axe optique et ses deux foyers. Rien d'autre n'est nécessaire pour construire l'image.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Rayon 1 et rayon 2</h3>
+          <p style="font-size:17px"><b>Parallèle à l'axe</b> → ressort par le foyer image. <b>Par le centre optique</b> → n'est pas dévié du tout. Le second est le plus rapide à tracer : commencez par lui.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Leur intersection est l'image</h3>
+          <p style="font-size:17px">Deux rayons donnent deux droites, donc <b>un point</b>. C'est l'image du sommet de l'objet — et le reste suit par symétrie autour de l'axe.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le troisième rayon, et le piège qu'il révèle</h3>
+          <p style="font-size:17px"><b>Rayon 3 :</b> passant par le foyer objet avant la lentille, il ressort <b>parallèle</b> à l'axe. Il n'apporte aucune information nouvelle — il <b>vérifie</b>. S'il ne passe pas par le même point, une construction est fausse.</p>
+          <p style="font-size:17px"><b>Le piège :</b> n'en construire qu'un seul. Un rayon donne une droite, pas un point. Il faut <b>deux</b> droites pour obtenir une intersection — et le QCM propose toujours une position d'image obtenue avec un seul rayon.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un objet, une lentille convergente, et ses deux foyers F et F′.",
+      "Rayon 1 : parallèle à l'axe, il ressort en passant par F′.",
+      "Rayon 2 : il passe par le centre optique et n'est pas dévié. Intersection : l'image.",
+      "Rayon 3 : il entre par F et ressort parallèle — il confirme le même point.",
+      "<em>Le piège :</em> un seul rayon donne une droite, jamais un point."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH7-03 ==================== -->
+  <section class="slide" data-ref="ANIM-PH7-03" data-title="L'objet qui s'approche" data-sub="L'image grandit, s'éloigne, puis change de nature" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <rect x="10" y="20" width="450" height="88" rx="12" fill="#F5D7D3"/>
+            <text x="28" y="48" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">objet au-delà de 2F</text>
+            <text x="28" y="76" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">réelle, renversée, plus petite</text>
+            <text x="28" y="98" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">c'est l'appareil photo</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="116" width="450" height="88" rx="12" fill="#F5D7D3"/>
+            <text x="28" y="144" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">objet entre 2F et F</text>
+            <text x="28" y="172" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">réelle, renversée, plus grande</text>
+            <text x="28" y="194" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">c'est le projecteur</text>
+          </g>
+          <g class="step s3">
+            <rect x="10" y="212" width="450" height="88" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="28" y="240" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">objet en F</text>
+            <text x="28" y="268" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">aucune image</text>
+            <text x="28" y="290" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">les rayons ressortent parallèles</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="308" width="450" height="88" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="28" y="336" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">objet entre F et la lentille</text>
+            <text x="28" y="364" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">virtuelle, droite, agrandie</text>
+            <text x="28" y="386" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">c'est la loupe</text>
+            <rect x="10" y="404" width="450" height="56" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="430" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">la position de l'objet par rapport au foyer</text>
+            <text x="235" y="450" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">décide de tout</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Objet loin : au-delà de 2F</h3>
+          <p style="font-size:17px">Image <b>réelle</b>, renversée, <b>plus petite</b>. C'est l'appareil photo : un paysage lointain tient sur un capteur de deux centimètres.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Objet entre 2F et F</h3>
+          <p style="font-size:17px">Image réelle, renversée, mais <b>plus grande</b>. C'est le projecteur : une diapositive de trois centimètres remplit un mur.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Objet exactement en F</h3>
+          <p style="font-size:17px"><b>Aucune image.</b> Les rayons ressortent parallèles entre eux et ne se croisent jamais — ni devant, ni derrière. Ce cas est une réponse possible du QCM.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Objet très près, et la règle en une phrase</h3>
+          <p style="font-size:17px"><b>Entre F et la lentille :</b> image <b>virtuelle, droite et agrandie</b>. C'est la loupe — et c'est le seul cas où l'image reste du côté de l'objet.</p>
+          <p style="font-size:17px"><b>La règle :</b> la position de l'objet <b>par rapport au foyer</b> décide de tout. C'est la première chose à repérer dans un énoncé, avant le moindre calcul — et souvent la seule nécessaire, puisque le QCM demande la <b>nature</b> de l'image plus souvent que sa position.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Objet au-delà de 2F : image réelle, renversée, plus petite — l'appareil photo.",
+      "On l'approche, entre 2F et F : toujours réelle, mais plus grande — le projecteur.",
+      "Exactement en F : plus d'image du tout, les rayons ressortent parallèles.",
+      "En deçà de F : l'image devient virtuelle, droite et agrandie — la loupe.",
+      "<em>La règle :</em> la position par rapport au foyer décide de tout."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH7-04 ==================== -->
+  <section class="slide" data-ref="ANIM-PH7-04" data-title="Image réelle ou image virtuelle" data-sub="Celle qu'on peut recueillir sur un écran, et l'autre" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="30" y1="110" x2="440" y2="110" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="9 6"/><path d="M 200,50 Q 230,110 200,170 Q 170,110 200,50 Z" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.4"/><line x1="90.0" y1="110.0" x2="90.0" y2="64.0" stroke="#C0261F" stroke-width="3.6" stroke-linecap="round" marker-end="url(#v4)"/><line x1="90.0" y1="64.0" x2="200.0" y2="64.0" stroke="#C0261F" stroke-width="2.8"/><line x1="200.0" y1="64.0" x2="330.0" y2="183.6" stroke="#C0261F" stroke-width="2.8"/><line x1="90.0" y1="64.0" x2="330.0" y2="164.4" stroke="#6E1410" stroke-width="2.8"/>
+            <text x="30" y="36" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">objet loin : les rayons se croisent</text>
+          </g>
+          <g class="step s2"><line x1="291.7" y1="110.0" x2="291.7" y2="148.3" stroke="#1B3A8C" stroke-width="3.6" stroke-linecap="round" marker-end="url(#r4)"/>
+            <text x="346" y="100" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">réelle</text>
+            <text x="346" y="124" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">renversée</text>
+          </g>
+          <g class="step s3"><line x1="30" y1="330" x2="440" y2="330" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="9 6"/><path d="M 200,270 Q 230,330 200,390 Q 170,330 200,270 Z" fill="#F5D7D3" stroke="#6E1410" stroke-width="2.4"/><line x1="170.0" y1="330.0" x2="170.0" y2="304.0" stroke="#C0261F" stroke-width="3.6" stroke-linecap="round" marker-end="url(#v4)"/><line x1="170.0" y1="304.0" x2="200.0" y2="304.0" stroke="#C0261F" stroke-width="2.8"/><line x1="200.0" y1="304.0" x2="400.0" y2="408.0" stroke="#C0261F" stroke-width="2.8"/><line x1="170.0" y1="304.0" x2="300.0" y2="416.7" stroke="#6E1410" stroke-width="2.8"/>
+            <text x="30" y="256" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">objet près : ils divergent</text>
+          </g>
+          <g class="step s4"><line x1="200.0" y1="304.0" x2="125.0" y2="265.0" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="7 5"/><line x1="170.0" y1="304.0" x2="125.0" y2="265.0" stroke="#8A8F98" stroke-width="1.8" stroke-dasharray="7 5"/><line x1="125" y1="330" x2="125" y2="265" stroke="#1B3A8C" stroke-width="3" stroke-dasharray="7 5"/><path d="M 125,262 l -7,14 l 14,0 z" fill="#1B3A8C"/>
+            <text x="330" y="320" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">virtuelle</text>
+            <text x="330" y="344" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">droite</text>
+            <rect x="10" y="422" width="450" height="38" rx="11" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="447" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">une divergente : toujours virtuelle, droite, plus petite</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Image réelle</h3>
+          <p style="font-size:17px">Les rayons se croisent <b>vraiment</b>, de l'<b>autre côté</b> de la lentille. On peut la recueillir sur un écran, et elle est <b>toujours renversée</b>.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Image virtuelle</h3>
+          <p style="font-size:17px">Les rayons <b>divergent</b> : ce sont leurs <b>prolongements</b> qui se croisent, du <b>même côté</b> que l'objet. Aucun écran ne la capte, et elle est <b>toujours droite</b>.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les deux couples indissociables</h3>
+          <p style="font-size:17px"><b>Réelle et renversée</b> vont ensemble. <b>Virtuelle et droite</b> vont ensemble. Il n'existe aucun cas, dans tout le programme, où l'un va sans l'autre.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le seul cas où il n'y a rien à discuter</h3>
+          <p style="font-size:17px">Une lentille <b>divergente</b> donne <b>toujours</b> une image <b>virtuelle, droite et plus petite</b> — quelle que soit la position de l'objet. À 5 cm comme à 5 mètres.</p>
+          <p style="font-size:17px">Conséquence pratique : dès que l'énoncé mentionne une divergente, la réponse qualitative est connue <b>avant tout calcul</b>. Le calcul ne servira qu'à donner un nombre, jamais à décider de la nature.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Objet loin de la lentille : les deux rayons convergent derrière elle.",
+      "Ils se croisent vraiment : l'image est réelle, et renversée.",
+      "Objet en deçà du foyer : les mêmes rayons divergent après la lentille.",
+      "Leurs prolongements se croisent devant : l'image est virtuelle, et droite.",
+      "<em>Une divergente</em> donne toujours ce second cas, sans exception."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule PH7-A — Construire l'image donnée par une lentille · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

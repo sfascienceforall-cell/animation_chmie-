@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule PH6-A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#C0261F;          /* bleu SFA */
+  --deep:#6E1410;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#FBECEA;         /* bleu 8 % */
+  --tint2:#F5D7D3;        /* bleu 18 % */
+  --surface:#FAF6F5;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-PH6-01 ==================== -->
+  <section class="slide" data-ref="ANIM-PH6-01" data-title="Source, objet, image" data-sub="Trois mots posés une fois pour tout le chapitre" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <rect x="10" y="20" width="218" height="84" rx="12" fill="#F5D7D3"/>
+            <text x="119" y="46" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">la source</text>
+            <text x="119" y="70" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">produit la lumière</text>
+            <text x="119" y="92" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">Soleil, lampe</text>
+            <rect x="242" y="20" width="218" height="84" rx="12" fill="#F5D7D3"/>
+            <text x="351" y="46" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">l'objet</text>
+            <text x="351" y="70" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">renvoie la lumière</text>
+            <text x="351" y="92" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">presque tout ce qu'on voit</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="118" width="450" height="50" rx="12" fill="#FBECEA" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="235" y="149" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">l'image : là où les rayons se rejoignent</text>
+          </g>
+          <g class="step s3">
+            <text x="100" y="198" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">réelle</text>
+            <line x1="24" y1="250" x2="100" y2="226" stroke="#C0261F" stroke-width="2.6"/><line x1="100" y1="226" x2="176" y2="250" stroke="#C0261F" stroke-width="2.6"/><line x1="24" y1="250" x2="100" y2="274" stroke="#C0261F" stroke-width="2.6"/><line x1="100" y1="274" x2="176" y2="250" stroke="#C0261F" stroke-width="2.6"/>
+            <rect x="94" y="208" width="12" height="84" rx="4" fill="#F5D7D3" stroke="#6E1410" stroke-width="2"/>
+            <circle cx="24" cy="250" r="8" fill="#6E1410"/>
+            <line x1="176" y1="212" x2="176" y2="288" stroke="#1B3A8C" stroke-width="5"/>
+            <text x="100" y="326" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">captée sur un écran</text>
+          </g>
+          <g class="step s4">
+            <text x="352" y="198" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">virtuelle</text>
+            <line x1="330.0" y1="212.3" x2="320.0" y2="222.3" stroke="#8A8F98" stroke-width="1.8"/><line x1="330.0" y1="224.9" x2="320.0" y2="234.9" stroke="#8A8F98" stroke-width="1.8"/><line x1="330.0" y1="237.4" x2="320.0" y2="247.4" stroke="#8A8F98" stroke-width="1.8"/><line x1="330.0" y1="250.0" x2="320.0" y2="260.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="330.0" y1="262.6" x2="320.0" y2="272.6" stroke="#8A8F98" stroke-width="1.8"/><line x1="330.0" y1="275.1" x2="320.0" y2="285.1" stroke="#8A8F98" stroke-width="1.8"/><line x1="330.0" y1="287.7" x2="320.0" y2="297.7" stroke="#8A8F98" stroke-width="1.8"/><line x1="250" y1="250" x2="330" y2="226" stroke="#C0261F" stroke-width="2.6"/><line x1="330" y1="226" x2="250" y2="202" stroke="#C0261F" stroke-width="2.6"/><line x1="330" y1="226" x2="410" y2="250" stroke="#8A8F98" stroke-width="2" stroke-dasharray="6 5"/><line x1="250" y1="250" x2="330" y2="274" stroke="#C0261F" stroke-width="2.6"/><line x1="330" y1="274" x2="250" y2="298" stroke="#C0261F" stroke-width="2.6"/><line x1="330" y1="274" x2="410" y2="250" stroke="#8A8F98" stroke-width="2" stroke-dasharray="6 5"/>
+            <line x1="330" y1="200" x2="330" y2="300" stroke="#6E1410" stroke-width="4"/>
+            <circle cx="250" cy="250" r="8" fill="#6E1410"/>
+            <circle cx="410" cy="250" r="8" fill="none" stroke="#1B3A8C" stroke-width="2.6"/>
+            <text x="352" y="326" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">l'œil la voit, l'écran non</text>
+            <rect x="10" y="346" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="376" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">réelle : les rayons s'y croisent vraiment</text>
+            <rect x="10" y="400" width="450" height="46" rx="11" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="430" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">virtuelle : ce sont leurs prolongements</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Source et objet</h3>
+          <p style="font-size:17px">Une <b>source</b> produit la lumière. Un <b>objet</b> renvoie celle qu'il reçoit — et la plupart de ce qu'on voit est un objet, pas une source.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'image</h3>
+          <p style="font-size:17px">C'est le point où les rayons issus d'un point de l'objet <b>se rejoignent</b> après avoir traversé le système optique.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Image réelle</h3>
+          <p style="font-size:17px">Les rayons s'y croisent <b>effectivement</b>. On peut donc la recueillir sur un écran — c'est le test opératoire.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Image virtuelle, et pourquoi le mot est exigible</h3>
+          <p style="font-size:17px">Ce sont les <b>prolongements</b> des rayons qui se croisent — les rayons eux-mêmes divergent. L'œil la voit parfaitement ; l'écran ne capte rien.</p>
+          <p style="font-size:17px">Le programme nomme explicitement « notions de source lumineuse, d'objet et d'image ». Ces trois mots sont donc <b>exigibles en tant que tels</b> : une question peut porter uniquement sur le vocabulaire, sans aucun calcul.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une source produit la lumière ; un objet ne fait que la renvoyer.",
+      "L'image est le point où les rayons d'un même point objet se rejoignent.",
+      "S'ils s'y croisent vraiment, l'image est <b>réelle</b> : un écran la capte.",
+      "Si ce sont leurs prolongements, elle est <b>virtuelle</b> : l'œil seul la voit.",
+      "<em>Ces trois mots sont au programme</em> — ils peuvent être demandés seuls."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH6-04 ==================== -->
+  <section class="slide" data-ref="ANIM-PH6-04" data-title="Le rayon lumineux est un modèle" data-sub="Pratique, et faux dès que la diffraction apparaît" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <text x="24" y="30" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">on représente la propagation par des droites</text>
+            <line x1="50" y1="120" x2="338.4" y2="202.7" stroke="#C0261F" stroke-width="2.4"/><line x1="50" y1="120" x2="344.8" y2="175.5" stroke="#C0261F" stroke-width="2.4"/><line x1="50" y1="120" x2="348.7" y2="147.9" stroke="#C0261F" stroke-width="2.4"/><line x1="50" y1="120" x2="350.0" y2="120.0" stroke="#C0261F" stroke-width="2.4"/><line x1="50" y1="120" x2="348.7" y2="92.1" stroke="#C0261F" stroke-width="2.4"/><line x1="50" y1="120" x2="344.8" y2="64.5" stroke="#C0261F" stroke-width="2.4"/><line x1="50" y1="120" x2="338.4" y2="37.3" stroke="#C0261F" stroke-width="2.4"/>
+            <circle cx="50" cy="120" r="15" fill="#6E1410"/>
+          </g>
+          <g class="step s2"><rect x="250" y="226" width="8" height="46" fill="#6E1410"/><rect x="250" y="292" width="8" height="46" fill="#6E1410"/><line x1="170" y1="232" x2="170" y2="332" stroke="#C0261F" stroke-width="2.4"/><line x1="196" y1="232" x2="196" y2="332" stroke="#C0261F" stroke-width="2.4"/><line x1="222" y1="232" x2="222" y2="332" stroke="#C0261F" stroke-width="2.4"/></g>
+          <g class="step s3"><polyline points="271.0,304.5 272.4,303.6 273.8,302.6 275.1,301.5 276.4,300.4 277.5,299.1 278.6,297.8 279.6,296.4 280.5,295.0 281.3,293.5 282.0,291.9 282.6,290.4 283.1,288.7 283.5,287.1 283.8,285.4 283.9,283.7 284.0,282.0 283.9,280.3 283.8,278.6 283.5,276.9 283.1,275.3 282.6,273.6 282.0,272.1 281.3,270.5 280.5,269.0 279.6,267.6 278.6,266.2 277.5,264.9 276.4,263.6 275.1,262.5 273.8,261.4 272.4,260.4 271.0,259.5" fill="none" stroke="#C0261F" stroke-width="2.4"/><polyline points="283.0,325.3 285.8,323.6 288.4,321.7 291.0,319.6 293.4,317.4 295.6,315.0 297.7,312.4 299.6,309.8 301.3,307.0 302.8,304.1 304.2,301.1 305.3,298.1 306.3,294.9 307.0,291.8 307.6,288.5 307.9,285.3 308.0,282.0 307.9,278.7 307.6,275.5 307.0,272.2 306.3,269.1 305.3,265.9 304.2,262.9 302.8,259.9 301.3,257.0 299.6,254.2 297.7,251.6 295.6,249.0 293.4,246.6 291.0,244.4 288.4,242.3 285.8,240.4 283.0,238.7" fill="none" stroke="#C0261F" stroke-width="2.4"/><polyline points="295.0,346.1 299.1,343.5 303.0,340.7 306.8,337.6 310.3,334.3 313.6,330.8 316.7,327.0 319.5,323.1 322.1,319.0 324.4,314.7 326.4,310.3 328.1,305.8 329.5,301.2 330.6,296.4 331.4,291.7 331.8,286.8 332.0,282.0 331.8,277.2 331.4,272.3 330.6,267.6 329.5,262.8 328.1,258.2 326.4,253.7 324.4,249.3 322.1,245.0 319.5,240.9 316.7,237.0 313.6,233.2 310.3,229.7 306.8,226.4 303.0,223.3 299.1,220.5 295.0,217.9" fill="none" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="170" y="220" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">mais elle se diffracte</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="354" width="450" height="46" rx="11" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="384" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">un modèle en droites ne peut pas en rendre compte</text>
+            <rect x="10" y="408" width="450" height="52" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="432" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">à notre échelle, a est immense devant λ :</text>
+            <text x="235" y="450" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">la ligne droite est exacte en pratique</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le rayon lumineux</h3>
+          <p style="font-size:17px">C'est un <b>modèle</b> : on représente la propagation de la lumière par des <b>droites</b>. Commode, et suffisant pour tout ce chapitre.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Sa limite se voit tout de suite</h3>
+          <p style="font-size:17px">La capsule précédente a montré que la lumière <b>se diffracte</b>. Un modèle en lignes droites ne peut pas en rendre compte : le rayon est faux dès qu'on rétrécit l'ouverture.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi on l'utilise quand même</h3>
+          <p style="font-size:17px">À notre échelle, les ouvertures sont <b>immenses</b> devant la longueur d'onde : la diffraction est négligeable et la ligne droite est exacte en pratique.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi je vous dis ça maintenant</h3>
+          <p style="font-size:17px">Parce que vous allez passer deux chapitres à tracer des droites, et qu'un QCM peut demander <b>si la lumière se propage toujours en ligne droite</b>. La réponse attendue est non — elle se diffracte — même si tous les exercices la supposent rectiligne.</p>
+          <p style="font-size:17px">Savoir qu'un modèle a un domaine de validité, et lequel, fait partie du programme autant que le modèle lui-même.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une source, et des droites : c'est le modèle du rayon lumineux.",
+      "Mettons sur son chemin un mur percé d'une petite ouverture.",
+      "L'onde s'étale au-delà : le modèle en droites ne le prévoit pas.",
+      "À notre échelle, pourtant, les ouvertures sont immenses devant λ.",
+      "<em>À retenir :</em> la lumière ne se propage pas toujours en ligne droite."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH6-02 ==================== -->
+  <section class="slide" data-ref="ANIM-PH6-02" data-title="La loi de la réflexion : i = r" data-sub="Et la normale, à partir de laquelle tout se mesure" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="40" y1="300" x2="430" y2="300" stroke="#6E1410" stroke-width="4"/><line x1="48.9" y1="300.0" x2="59.9" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="66.6" y1="300.0" x2="77.6" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="84.3" y1="300.0" x2="95.3" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="102.0" y1="300.0" x2="113.0" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="119.8" y1="300.0" x2="130.8" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="137.5" y1="300.0" x2="148.5" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="155.2" y1="300.0" x2="166.2" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="173.0" y1="300.0" x2="184.0" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="190.7" y1="300.0" x2="201.7" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="208.4" y1="300.0" x2="219.4" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="226.1" y1="300.0" x2="237.1" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="243.9" y1="300.0" x2="254.9" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="261.6" y1="300.0" x2="272.6" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="279.3" y1="300.0" x2="290.3" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="297.0" y1="300.0" x2="308.0" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="314.8" y1="300.0" x2="325.8" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="332.5" y1="300.0" x2="343.5" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="350.2" y1="300.0" x2="361.2" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="368.0" y1="300.0" x2="379.0" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="385.7" y1="300.0" x2="396.7" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="403.4" y1="300.0" x2="414.4" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="421.1" y1="300.0" x2="432.1" y2="311.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="235" y1="118" x2="235" y2="300" stroke="#8A8F98" stroke-width="2" stroke-dasharray="7 5"/>
+            <text x="245" y="132" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">la normale</text>
+          </g>
+          <g class="step s2"><line x1="100.0" y1="139.1" x2="235.0" y2="300.0" stroke="#C0261F" stroke-width="3.6" stroke-linecap="round" marker-end="url(#v3)"/><polyline points="235.0,236.0 233.4,236.0 231.8,236.1 230.2,236.2 228.6,236.3 227.0,236.5 225.5,236.7 223.9,237.0 222.3,237.3 220.8,237.6 219.2,238.0 217.7,238.4 216.1,238.8 214.6,239.3 213.1,239.9 211.6,240.4 210.1,241.0 208.7,241.7 207.2,242.3 205.8,243.0 204.4,243.8 203.0,244.6 201.6,245.4 200.3,246.2 198.9,247.1 197.6,248.0 196.4,249.0 195.1,250.0 193.9,251.0" fill="none" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="223" y="256" text-anchor="end" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">i</text>
+          </g>
+          <g class="step s3"><line x1="235.0" y1="300.0" x2="370.0" y2="139.1" stroke="#1B3A8C" stroke-width="3.6" stroke-linecap="round" marker-end="url(#r3)"/><polyline points="276.1,251.0 274.9,250.0 273.6,249.0 272.4,248.0 271.1,247.1 269.7,246.2 268.4,245.4 267.0,244.6 265.6,243.8 264.2,243.0 262.8,242.3 261.3,241.7 259.9,241.0 258.4,240.4 256.9,239.9 255.4,239.3 253.9,238.8 252.3,238.4 250.8,238.0 249.2,237.6 247.7,237.3 246.1,237.0 244.5,236.7 243.0,236.5 241.4,236.3 239.8,236.2 238.2,236.1 236.6,236.0 235.0,236.0" fill="none" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="247" y="256" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">r</text>
+            <rect x="10" y="326" width="450" height="50" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="358" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">i = r, mesurés depuis la normale</text>
+          </g>
+          <g class="step s4"><polyline points="164.3,215.7 161.7,218.0 159.2,220.3 156.7,222.7 154.4,225.2 152.1,227.7 149.9,230.3 147.7,233.0 145.7,235.8 143.7,238.6 141.9,241.5 140.1,244.4 138.4,247.4 136.8,250.4 135.3,253.5 133.9,256.6 132.6,259.8 131.4,263.0 130.3,266.3 129.3,269.5 128.4,272.9 127.6,276.2 126.9,279.5 126.3,282.9 125.9,286.3 125.5,289.7 125.2,293.1 125.1,296.6 125.0,300.0" fill="none" stroke="#8A8F98" stroke-width="2.0"/>
+            <text x="122" y="282" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">90° − i</text>
+            <rect x="10" y="378" width="450" height="82" rx="12" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="406" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">l'énoncé donne souvent l'angle</text>
+            <text x="235" y="430" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">avec la surface</text>
+            <text x="235" y="450" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">on écrit 90° − angle avant tout calcul</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La normale</h3>
+          <p style="font-size:17px">C'est la <b>perpendiculaire à la surface</b> au point d'incidence. En optique, <b>tous</b> les angles se mesurent par rapport à elle — jamais par rapport à la surface.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'angle d'incidence</h3>
+          <p style="font-size:17px">i est l'angle entre le rayon <b>incident</b> et la normale. Le plan qui les contient tous deux est le <b>plan d'incidence</b>.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La loi</h3>
+          <p style="font-size:17px">L'angle de réflexion est <b>égal</b> à l'angle d'incidence, et le rayon réfléchi reste dans le plan d'incidence. C'est tout ce qu'il y a à savoir.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">LE piège du chapitre, et la parade mécanique</h3>
+          <p style="font-size:17px">L'énoncé donne l'angle « <b>avec la surface</b> » et non « avec la normale ». Il faut alors prendre le <b>complémentaire</b> : 90° moins l'angle donné. Cette substitution est faite dans la <b>moitié</b> des exercices de concours.</p>
+          <p style="font-size:17px"><b>La parade :</b> dès qu'on lit « avec la surface », on écrit 90° moins l'angle <b>avant</b> de faire quoi que ce soit d'autre. Le réflexe doit être mécanique, pas réfléchi.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un miroir, et la normale : la perpendiculaire au point d'incidence.",
+      "Le rayon incident fait un angle i avec cette normale — pas avec le miroir.",
+      "Le rayon réfléchi repart de l'autre côté, avec r = i.",
+      "L'angle avec la surface, lui, vaut 90° moins i.",
+      "<em>LE piège :</em> l'énoncé donne l'angle avec la surface une fois sur deux."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH6-03 ==================== -->
+  <section class="slide" data-ref="ANIM-PH6-03" data-title="L'image dans un miroir plan" data-sub="Virtuelle, symétrique, à la même distance" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="250" y1="120" x2="250" y2="340" stroke="#6E1410" stroke-width="4"/><line x1="250.0" y1="127.9" x2="239.0" y2="138.9" stroke="#8A8F98" stroke-width="1.8"/><line x1="250.0" y1="143.6" x2="239.0" y2="154.6" stroke="#8A8F98" stroke-width="1.8"/><line x1="250.0" y1="159.3" x2="239.0" y2="170.3" stroke="#8A8F98" stroke-width="1.8"/><line x1="250.0" y1="175.0" x2="239.0" y2="186.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="250.0" y1="190.7" x2="239.0" y2="201.7" stroke="#8A8F98" stroke-width="1.8"/><line x1="250.0" y1="206.4" x2="239.0" y2="217.4" stroke="#8A8F98" stroke-width="1.8"/><line x1="250.0" y1="222.1" x2="239.0" y2="233.1" stroke="#8A8F98" stroke-width="1.8"/><line x1="250.0" y1="237.9" x2="239.0" y2="248.9" stroke="#8A8F98" stroke-width="1.8"/><line x1="250.0" y1="253.6" x2="239.0" y2="264.6" stroke="#8A8F98" stroke-width="1.8"/><line x1="250.0" y1="269.3" x2="239.0" y2="280.3" stroke="#8A8F98" stroke-width="1.8"/><line x1="250.0" y1="285.0" x2="239.0" y2="296.0" stroke="#8A8F98" stroke-width="1.8"/><line x1="250.0" y1="300.7" x2="239.0" y2="311.7" stroke="#8A8F98" stroke-width="1.8"/><line x1="250.0" y1="316.4" x2="239.0" y2="327.4" stroke="#8A8F98" stroke-width="1.8"/><line x1="250.0" y1="332.1" x2="239.0" y2="343.1" stroke="#8A8F98" stroke-width="1.8"/><line x1="150.0" y1="300.0" x2="150.0" y2="170.0" stroke="#C0261F" stroke-width="4.0" stroke-linecap="round" marker-end="url(#v4)"/>
+            <text x="136" y="176" text-anchor="end" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">l'objet</text>
+            <text x="235" y="36" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">un objet devant un miroir plan</text>
+          </g>
+          <g class="step s2"><line x1="150" y1="170" x2="350" y2="170" stroke="#8A8F98" stroke-width="1.6" stroke-dasharray="4 4"/><line x1="150" y1="300" x2="350" y2="300" stroke="#8A8F98" stroke-width="1.6" stroke-dasharray="4 4"/><line x1="350" y1="300" x2="350" y2="170" stroke="#8A8F98" stroke-width="3" stroke-dasharray="7 5"/><path d="M 350,166 l -7,14 l 14,0 z" fill="#8A8F98"/>
+            <text x="364" y="176" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98" font-weight="700">l'image</text>
+          </g>
+          <g class="step s3"><line x1="150.0" y1="324.0" x2="250.0" y2="324.0" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v4)"/><line x1="250.0" y1="324.0" x2="150.0" y2="324.0" stroke="#C0261F" stroke-width="2.6" stroke-linecap="round" marker-end="url(#v4)"/><text x="200" y="314" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">d</text><line x1="250.0" y1="324.0" x2="350.0" y2="324.0" stroke="#1B3A8C" stroke-width="2.6" stroke-linecap="round" marker-end="url(#r4)"/><line x1="350.0" y1="324.0" x2="250.0" y2="324.0" stroke="#1B3A8C" stroke-width="2.6" stroke-linecap="round" marker-end="url(#r4)"/><text x="300" y="314" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">d</text></g>
+          <g class="step s4">
+            <rect x="10" y="356" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="386" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">virtuelle, symétrique, de même taille</text>
+            <rect x="10" y="410" width="450" height="50" rx="11" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="441" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">se voir en entier : un miroir de moitié suffit</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce que donne un miroir plan</h3>
+          <p style="font-size:17px">Une image <b>virtuelle</b>, <b>symétrique</b> de l'objet par rapport au plan du miroir, et de <b>même taille</b>. Trois mots, et aucun calcul.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Où elle se trouve</h3>
+          <p style="font-size:17px"><b>Derrière</b> le miroir, à la même distance que l'objet devant. C'est ce qui donne l'impression de profondeur — la pièce semble deux fois plus grande.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La symétrie, concrètement</h3>
+          <p style="font-size:17px">Chaque point de l'image est le <b>symétrique</b> du point objet. La construction se fait donc sans tracer un seul rayon : on reporte la distance.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le résultat qui tombe au concours</h3>
+          <p style="font-size:17px">Pour se voir <b>en entier</b>, un miroir vertical doit mesurer la <b>moitié</b> de la taille de la personne. Une personne de 1,70 m a besoin de 0,85 m, pas davantage.</p>
+          <p style="font-size:17px">Et — c'est la partie contre-intuitive — cette hauteur <b>ne dépend pas de la distance au miroir</b>. Reculer ne change rien : on se voit plus petit, mais on occupe toujours la même fraction de sa surface. C'est exactement ce que le QCM demande.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un objet placé devant un miroir plan.",
+      "Son image se forme derrière, symétrique par rapport au plan du miroir.",
+      "Les deux distances sont égales : d devant, d derrière.",
+      "L'image est virtuelle et de même taille que l'objet.",
+      "<em>Le résultat qui tombe :</em> un miroir de moitié suffit, quelle que soit la distance."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule PH6-A — Source, objet, image, et la réflexion · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

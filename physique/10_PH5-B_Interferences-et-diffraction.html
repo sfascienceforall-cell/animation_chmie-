@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule PH5-B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#C0261F;          /* bleu SFA */
+  --deep:#6E1410;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#FBECEA;         /* bleu 8 % */
+  --tint2:#F5D7D3;        /* bleu 18 % */
+  --surface:#FAF6F5;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-PH5-05 ==================== -->
+  <section class="slide" data-ref="ANIM-PH5-05" data-title="Deux ondes qui se croisent s'additionnent" data-sub="Puis repartent comme si de rien n'était" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><line x1="24" y1="96" x2="446" y2="96" stroke="#8A8F98" stroke-width="1.6"/><line x1="24" y1="232" x2="446" y2="232" stroke="#8A8F98" stroke-width="1.6"/><line x1="24" y1="368" x2="446" y2="368" stroke="#8A8F98" stroke-width="1.6"/>
+            <text x="24" y="36" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">avant la rencontre</text>
+            <path d="M 30.0,96.0 L 31.7,96.0 L 33.4,96.0 L 35.1,96.0 L 36.8,96.0 L 38.5,96.0 L 40.2,96.0 L 42.0,96.0 L 43.7,95.9 L 45.4,95.9 L 47.1,95.9 L 48.8,95.9 L 50.5,95.8 L 52.2,95.8 L 53.9,95.7 L 55.6,95.6 L 57.3,95.5 L 59.0,95.4 L 60.8,95.2 L 62.5,95.0 L 64.2,94.7 L 65.9,94.5 L 67.6,94.1 L 69.3,93.7 L 71.0,93.2 L 72.7,92.7 L 74.4,92.0 L 76.1,91.3 L 77.8,90.5 L 79.5,89.5 L 81.2,88.5 L 83.0,87.3 L 84.7,86.0 L 86.4,84.6 L 88.1,83.1 L 89.8,81.5 L 91.5,79.8 L 93.2,78.0 L 94.9,76.1 L 96.6,74.2 L 98.3,72.3 L 100.0,70.3 L 101.8,68.4 L 103.5,66.5 L 105.2,64.7 L 106.9,63.0 L 108.6,61.4 L 110.3,60.0 L 112.0,58.7 L 113.7,57.7 L 115.4,56.9 L 117.1,56.4 L 118.8,56.1 L 120.5,56.0 L 122.2,56.2 L 124.0,56.7 L 125.7,57.4 L 127.4,58.3 L 129.1,59.5 L 130.8,60.9 L 132.5,62.4 L 134.2,64.0 L 135.9,65.8 L 137.6,67.7 L 139.3,69.6 L 141.0,71.5 L 142.8,73.5 L 144.5,75.4 L 146.2,77.3 L 147.9,79.1 L 149.6,80.9 L 151.3,82.5 L 153.0,84.1 L 154.7,85.5 L 156.4,86.8 L 158.1,88.0 L 159.8,89.1 L 161.5,90.1 L 163.2,91.0 L 165.0,91.8 L 166.7,92.4 L 168.4,93.0 L 170.1,93.5 L 171.8,94.0 L 173.5,94.3 L 175.2,94.6 L 176.9,94.9 L 178.6,95.1 L 180.3,95.3 L 182.0,95.4 L 183.8,95.6 L 185.5,95.7 L 187.2,95.7 L 188.9,95.8 L 190.6,95.8 L 192.3,95.9 L 194.0,95.9 L 195.7,95.9 L 197.4,95.9 L 199.1,96.0 L 200.8,96.0 L 202.5,96.0 L 204.2,96.0 L 206.0,96.0 L 207.7,96.0 L 209.4,96.0 L 211.1,96.0 L 212.8,96.0 L 214.5,96.0 L 216.2,96.0 L 217.9,96.0 L 219.6,96.0 L 221.3,96.0 L 223.0,96.0 L 224.8,96.0 L 226.5,96.0 L 228.2,96.0 L 229.9,96.0 L 231.6,96.0 L 233.3,96.0 L 235.0,96.0 L 236.7,96.0 L 238.4,96.0 L 240.1,96.0 L 241.8,96.0 L 243.5,96.0 L 245.2,96.0 L 247.0,96.0 L 248.7,96.0 L 250.4,96.0 L 252.1,96.0 L 253.8,96.0 L 255.5,96.0 L 257.2,96.0 L 258.9,96.0 L 260.6,96.0 L 262.3,96.0 L 264.0,96.0 L 265.8,96.0 L 267.5,96.0 L 269.2,96.0 L 270.9,96.0 L 272.6,96.0 L 274.3,96.0 L 276.0,96.0 L 277.7,96.0 L 279.4,96.0 L 281.1,96.0 L 282.8,96.0 L 284.5,96.0 L 286.2,96.0 L 288.0,96.0 L 289.7,96.0 L 291.4,96.0 L 293.1,96.0 L 294.8,96.0 L 296.5,96.0 L 298.2,96.0 L 299.9,96.0 L 301.6,96.0 L 303.3,96.0 L 305.0,96.0 L 306.8,96.0 L 308.5,96.0 L 310.2,96.0 L 311.9,96.0 L 313.6,96.0 L 315.3,96.0 L 317.0,96.0 L 318.7,96.0 L 320.4,96.0 L 322.1,96.0 L 323.8,96.0 L 325.5,96.0 L 327.2,96.0 L 329.0,96.0 L 330.7,96.0 L 332.4,96.0 L 334.1,96.0 L 335.8,96.0 L 337.5,96.0 L 339.2,96.0 L 340.9,96.0 L 342.6,96.0 L 344.3,96.0 L 346.0,96.0 L 347.8,96.0 L 349.5,96.0 L 351.2,96.0 L 352.9,96.0 L 354.6,96.0 L 356.3,96.0 L 358.0,96.0 L 359.7,96.0 L 361.4,96.0 L 363.1,96.0 L 364.8,96.0 L 366.5,96.0 L 368.2,96.0 L 370.0,96.0 L 371.7,96.0 L 373.4,96.0 L 375.1,96.0 L 376.8,96.0 L 378.5,96.0 L 380.2,96.0 L 381.9,96.0 L 383.6,96.0 L 385.3,96.0 L 387.0,96.0 L 388.8,96.0 L 390.5,96.0 L 392.2,96.0 L 393.9,96.0 L 395.6,96.0 L 397.3,96.0 L 399.0,96.0 L 400.7,96.0 L 402.4,96.0 L 404.1,96.0 L 405.8,96.0 L 407.5,96.0 L 409.2,96.0 L 411.0,96.0 L 412.7,96.0 L 414.4,96.0 L 416.1,96.0 L 417.8,96.0 L 419.5,96.0 L 421.2,96.0 L 422.9,96.0 L 424.6,96.0 L 426.3,96.0 L 428.0,96.0 L 429.8,96.0 L 431.5,96.0 L 433.2,96.0 L 434.9,96.0 L 436.6,96.0 L 438.3,96.0 L 440.0,96.0" fill="none" stroke="#C0261F" stroke-width="3.4"/>
+            <path d="M 30.0,96.0 L 31.7,96.0 L 33.4,96.0 L 35.1,96.0 L 36.8,96.0 L 38.5,96.0 L 40.2,96.0 L 42.0,96.0 L 43.7,96.0 L 45.4,96.0 L 47.1,96.0 L 48.8,96.0 L 50.5,96.0 L 52.2,96.0 L 53.9,96.0 L 55.6,96.0 L 57.3,96.0 L 59.0,96.0 L 60.8,96.0 L 62.5,96.0 L 64.2,96.0 L 65.9,96.0 L 67.6,96.0 L 69.3,96.0 L 71.0,96.0 L 72.7,96.0 L 74.4,96.0 L 76.1,96.0 L 77.8,96.0 L 79.5,96.0 L 81.2,96.0 L 83.0,96.0 L 84.7,96.0 L 86.4,96.0 L 88.1,96.0 L 89.8,96.0 L 91.5,96.0 L 93.2,96.0 L 94.9,96.0 L 96.6,96.0 L 98.3,96.0 L 100.0,96.0 L 101.8,96.0 L 103.5,96.0 L 105.2,96.0 L 106.9,96.0 L 108.6,96.0 L 110.3,96.0 L 112.0,96.0 L 113.7,96.0 L 115.4,96.0 L 117.1,96.0 L 118.8,96.0 L 120.5,96.0 L 122.2,96.0 L 124.0,96.0 L 125.7,96.0 L 127.4,96.0 L 129.1,96.0 L 130.8,96.0 L 132.5,96.0 L 134.2,96.0 L 135.9,96.0 L 137.6,96.0 L 139.3,96.0 L 141.0,96.0 L 142.8,96.0 L 144.5,96.0 L 146.2,96.0 L 147.9,96.0 L 149.6,96.0 L 151.3,96.0 L 153.0,96.0 L 154.7,96.0 L 156.4,96.0 L 158.1,96.0 L 159.8,96.0 L 161.5,96.0 L 163.2,96.0 L 165.0,96.0 L 166.7,96.0 L 168.4,96.0 L 170.1,96.0 L 171.8,96.0 L 173.5,96.0 L 175.2,96.0 L 176.9,96.0 L 178.6,96.0 L 180.3,96.0 L 182.0,96.0 L 183.8,96.0 L 185.5,96.0 L 187.2,96.0 L 188.9,96.0 L 190.6,96.0 L 192.3,96.0 L 194.0,96.0 L 195.7,96.0 L 197.4,96.0 L 199.1,96.0 L 200.8,96.0 L 202.5,96.0 L 204.2,96.0 L 206.0,96.0 L 207.7,96.0 L 209.4,96.0 L 211.1,96.0 L 212.8,96.0 L 214.5,96.0 L 216.2,96.0 L 217.9,96.0 L 219.6,96.0 L 221.3,96.0 L 223.0,96.0 L 224.8,96.0 L 226.5,96.0 L 228.2,96.0 L 229.9,96.0 L 231.6,96.0 L 233.3,96.0 L 235.0,96.0 L 236.7,96.0 L 238.4,96.0 L 240.1,96.0 L 241.8,96.0 L 243.5,96.0 L 245.2,96.0 L 247.0,96.0 L 248.7,96.0 L 250.4,96.0 L 252.1,96.0 L 253.8,96.0 L 255.5,96.0 L 257.2,96.0 L 258.9,96.0 L 260.6,96.0 L 262.3,96.0 L 264.0,96.0 L 265.8,96.0 L 267.5,96.0 L 269.2,96.0 L 270.9,96.0 L 272.6,95.9 L 274.3,95.9 L 276.0,95.9 L 277.7,95.9 L 279.4,95.8 L 281.1,95.8 L 282.8,95.7 L 284.5,95.7 L 286.2,95.6 L 288.0,95.4 L 289.7,95.3 L 291.4,95.1 L 293.1,94.9 L 294.8,94.6 L 296.5,94.3 L 298.2,94.0 L 299.9,93.5 L 301.6,93.0 L 303.3,92.4 L 305.0,91.8 L 306.8,91.0 L 308.5,90.1 L 310.2,89.1 L 311.9,88.0 L 313.6,86.8 L 315.3,85.5 L 317.0,84.1 L 318.7,82.5 L 320.4,80.9 L 322.1,79.1 L 323.8,77.3 L 325.5,75.4 L 327.2,73.5 L 329.0,71.5 L 330.7,69.6 L 332.4,67.7 L 334.1,65.8 L 335.8,64.0 L 337.5,62.4 L 339.2,60.9 L 340.9,59.5 L 342.6,58.3 L 344.3,57.4 L 346.0,56.7 L 347.8,56.2 L 349.5,56.0 L 351.2,56.1 L 352.9,56.4 L 354.6,56.9 L 356.3,57.7 L 358.0,58.7 L 359.7,60.0 L 361.4,61.4 L 363.1,63.0 L 364.8,64.7 L 366.5,66.5 L 368.2,68.4 L 370.0,70.3 L 371.7,72.3 L 373.4,74.2 L 375.1,76.1 L 376.8,78.0 L 378.5,79.8 L 380.2,81.5 L 381.9,83.1 L 383.6,84.6 L 385.3,86.0 L 387.0,87.3 L 388.8,88.5 L 390.5,89.5 L 392.2,90.5 L 393.9,91.3 L 395.6,92.0 L 397.3,92.7 L 399.0,93.2 L 400.7,93.7 L 402.4,94.1 L 404.1,94.5 L 405.8,94.7 L 407.5,95.0 L 409.2,95.2 L 411.0,95.4 L 412.7,95.5 L 414.4,95.6 L 416.1,95.7 L 417.8,95.8 L 419.5,95.8 L 421.2,95.9 L 422.9,95.9 L 424.6,95.9 L 426.3,95.9 L 428.0,96.0 L 429.8,96.0 L 431.5,96.0 L 433.2,96.0 L 434.9,96.0 L 436.6,96.0 L 438.3,96.0 L 440.0,96.0" fill="none" stroke="#1B3A8C" stroke-width="3.4"/>
+            <line x1="150.0" y1="48.0" x2="206.0" y2="48.0" stroke="#C0261F" stroke-width="3.0" stroke-linecap="round" marker-end="url(#v1)"/><line x1="320.0" y1="48.0" x2="264.0" y2="48.0" stroke="#1B3A8C" stroke-width="3.0" stroke-linecap="round" marker-end="url(#r1)"/>
+          </g>
+          <g class="step s2">
+            <text x="24" y="176" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">pendant</text>
+            <path d="M 30.0,232.0 L 31.7,232.0 L 33.4,232.0 L 35.1,232.0 L 36.8,232.0 L 38.5,232.0 L 40.2,232.0 L 42.0,232.0 L 43.7,232.0 L 45.4,232.0 L 47.1,232.0 L 48.8,232.0 L 50.5,232.0 L 52.2,232.0 L 53.9,232.0 L 55.6,232.0 L 57.3,232.0 L 59.0,232.0 L 60.8,232.0 L 62.5,232.0 L 64.2,232.0 L 65.9,232.0 L 67.6,232.0 L 69.3,232.0 L 71.0,232.0 L 72.7,232.0 L 74.4,232.0 L 76.1,232.0 L 77.8,232.0 L 79.5,232.0 L 81.2,232.0 L 83.0,232.0 L 84.7,232.0 L 86.4,232.0 L 88.1,232.0 L 89.8,232.0 L 91.5,232.0 L 93.2,232.0 L 94.9,232.0 L 96.6,232.0 L 98.3,232.0 L 100.0,232.0 L 101.8,232.0 L 103.5,232.0 L 105.2,232.0 L 106.9,232.0 L 108.6,232.0 L 110.3,232.0 L 112.0,232.0 L 113.7,232.0 L 115.4,232.0 L 117.1,232.0 L 118.8,232.0 L 120.5,232.0 L 122.2,232.0 L 124.0,232.0 L 125.7,232.0 L 127.4,232.0 L 129.1,232.0 L 130.8,232.0 L 132.5,232.0 L 134.2,232.0 L 135.9,232.0 L 137.6,232.0 L 139.3,232.0 L 141.0,232.0 L 142.8,232.0 L 144.5,232.0 L 146.2,232.0 L 147.9,232.0 L 149.6,232.0 L 151.3,232.0 L 153.0,232.0 L 154.7,231.9 L 156.4,231.9 L 158.1,231.9 L 159.8,231.8 L 161.5,231.8 L 163.2,231.7 L 165.0,231.7 L 166.7,231.6 L 168.4,231.4 L 170.1,231.3 L 171.8,231.1 L 173.5,230.8 L 175.2,230.5 L 176.9,230.1 L 178.6,229.7 L 180.3,229.1 L 182.0,228.5 L 183.8,227.7 L 185.5,226.8 L 187.2,225.7 L 188.9,224.5 L 190.6,223.1 L 192.3,221.5 L 194.0,219.6 L 195.7,217.6 L 197.4,215.3 L 199.1,212.9 L 200.8,210.1 L 202.5,207.2 L 204.2,204.0 L 206.0,200.7 L 207.7,197.1 L 209.4,193.4 L 211.1,189.6 L 212.8,185.8 L 214.5,181.8 L 216.2,178.0 L 217.9,174.2 L 219.6,170.5 L 221.3,167.0 L 223.0,163.8 L 224.8,160.8 L 226.5,158.2 L 228.2,156.0 L 229.9,154.3 L 231.6,153.0 L 233.3,152.3 L 235.0,152.0 L 236.7,152.3 L 238.4,153.0 L 240.1,154.3 L 241.8,156.0 L 243.5,158.2 L 245.2,160.8 L 247.0,163.8 L 248.7,167.0 L 250.4,170.5 L 252.1,174.2 L 253.8,178.0 L 255.5,181.8 L 257.2,185.8 L 258.9,189.6 L 260.6,193.4 L 262.3,197.1 L 264.0,200.7 L 265.8,204.0 L 267.5,207.2 L 269.2,210.1 L 270.9,212.9 L 272.6,215.3 L 274.3,217.6 L 276.0,219.6 L 277.7,221.5 L 279.4,223.1 L 281.1,224.5 L 282.8,225.7 L 284.5,226.8 L 286.2,227.7 L 288.0,228.5 L 289.7,229.1 L 291.4,229.7 L 293.1,230.1 L 294.8,230.5 L 296.5,230.8 L 298.2,231.1 L 299.9,231.3 L 301.6,231.4 L 303.3,231.6 L 305.0,231.7 L 306.8,231.7 L 308.5,231.8 L 310.2,231.8 L 311.9,231.9 L 313.6,231.9 L 315.3,231.9 L 317.0,232.0 L 318.7,232.0 L 320.4,232.0 L 322.1,232.0 L 323.8,232.0 L 325.5,232.0 L 327.2,232.0 L 329.0,232.0 L 330.7,232.0 L 332.4,232.0 L 334.1,232.0 L 335.8,232.0 L 337.5,232.0 L 339.2,232.0 L 340.9,232.0 L 342.6,232.0 L 344.3,232.0 L 346.0,232.0 L 347.8,232.0 L 349.5,232.0 L 351.2,232.0 L 352.9,232.0 L 354.6,232.0 L 356.3,232.0 L 358.0,232.0 L 359.7,232.0 L 361.4,232.0 L 363.1,232.0 L 364.8,232.0 L 366.5,232.0 L 368.2,232.0 L 370.0,232.0 L 371.7,232.0 L 373.4,232.0 L 375.1,232.0 L 376.8,232.0 L 378.5,232.0 L 380.2,232.0 L 381.9,232.0 L 383.6,232.0 L 385.3,232.0 L 387.0,232.0 L 388.8,232.0 L 390.5,232.0 L 392.2,232.0 L 393.9,232.0 L 395.6,232.0 L 397.3,232.0 L 399.0,232.0 L 400.7,232.0 L 402.4,232.0 L 404.1,232.0 L 405.8,232.0 L 407.5,232.0 L 409.2,232.0 L 411.0,232.0 L 412.7,232.0 L 414.4,232.0 L 416.1,232.0 L 417.8,232.0 L 419.5,232.0 L 421.2,232.0 L 422.9,232.0 L 424.6,232.0 L 426.3,232.0 L 428.0,232.0 L 429.8,232.0 L 431.5,232.0 L 433.2,232.0 L 434.9,232.0 L 436.6,232.0 L 438.3,232.0 L 440.0,232.0" fill="none" stroke="#6E1410" stroke-width="3.6"/>
+            <text x="336" y="176" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">crête doublée</text>
+          </g>
+          <g class="step s3">
+            <text x="24" y="312" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">après</text>
+            <path d="M 30.0,368.0 L 31.7,368.0 L 33.4,368.0 L 35.1,368.0 L 36.8,368.0 L 38.5,368.0 L 40.2,368.0 L 42.0,368.0 L 43.7,367.9 L 45.4,367.9 L 47.1,367.9 L 48.8,367.9 L 50.5,367.8 L 52.2,367.8 L 53.9,367.7 L 55.6,367.6 L 57.3,367.5 L 59.0,367.4 L 60.8,367.2 L 62.5,367.0 L 64.2,366.7 L 65.9,366.5 L 67.6,366.1 L 69.3,365.7 L 71.0,365.2 L 72.7,364.7 L 74.4,364.0 L 76.1,363.3 L 77.8,362.5 L 79.5,361.5 L 81.2,360.5 L 83.0,359.3 L 84.7,358.0 L 86.4,356.6 L 88.1,355.1 L 89.8,353.5 L 91.5,351.8 L 93.2,350.0 L 94.9,348.1 L 96.6,346.2 L 98.3,344.3 L 100.0,342.3 L 101.8,340.4 L 103.5,338.5 L 105.2,336.7 L 106.9,335.0 L 108.6,333.4 L 110.3,332.0 L 112.0,330.7 L 113.7,329.7 L 115.4,328.9 L 117.1,328.4 L 118.8,328.1 L 120.5,328.0 L 122.2,328.2 L 124.0,328.7 L 125.7,329.4 L 127.4,330.3 L 129.1,331.5 L 130.8,332.9 L 132.5,334.4 L 134.2,336.0 L 135.9,337.8 L 137.6,339.7 L 139.3,341.6 L 141.0,343.5 L 142.8,345.5 L 144.5,347.4 L 146.2,349.3 L 147.9,351.1 L 149.6,352.9 L 151.3,354.5 L 153.0,356.1 L 154.7,357.5 L 156.4,358.8 L 158.1,360.0 L 159.8,361.1 L 161.5,362.1 L 163.2,363.0 L 165.0,363.8 L 166.7,364.4 L 168.4,365.0 L 170.1,365.5 L 171.8,366.0 L 173.5,366.3 L 175.2,366.6 L 176.9,366.9 L 178.6,367.1 L 180.3,367.3 L 182.0,367.4 L 183.8,367.6 L 185.5,367.7 L 187.2,367.7 L 188.9,367.8 L 190.6,367.8 L 192.3,367.9 L 194.0,367.9 L 195.7,367.9 L 197.4,367.9 L 199.1,368.0 L 200.8,368.0 L 202.5,368.0 L 204.2,368.0 L 206.0,368.0 L 207.7,368.0 L 209.4,368.0 L 211.1,368.0 L 212.8,368.0 L 214.5,368.0 L 216.2,368.0 L 217.9,368.0 L 219.6,368.0 L 221.3,368.0 L 223.0,368.0 L 224.8,368.0 L 226.5,368.0 L 228.2,368.0 L 229.9,368.0 L 231.6,368.0 L 233.3,368.0 L 235.0,368.0 L 236.7,368.0 L 238.4,368.0 L 240.1,368.0 L 241.8,368.0 L 243.5,368.0 L 245.2,368.0 L 247.0,368.0 L 248.7,368.0 L 250.4,368.0 L 252.1,368.0 L 253.8,368.0 L 255.5,368.0 L 257.2,368.0 L 258.9,368.0 L 260.6,368.0 L 262.3,368.0 L 264.0,368.0 L 265.8,368.0 L 267.5,368.0 L 269.2,368.0 L 270.9,368.0 L 272.6,368.0 L 274.3,368.0 L 276.0,368.0 L 277.7,368.0 L 279.4,368.0 L 281.1,368.0 L 282.8,368.0 L 284.5,368.0 L 286.2,368.0 L 288.0,368.0 L 289.7,368.0 L 291.4,368.0 L 293.1,368.0 L 294.8,368.0 L 296.5,368.0 L 298.2,368.0 L 299.9,368.0 L 301.6,368.0 L 303.3,368.0 L 305.0,368.0 L 306.8,368.0 L 308.5,368.0 L 310.2,368.0 L 311.9,368.0 L 313.6,368.0 L 315.3,368.0 L 317.0,368.0 L 318.7,368.0 L 320.4,368.0 L 322.1,368.0 L 323.8,368.0 L 325.5,368.0 L 327.2,368.0 L 329.0,368.0 L 330.7,368.0 L 332.4,368.0 L 334.1,368.0 L 335.8,368.0 L 337.5,368.0 L 339.2,368.0 L 340.9,368.0 L 342.6,368.0 L 344.3,368.0 L 346.0,368.0 L 347.8,368.0 L 349.5,368.0 L 351.2,368.0 L 352.9,368.0 L 354.6,368.0 L 356.3,368.0 L 358.0,368.0 L 359.7,368.0 L 361.4,368.0 L 363.1,368.0 L 364.8,368.0 L 366.5,368.0 L 368.2,368.0 L 370.0,368.0 L 371.7,368.0 L 373.4,368.0 L 375.1,368.0 L 376.8,368.0 L 378.5,368.0 L 380.2,368.0 L 381.9,368.0 L 383.6,368.0 L 385.3,368.0 L 387.0,368.0 L 388.8,368.0 L 390.5,368.0 L 392.2,368.0 L 393.9,368.0 L 395.6,368.0 L 397.3,368.0 L 399.0,368.0 L 400.7,368.0 L 402.4,368.0 L 404.1,368.0 L 405.8,368.0 L 407.5,368.0 L 409.2,368.0 L 411.0,368.0 L 412.7,368.0 L 414.4,368.0 L 416.1,368.0 L 417.8,368.0 L 419.5,368.0 L 421.2,368.0 L 422.9,368.0 L 424.6,368.0 L 426.3,368.0 L 428.0,368.0 L 429.8,368.0 L 431.5,368.0 L 433.2,368.0 L 434.9,368.0 L 436.6,368.0 L 438.3,368.0 L 440.0,368.0" fill="none" stroke="#1B3A8C" stroke-width="3.4"/>
+            <path d="M 30.0,368.0 L 31.7,368.0 L 33.4,368.0 L 35.1,368.0 L 36.8,368.0 L 38.5,368.0 L 40.2,368.0 L 42.0,368.0 L 43.7,368.0 L 45.4,368.0 L 47.1,368.0 L 48.8,368.0 L 50.5,368.0 L 52.2,368.0 L 53.9,368.0 L 55.6,368.0 L 57.3,368.0 L 59.0,368.0 L 60.8,368.0 L 62.5,368.0 L 64.2,368.0 L 65.9,368.0 L 67.6,368.0 L 69.3,368.0 L 71.0,368.0 L 72.7,368.0 L 74.4,368.0 L 76.1,368.0 L 77.8,368.0 L 79.5,368.0 L 81.2,368.0 L 83.0,368.0 L 84.7,368.0 L 86.4,368.0 L 88.1,368.0 L 89.8,368.0 L 91.5,368.0 L 93.2,368.0 L 94.9,368.0 L 96.6,368.0 L 98.3,368.0 L 100.0,368.0 L 101.8,368.0 L 103.5,368.0 L 105.2,368.0 L 106.9,368.0 L 108.6,368.0 L 110.3,368.0 L 112.0,368.0 L 113.7,368.0 L 115.4,368.0 L 117.1,368.0 L 118.8,368.0 L 120.5,368.0 L 122.2,368.0 L 124.0,368.0 L 125.7,368.0 L 127.4,368.0 L 129.1,368.0 L 130.8,368.0 L 132.5,368.0 L 134.2,368.0 L 135.9,368.0 L 137.6,368.0 L 139.3,368.0 L 141.0,368.0 L 142.8,368.0 L 144.5,368.0 L 146.2,368.0 L 147.9,368.0 L 149.6,368.0 L 151.3,368.0 L 153.0,368.0 L 154.7,368.0 L 156.4,368.0 L 158.1,368.0 L 159.8,368.0 L 161.5,368.0 L 163.2,368.0 L 165.0,368.0 L 166.7,368.0 L 168.4,368.0 L 170.1,368.0 L 171.8,368.0 L 173.5,368.0 L 175.2,368.0 L 176.9,368.0 L 178.6,368.0 L 180.3,368.0 L 182.0,368.0 L 183.8,368.0 L 185.5,368.0 L 187.2,368.0 L 188.9,368.0 L 190.6,368.0 L 192.3,368.0 L 194.0,368.0 L 195.7,368.0 L 197.4,368.0 L 199.1,368.0 L 200.8,368.0 L 202.5,368.0 L 204.2,368.0 L 206.0,368.0 L 207.7,368.0 L 209.4,368.0 L 211.1,368.0 L 212.8,368.0 L 214.5,368.0 L 216.2,368.0 L 217.9,368.0 L 219.6,368.0 L 221.3,368.0 L 223.0,368.0 L 224.8,368.0 L 226.5,368.0 L 228.2,368.0 L 229.9,368.0 L 231.6,368.0 L 233.3,368.0 L 235.0,368.0 L 236.7,368.0 L 238.4,368.0 L 240.1,368.0 L 241.8,368.0 L 243.5,368.0 L 245.2,368.0 L 247.0,368.0 L 248.7,368.0 L 250.4,368.0 L 252.1,368.0 L 253.8,368.0 L 255.5,368.0 L 257.2,368.0 L 258.9,368.0 L 260.6,368.0 L 262.3,368.0 L 264.0,368.0 L 265.8,368.0 L 267.5,368.0 L 269.2,368.0 L 270.9,368.0 L 272.6,367.9 L 274.3,367.9 L 276.0,367.9 L 277.7,367.9 L 279.4,367.8 L 281.1,367.8 L 282.8,367.7 L 284.5,367.7 L 286.2,367.6 L 288.0,367.4 L 289.7,367.3 L 291.4,367.1 L 293.1,366.9 L 294.8,366.6 L 296.5,366.3 L 298.2,366.0 L 299.9,365.5 L 301.6,365.0 L 303.3,364.4 L 305.0,363.8 L 306.8,363.0 L 308.5,362.1 L 310.2,361.1 L 311.9,360.0 L 313.6,358.8 L 315.3,357.5 L 317.0,356.1 L 318.7,354.5 L 320.4,352.9 L 322.1,351.1 L 323.8,349.3 L 325.5,347.4 L 327.2,345.5 L 329.0,343.5 L 330.7,341.6 L 332.4,339.7 L 334.1,337.8 L 335.8,336.0 L 337.5,334.4 L 339.2,332.9 L 340.9,331.5 L 342.6,330.3 L 344.3,329.4 L 346.0,328.7 L 347.8,328.2 L 349.5,328.0 L 351.2,328.1 L 352.9,328.4 L 354.6,328.9 L 356.3,329.7 L 358.0,330.7 L 359.7,332.0 L 361.4,333.4 L 363.1,335.0 L 364.8,336.7 L 366.5,338.5 L 368.2,340.4 L 370.0,342.3 L 371.7,344.3 L 373.4,346.2 L 375.1,348.1 L 376.8,350.0 L 378.5,351.8 L 380.2,353.5 L 381.9,355.1 L 383.6,356.6 L 385.3,358.0 L 387.0,359.3 L 388.8,360.5 L 390.5,361.5 L 392.2,362.5 L 393.9,363.3 L 395.6,364.0 L 397.3,364.7 L 399.0,365.2 L 400.7,365.7 L 402.4,366.1 L 404.1,366.5 L 405.8,366.7 L 407.5,367.0 L 409.2,367.2 L 411.0,367.4 L 412.7,367.5 L 414.4,367.6 L 416.1,367.7 L 417.8,367.8 L 419.5,367.8 L 421.2,367.9 L 422.9,367.9 L 424.6,367.9 L 426.3,367.9 L 428.0,368.0 L 429.8,368.0 L 431.5,368.0 L 433.2,368.0 L 434.9,368.0 L 436.6,368.0 L 438.3,368.0 L 440.0,368.0" fill="none" stroke="#C0261F" stroke-width="3.4"/>
+            <text x="336" y="312" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">intactes</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="398" width="450" height="62" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="424" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">les élongations s'additionnent, point par point</text>
+            <text x="235" y="448" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">puis chacune repart inchangée</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le principe de superposition</h3>
+          <p style="font-size:17px">Quand deux ondes se rencontrent, les élongations <b>s'additionnent algébriquement</b>, point par point. Rien de plus compliqué qu'une addition.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les deux cas à voir</h3>
+          <p style="font-size:17px">Deux <b>crêtes</b> → une crête deux fois plus haute. Une crête et un <b>creux</b> de même amplitude → annulation momentanée, la corde est droite un instant.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et ensuite ?</h3>
+          <p style="font-size:17px">Chacune repart <b>inchangée</b>, comme si la rencontre n'avait pas eu lieu. Même forme, même amplitude, même sens.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce qui distingue une onde d'un objet</h3>
+          <p style="font-size:17px">Deux billes qui se rencontrent <b>rebondissent</b> : leurs trajectoires sont modifiées pour toujours. Deux ondes <b>s'additionnent puis repartent intactes</b>.</p>
+          <p style="font-size:17px">C'est cette propriété, et la diffraction de la seconde moitié de la capsule, qui ont servi historiquement à <b>prouver</b> que la lumière était une onde. Les retenir comme « le test de l'onde » est plus utile que les retenir comme deux phénomènes séparés.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Deux impulsions se dirigent l'une vers l'autre sur une même corde.",
+      "Au moment de la rencontre, les élongations s'additionnent : crête doublée.",
+      "Après la rencontre, chacune repart exactement comme avant.",
+      "Deux billes rebondiraient ; deux ondes se traversent.",
+      "<em>C'est le test de l'onde</em> — et il a servi à prouver que la lumière en était une."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH5-06 ==================== -->
+  <section class="slide" data-ref="ANIM-PH5-06" data-title="Constructive ou destructive : la différence de marche" data-sub="Un nombre entier de λ, ou un nombre impair de demi-λ" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="34" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">deux sources, un point d'observation</text>
+            <line x1="40" y1="96" x2="370" y2="120" stroke="#C0261F" stroke-width="3"/><line x1="40" y1="200" x2="370" y2="120" stroke="#6E1410" stroke-width="3"/>
+            <circle cx="40" cy="96" r="12" fill="#C0261F"/>
+            <text x="22" y="102" text-anchor="end" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">S₁</text>
+            <circle cx="40" cy="200" r="12" fill="#6E1410"/>
+            <text x="22" y="206" text-anchor="end" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">S₂</text>
+            <circle cx="370" cy="120" r="10" fill="#1B3A8C"/>
+            <text x="388" y="126" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">M</text>
+            <text x="180" y="104" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">d₁</text>
+            <text x="180" y="188" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">d₂</text>
+          </g>
+          <g class="step s2">
+            <rect x="10" y="244" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="275" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">δ = | d₂ − d₁ |,  puis δ / λ</text>
+          </g>
+          <g class="step s3">
+            <rect x="10" y="298" width="450" height="52" rx="11" fill="#FBECEA" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="235" y="330" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">δ = k λ  →  constructive</text>
+            <rect x="10" y="356" width="450" height="52" rx="11" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="388" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">δ = (k + ½) λ  →  destructive</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="414" width="450" height="46" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="444" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">valable si les sources sont en phase</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La différence de marche</h3>
+          <p style="font-size:17px">δ est la différence des <b>distances parcourues</b> par les deux ondes, depuis leurs sources jusqu'au point observé. Une simple soustraction.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les deux conditions</h3>
+          <p style="font-size:17px"><b>Constructive</b> si δ est un nombre <b>entier</b> de longueurs d'onde : les ondes arrivent en phase, l'amplitude est maximale. <b>Destructive</b> si δ est un nombre <b>impair de demi-λ</b> : elles s'annulent.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La méthode, en une ligne</h3>
+          <p style="font-size:17px">On calcule δ, on le <b>divise par λ</b>. Résultat <b>entier</b> → constructive. Résultat finissant par <b>,5</b> → destructive. Aucune formule à retenir.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La condition tacite, et ce que le programme n'exige pas</h3>
+          <p style="font-size:17px"><b>Le piège :</b> ces conditions supposent des sources <b>en phase</b>. Si l'énoncé précise qu'elles sont en opposition de phase, les deux conclusions <b>s'échangent</b> — et c'est la seule subtilité du chapitre.</p>
+          <p style="font-size:17px"><b>Ce qui est hors programme :</b> aucune formule d'interférence à deux fentes n'est exigée. On s'arrête au phénomène, pas au formalisme. Une soustraction et une division suffisent à répondre.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Deux sources, et un point M où l'on observe. Deux chemins, deux longueurs.",
+      "La différence de marche δ est la différence de ces deux distances.",
+      "δ entier en λ : les ondes arrivent en phase, l'interférence est constructive.",
+      "δ en demi-λ impair : elles arrivent en opposition et s'annulent.",
+      "<em>Condition tacite :</em> les sources doivent être en phase."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH5-07 ==================== -->
+  <section class="slide" data-ref="ANIM-PH5-07" data-title="La diffraction : l'onde contourne l'obstacle" data-sub="Elle ne se propage plus en ligne droite" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><rect x="230" y="26" width="9" height="150" fill="#6E1410"/><rect x="230" y="216" width="9" height="140" fill="#6E1410"/>
+            <text x="246" y="202" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">l'ouverture</text>
+          </g>
+          <g class="step s2"><line x1="44" y1="36" x2="44" y2="346" stroke="#C0261F" stroke-width="2.6"/><line x1="80" y1="36" x2="80" y2="346" stroke="#C0261F" stroke-width="2.6"/><line x1="116" y1="36" x2="116" y2="346" stroke="#C0261F" stroke-width="2.6"/><line x1="152" y1="36" x2="152" y2="346" stroke="#C0261F" stroke-width="2.6"/><line x1="188" y1="36" x2="188" y2="346" stroke="#C0261F" stroke-width="2.6"/>
+            <text x="40" y="384" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">onde plane, en ligne droite</text>
+          </g>
+          <g class="step s3"><polyline points="242.3,229.8 244.0,229.2 245.7,228.4 247.3,227.6 248.9,226.6 250.4,225.6 251.9,224.6 253.3,223.4 254.7,222.2 256.0,220.9 257.2,219.5 258.4,218.1 259.5,216.6 260.5,215.1 261.4,213.5 262.3,211.9 263.1,210.3 263.7,208.6 264.3,206.8 264.8,205.1 265.3,203.3 265.6,201.5 265.8,199.7 266.0,197.8 266.0,196.0 266.0,194.2 265.8,192.3 265.6,190.5 265.3,188.7 264.8,186.9 264.3,185.2 263.7,183.4 263.1,181.7 262.3,180.1 261.4,178.5 260.5,176.9 259.5,175.4 258.4,173.9 257.2,172.5 256.0,171.1 254.7,169.8 253.3,168.6 251.9,167.4 250.4,166.4 248.9,165.4 247.3,164.4 245.7,163.6 244.0,162.8 242.3,162.2" fill="none" stroke="#C0261F" stroke-width="2.6"/><polyline points="254.6,263.7 258.0,262.3 261.4,260.8 264.6,259.1 267.8,257.3 270.9,255.3 273.8,253.1 276.7,250.8 279.4,248.4 282.0,245.8 284.5,243.1 286.8,240.2 289.0,237.3 291.0,234.2 292.9,231.1 294.6,227.8 296.1,224.5 297.5,221.1 298.7,217.7 299.7,214.1 300.5,210.6 301.2,207.0 301.6,203.3 301.9,199.7 302.0,196.0 301.9,192.3 301.6,188.7 301.2,185.0 300.5,181.4 299.7,177.9 298.7,174.3 297.5,170.9 296.1,167.5 294.6,164.2 292.9,160.9 291.0,157.8 289.0,154.7 286.8,151.8 284.5,148.9 282.0,146.2 279.4,143.6 276.7,141.2 273.8,138.9 270.9,136.7 267.8,134.7 264.6,132.9 261.4,131.2 258.0,129.7 254.6,128.3" fill="none" stroke="#C0261F" stroke-width="2.6"/><polyline points="266.9,297.5 272.1,295.5 277.1,293.2 281.9,290.7 286.7,287.9 291.3,284.9 295.7,281.7 300.0,278.2 304.1,274.6 308.0,270.7 311.7,266.6 315.2,262.4 318.5,257.9 321.5,253.4 324.3,248.6 326.9,243.8 329.2,238.8 331.2,233.7 333.0,228.5 334.5,223.2 335.8,217.8 336.7,212.4 337.4,207.0 337.9,201.5 338.0,196.0 337.9,190.5 337.4,185.0 336.7,179.6 335.8,174.2 334.5,168.8 333.0,163.5 331.2,158.3 329.2,153.2 326.9,148.2 324.3,143.4 321.5,138.6 318.5,134.1 315.2,129.6 311.7,125.4 308.0,121.3 304.1,117.4 300.0,113.8 295.7,110.3 291.3,107.1 286.7,104.1 281.9,101.3 277.1,98.8 272.1,96.5 266.9,94.5" fill="none" stroke="#C0261F" stroke-width="2.6"/><polyline points="279.3,331.3 286.1,328.6 292.7,325.6 299.3,322.2 305.6,318.6 311.7,314.6 317.7,310.2 323.4,305.6 328.8,300.7 334.0,295.6 339.0,290.2 343.6,284.5 348.0,278.6 352.0,272.5 355.7,266.2 359.1,259.7 362.2,253.0 365.0,246.2 367.3,239.3 369.4,232.3 371.0,225.1 372.3,217.9 373.3,210.6 373.8,203.3 374.0,196.0 373.8,188.7 373.3,181.4 372.3,174.1 371.0,166.9 369.4,159.7 367.3,152.7 365.0,145.8 362.2,139.0 359.1,132.3 355.7,125.8 352.0,119.5 348.0,113.4 343.6,107.5 339.0,101.8 334.0,96.4 328.8,91.3 323.4,86.4 317.7,81.8 311.7,77.4 305.6,73.4 299.3,69.8 292.7,66.4 286.1,63.4 279.3,60.7" fill="none" stroke="#C0261F" stroke-width="2.6"/><polyline points="288.1,355.7 296.2,352.6 304.1,349.0 311.8,345.0 319.2,340.7 326.5,336.0 333.5,330.9 340.2,325.4 346.7,319.7 352.8,313.6 358.6,307.2 364.1,300.5 369.3,293.5 374.0,286.3 378.4,278.8 382.5,271.2 386.1,263.3 389.3,255.3 392.1,247.1 394.5,238.8 396.5,230.4 398.0,221.9 399.1,213.3 399.8,204.7 400.0,196.0 399.8,187.3 399.1,178.7 398.0,170.1 396.5,161.6 394.5,153.2 392.1,144.9 389.3,136.7 386.1,128.7 382.5,120.8 378.4,113.2 374.0,105.7 369.3,98.5 364.1,91.5 358.6,84.8 352.8,78.4 346.7,72.3 340.2,66.6 333.5,61.1 326.5,56.0 319.2,51.3 311.8,47.0 304.1,43.0 296.2,39.4 288.1,36.3" fill="none" stroke="#C0261F" stroke-width="2.6"/>
+            <text x="286" y="384" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">elle contourne</text>
+          </g>
+          <g class="step s4">
+            <rect x="10" y="404" width="450" height="56" rx="12" fill="#F5D7D3"/>
+            <text x="235" y="430" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">au-delà, elle ne va plus tout droit</text>
+            <text x="235" y="450" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#C0261F" font-weight="700">c'est la preuve qu'on a affaire à une onde</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La diffraction</h3>
+          <p style="font-size:17px">C'est l'<b>étalement</b> d'une onde lorsqu'elle rencontre une ouverture ou un obstacle de petite taille. L'onde <b>contourne</b> — elle ne va plus tout droit.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Avant l'ouverture</h3>
+          <p style="font-size:17px">Les fronts d'onde sont <b>plans</b> et parallèles : la propagation est rectiligne, comme on s'y attend.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Après l'ouverture</h3>
+          <p style="font-size:17px">Les fronts deviennent <b>circulaires</b> : l'ouverture se comporte comme une nouvelle source, et l'onde repart dans toutes les directions.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi c'est une preuve, et l'exemple quotidien</h3>
+          <p style="font-size:17px">Un jet de <b>billes</b> passant par une fente donne une tache nette, de la taille de la fente. Une <b>onde</b> donne un étalement. Le comportement est qualitativement différent — c'est un test, pas une nuance.</p>
+          <p style="font-size:17px"><b>L'exemple à citer :</b> on entend une conversation à travers une porte entrouverte <b>sans voir</b> les personnes. Le son, de grande longueur d'onde, se diffracte largement ; la lumière, bien plus courte, pas du tout. PH5-08 en donne le critère.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un mur percé d'une petite ouverture.",
+      "À gauche, l'onde arrive en fronts plans : elle se propage en ligne droite.",
+      "Au-delà de l'ouverture, les fronts deviennent circulaires : elle contourne.",
+      "L'ouverture se comporte comme une nouvelle source.",
+      "<em>C'est un test :</em> des billes donneraient une tache nette, pas un étalement."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-PH5-08 ==================== -->
+  <section class="slide" data-ref="ANIM-PH5-08" data-title="Quand la diffraction se voit" data-sub="Il faut comparer λ à la taille de l'ouverture" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#C0261F"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#6E1410"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#1B3A8C"/></marker></defs>
+          <g class="step s1"><rect x="120" y="44" width="8" height="56" fill="#6E1410"/><rect x="120" y="136" width="8" height="56" fill="#6E1410"/><line x1="34" y1="52" x2="34" y2="184" stroke="#C0261F" stroke-width="2.4"/><line x1="60" y1="52" x2="60" y2="184" stroke="#C0261F" stroke-width="2.4"/><line x1="86" y1="52" x2="86" y2="184" stroke="#C0261F" stroke-width="2.4"/><line x1="128" y1="118" x2="222.6" y2="191.9" stroke="#C0261F" stroke-width="2.4"/><line x1="128" y1="118" x2="241.5" y2="157.1" stroke="#C0261F" stroke-width="2.4"/><line x1="128" y1="118" x2="248.0" y2="118.0" stroke="#C0261F" stroke-width="2.4"/><line x1="128" y1="118" x2="241.5" y2="78.9" stroke="#C0261F" stroke-width="2.4"/><line x1="128" y1="118" x2="222.6" y2="44.1" stroke="#C0261F" stroke-width="2.4"/>
+            <text x="272" y="104" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">l'étalement dépend</text>
+            <text x="272" y="128" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">du rapport a / λ</text>
+            <text x="272" y="156" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">a : largeur de l'ouverture</text>
+          </g>
+          <g class="step s2"><text x="16" y="234" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">a ≫ λ</text><text x="90" y="234" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">négligeable</text><rect x="214" y="215" width="40" height="26" rx="6" fill="#C0261F"/></g>
+          <g class="step s3"><text x="16" y="286" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">a ≈ λ</text><text x="90" y="286" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">marquée</text><rect x="214" y="267" width="120" height="26" rx="6" fill="#C0261F"/></g>
+          <g class="step s4"><text x="16" y="338" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">a &lt; λ</text><text x="90" y="338" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">maximale</text><rect x="214" y="319" width="230" height="26" rx="6" fill="#1B3A8C"/>
+            <rect x="10" y="356" width="450" height="44" rx="11" fill="#F5D7D3"/>
+            <text x="235" y="384" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#6E1410" font-weight="700">plus l'ouverture est petite, plus l'étalement est grand</text>
+            <rect x="10" y="408" width="450" height="52" rx="11" fill="#FFFFFF" stroke="#1B3A8C" stroke-width="2.4"/>
+            <text x="235" y="432" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">l'intuition dit l'inverse — et c'est</text>
+            <text x="235" y="450" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#1B3A8C" font-weight="700">la proposition fausse la plus choisie</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le critère, et c'est le seul</h3>
+          <p style="font-size:17px">On compare la longueur d'onde λ à la dimension <b>a</b> de l'ouverture. Rien d'autre n'entre en jeu — ni la nature de l'onde, ni son amplitude.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">a très supérieur à λ</h3>
+          <p style="font-size:17px">La diffraction est <b>négligeable</b> : l'onde passe tout droit, comme un jet de billes. C'est le cas de la lumière devant une porte.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">a du même ordre que λ, ou plus petit</h3>
+          <p style="font-size:17px">La diffraction est <b>marquée</b>, puis <b>maximale</b>. C'est le cas du son devant la même porte : λ ≈ 1 m, ouverture 10 cm.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le résultat contre-intuitif, et le piège qui en découle</h3>
+          <p style="font-size:17px"><b>Plus l'ouverture est petite, plus l'étalement est grand.</b> C'est exactement ce que le QCM demande, et c'est exactement ce que l'intuition refuse.</p>
+          <p style="font-size:17px"><b>Le piège :</b> répondre « plus l'ouverture est grande, plus ça se diffracte ». C'est l'inverse, et cette proposition figure systématiquement parmi les réponses — c'est la plus choisie du chapitre.</p>
+          <p style="font-size:17px">Le bon réflexe est de calculer le <b>rapport</b> a/λ, jamais de juger sur une taille absolue.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une ouverture de largeur a, une onde de longueur d'onde λ.",
+      "Si a est bien plus grand que λ : la diffraction est négligeable.",
+      "Si a est du même ordre que λ : elle devient marquée.",
+      "Si a est plus petit que λ : l'étalement est maximal.",
+      "<em>Le piège :</em> croire que plus l'ouverture est grande, plus ça se diffracte."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule PH5-B — Interférences et diffraction · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

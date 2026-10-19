@@ -2,8 +2,9 @@
 
 Site statique : les animations de cours de la prépa médecine, par matière.
 
-- **Chimie** — 17 capsules, 68 animations (ARES v10)
-- **Mathématiques** — 20 capsules, 82 animations (ARES v8)
+- **Chimie** — 17 capsules, 68 animations (ARES version 10)
+- **Mathématiques** — 20 capsules, 83 animations (ARES version 8)
+- **Physique** — 20 capsules, 80 animations (ARES version 8)
 
 ## Publier sur GitHub Pages
 
@@ -26,9 +27,10 @@ fichiers tels quels, sans passer par Jekyll.
 ## Structure
 
 ```
-index.html        accueil, les deux matières
-chimie/index.html sommaire + les 17 capsules
-maths/index.html  sommaire + les 20 capsules
+index.html             accueil, les 3 matières
+chimie/index.html      sommaire + les 17 capsules
+maths/index.html       sommaire + les 20 capsules
+physique/index.html    sommaire + les 20 capsules
 ```
 
 Chaque capsule est un fichier HTML autonome : aucune dépendance, aucun script
