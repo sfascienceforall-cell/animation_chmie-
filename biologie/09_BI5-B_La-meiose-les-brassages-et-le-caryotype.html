@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule BI5B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#5B21B6;          /* bleu SFA */
+  --deep:#2E1065;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#F1ECFB;         /* bleu 8 % */
+  --tint2:#DFD5F7;        /* bleu 18 % */
+  --surface:#F8F6FC;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-BI5-05 ==================== -->
+  <section class="slide" data-ref="ANIM-BI5-05" data-title="La méiose en deux divisions" data-sub="Une réduction, puis une mitose ordinaire" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="62" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Une seule réplication, deux divisions</text>
+          <g class="step s1"><rect x="170.0" y="86.0" width="130.0" height="46.0" rx="12" fill="#DFD5F7" stroke="#2E1065" stroke-width="2.6"/><text x="235.0" y="116.0" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">2n = 46</text></g>
+          <g class="step s2"><line x1="235.0" y1="136.0" x2="150.0" y2="198.0" stroke="#5B21B6" stroke-width="3.0" stroke-linecap="round" marker-end="url(#v1)"/><line x1="235.0" y1="136.0" x2="320.0" y2="198.0" stroke="#5B21B6" stroke-width="3.0" stroke-linecap="round" marker-end="url(#v1)"/><rect x="88.0" y="204.0" width="124.0" height="52.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="150.0" y="226.0" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">n = 23</text><text x="150.0" y="248.0" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">2 chromatides</text><rect x="258.0" y="204.0" width="124.0" height="52.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="320.0" y="226.0" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">n = 23</text><text x="320.0" y="248.0" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">2 chromatides</text>
+            <text x="418" y="180" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">division I</text>
+          </g>
+          <g class="step s3"><line x1="150.0" y1="260.0" x2="61.0" y2="316.0" stroke="#2E1065" stroke-width="2.6" stroke-linecap="round" marker-end="url(#d1)"/><line x1="150.0" y1="260.0" x2="177.0" y2="316.0" stroke="#2E1065" stroke-width="2.6" stroke-linecap="round" marker-end="url(#d1)"/><line x1="320.0" y1="260.0" x2="293.0" y2="316.0" stroke="#2E1065" stroke-width="2.6" stroke-linecap="round" marker-end="url(#d1)"/><line x1="320.0" y1="260.0" x2="409.0" y2="316.0" stroke="#2E1065" stroke-width="2.6" stroke-linecap="round" marker-end="url(#d1)"/><rect x="18.0" y="322.0" width="86.0" height="48.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="61.0" y="351.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">n = 23</text><rect x="134.0" y="322.0" width="86.0" height="48.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="177.0" y="351.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">n = 23</text><rect x="250.0" y="322.0" width="86.0" height="48.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="293.0" y="351.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">n = 23</text><rect x="366.0" y="322.0" width="86.0" height="48.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="409.0" y="351.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">n = 23</text>
+            <text x="418" y="298" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">division II</text>
+          </g>
+          <g class="step s4">
+            <text x="235" y="400" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">division I : réductionnelle  ·  division II : équationnelle</text>
+          </g>
+          <g class="step s5">
+            <rect x="24" y="414" width="422" height="42" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="441" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">quatre gamètes, tous différents</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi diviser par deux</h3>
+          <p style="font-size:17px">Parce que la fécondation va <b>additionner</b>. Sans réduction, le nombre de chromosomes doublerait à chaque génération. C'est l'argument à donner avant toute description.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Division I — la réductionnelle</h3>
+          <p style="font-size:17px">Les <b>homologues</b> s'apparient, puis se séparent : un de chaque paire part de chaque côté. On passe de 2n à n. C'est ici que le nombre est divisé par deux.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Division II — l'équationnelle</h3>
+          <p style="font-size:17px">Elle ressemble trait pour trait à une mitose : les <b>chromatides</b> se séparent. Le nombre de chromosomes ne change plus.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège de la division I</h3>
+          <p style="font-size:17px">Ce sont les <b>chromosomes homologues</b> qui se séparent, pas les chromatides. Les chromatides, elles, ne se séparent qu'en division II.</p>
+          <p style="font-size:17px">Inverser les deux est l'erreur numéro un du chapitre. Le comptage : après S, 46 / 92. Après I, 23 / 46. Après II, <b>23 / 23</b>.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une cellule mère à 2n = 46, et son ADN déjà répliqué.",
+      "Première division : les <b>homologues</b> se séparent. On passe de 2n à n.",
+      "Deuxième division : les <b>chromatides</b> se séparent. C'est une mitose ordinaire.",
+      "D'où les noms : réductionnelle d'abord, équationnelle ensuite.",
+      "<em>Quatre gamètes</em>, à n chromosomes, et tous génétiquement différents."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI5-06 ==================== -->
+  <section class="slide" data-ref="ANIM-BI5-06" data-title="Les deux brassages" data-sub="Entre chromosomes en métaphase I, à l'intérieur en prophase I" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="74" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Métaphase I : chaque paire s'oriente au hasard</text>
+          <g class="step s1"><rect x="40" y="108" width="170" height="128" rx="34" fill="#FFFFFF" stroke="#8A8F98" stroke-width="2.6"/><line x1="54" y1="172" x2="196" y2="172" stroke="#E3E7EE" stroke-width="1.6" stroke-dasharray="5 4"/><rect x="93" y="131" width="13" height="30" rx="6" fill="#5B21B6"/><rect x="145" y="131" width="13" height="30" rx="6" fill="#B45309"/><rect x="93" y="183" width="13" height="30" rx="6" fill="#5B21B6"/><rect x="145" y="183" width="13" height="30" rx="6" fill="#B45309"/></g>
+          <g class="step s2"><rect x="260" y="108" width="170" height="128" rx="34" fill="#FFFFFF" stroke="#8A8F98" stroke-width="2.6"/><line x1="274" y1="172" x2="416" y2="172" stroke="#E3E7EE" stroke-width="1.6" stroke-dasharray="5 4"/><rect x="313" y="131" width="13" height="30" rx="6" fill="#5B21B6"/><rect x="365" y="131" width="13" height="30" rx="6" fill="#B45309"/><rect x="313" y="183" width="13" height="30" rx="6" fill="#B45309"/><rect x="365" y="183" width="13" height="30" rx="6" fill="#5B21B6"/>
+            <text x="235" y="262" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">2 paires → 2² = 4 combinaisons</text>
+          </g>
+          <g class="step s3 h4"><rect x="196" y="300" width="15" height="86" rx="7" fill="#5B21B6"/><rect x="244" y="300" width="15" height="86" rx="7" fill="#B45309"/><rect x="196" y="354" width="15" height="24" rx="4" fill="#B45309"/><rect x="244" y="354" width="15" height="24" rx="4" fill="#5B21B6"/><path d="M 212,350 L 243,362 M 243,350 L 212,362" stroke="#8A8F98" stroke-width="2.2" fill="none"/>
+            <text x="320" y="348" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">crossing-over</text>
+            <text x="320" y="370" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">prophase I</text>
+          </g>
+          <g class="step s4">
+            <text x="235" y="326" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">2²³ = 8 388 608 gamètes différents</text>
+          </g>
+          <g class="step s5">
+            <rect x="24" y="396" width="422" height="56" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="420" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">et la fécondation en remet une couche</text>
+            <text x="235" y="442" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">un gamète parmi 8 millions, avec un autre parmi 8 millions</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Brassage interchromosomique</h3>
+          <p style="font-size:17px">En <b>métaphase I</b>. Chaque paire d'homologues s'oriente au hasard et <b>indépendamment des autres</b> : le chromosome paternel peut partir à gauche ou à droite, pour chaque paire.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Brassage intrachromosomique</h3>
+          <p style="font-size:17px">En <b>prophase I</b>. Les deux homologues appariés échangent des morceaux : c'est le <b>crossing-over</b>. Il crée des chromosomes qui ne sont ni entièrement paternels ni entièrement maternels.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le calcul</h3>
+          <p style="font-size:17px">Avec n paires : <b>2ⁿ</b> combinaisons. Chez l'humain, n = 23 — et le crossing-over s'ajoute à ce compte, qu'il rend pratiquement illimité.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le repère qui évite l'inversion</h3>
+          <p style="font-size:17px"><b>Inter</b>chromosomique = <b>entre</b> les chromosomes = métaphase I, quand ils s'alignent.<br><b>Intra</b>chromosomique = à l'<b>intérieur</b> = prophase I, quand ils sont collés.</p>
+          <p style="font-size:17px">Et c'est pour tout cela que deux frères ne sont jamais identiques — sauf de vrais jumeaux, issus d'un seul œuf.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Deux paires d'homologues à l'équateur. Le paternel part à gauche pour les deux.",
+      "Mais rien ne l'y oblige : une paire peut s'orienter dans l'autre sens. Deux paires, quatre combinaisons.",
+      "Et le second brassage se joue <b>à l'intérieur</b> d'une paire : le crossing-over.",
+      "Chez l'humain, vingt-trois paires : plus de huit millions de gamètes différents.",
+      "<em>Et la fécondation en remet une couche</em> : huit millions, multipliés par huit millions."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI5-07 ==================== -->
+  <section class="slide" data-ref="ANIM-BI5-07" data-title="Mitose ou méiose" data-sub="Le tableau qui tranche, ligne par ligne" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="70" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Six lignes, et tout est dit</text>
+          <g class="step s1"><rect x="18.0" y="100.0" width="434.0" height="322.0" rx="10" fill="#FFFFFF" stroke="#5B21B6" stroke-width="2.2"/><path d="M 28.0,100.0 h 414.0 a10,10 0 0 1 10,10 v 36.0 h -434.0 v -36.0 a10,10 0 0 1 10,-10 z" fill="#5B21B6"/><text x="84.0" y="129.0" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700"></text><text x="225.5" y="129.0" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Mitose</text><text x="376.5" y="129.0" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Méiose</text><text x="84.0" y="175.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Divisions</text><text x="225.5" y="175.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">1</text><text x="376.5" y="175.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">2</text><line x1="26.0" y1="192.0" x2="444.0" y2="192.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="84.0" y="221.9" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Cellules filles</text><text x="225.5" y="221.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">2</text><text x="376.5" y="221.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">4</text><line x1="26.0" y1="238.0" x2="444.0" y2="238.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="84.0" y="267.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Garniture</text><text x="225.5" y="267.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">2n → 2n</text><text x="376.5" y="267.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">2n → n</text><line x1="26.0" y1="284.0" x2="444.0" y2="284.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="84.0" y="313.9" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Les filles sont</text><text x="225.5" y="313.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">identiques</text><text x="376.5" y="313.9" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">toutes différentes</text><line x1="26.0" y1="330.0" x2="444.0" y2="330.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="84.0" y="359.9" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Appariement</text><text x="225.5" y="359.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">jamais</text><text x="376.5" y="359.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">en prophase I</text><line x1="26.0" y1="376.0" x2="444.0" y2="376.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="84.0" y="405.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Rôle</text><text x="225.5" y="405.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">croissance</text><text x="376.5" y="405.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">gamètes</text><line x1="150.0" y1="146.0" x2="150.0" y2="416.0" stroke="#E3E7EE" stroke-width="1.2"/><line x1="301.0" y1="146.0" x2="301.0" y2="416.0" stroke="#E3E7EE" stroke-width="1.2"/></g>
+          <g class="step s2 h3"><rect x="23.0" y="147.0" width="424.0" height="90.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/></g>
+          <g class="step s3 h4"><rect x="23.0" y="239.0" width="424.0" height="90.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/></g>
+          <g class="step s4"><rect x="23.0" y="331.0" width="424.0" height="90.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/></g>
+          <g class="step s5">
+            <rect x="22" y="430" width="426" height="32" rx="9" fill="#DFD5F7"/>
+            <text x="235" y="452" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">l'appariement : le critère qui ne trompe jamais</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Divisions et cellules filles</h3>
+          <p style="font-size:17px">Une division et deux filles pour la mitose ; <b>deux divisions et quatre filles</b> pour la méiose — et une seule réplication pour les deux.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Garniture et identité</h3>
+          <p style="font-size:17px">La mitose conserve 2n et donne des filles <b>identiques</b>. La méiose passe à n et donne des filles <b>toutes différentes</b> — c'est tout l'intérêt des brassages.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Appariement et rôle</h3>
+          <p style="font-size:17px">L'appariement des homologues n'arrive <b>jamais</b> en mitose. Et le rôle diffère : croissance et réparation d'un côté, <b>formation des gamètes</b> de l'autre.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le critère d'observation décisif</h3>
+          <p style="font-size:17px">Des chromosomes alignés <b>par deux</b> à l'équateur, en paires superposées : métaphase I de méiose.</p>
+          <p style="font-size:17px">Alignés <b>sur un seul rang</b> : métaphase de mitose — ou métaphase II, si la garniture est réduite. <b>Toujours compter avant de nommer</b>, jamais l'inverse.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Six caractères, deux colonnes. On les prend deux par deux.",
+      "Une division contre deux ; deux cellules filles contre quatre.",
+      "2n conservé contre 2n réduit à n ; filles identiques contre filles toutes différentes.",
+      "Et l'appariement des homologues : jamais en mitose, toujours en prophase I de méiose.",
+      "<em>C'est ce dernier critère</em> qui tranche sur une observation, en une seconde."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI5-08 ==================== -->
+  <section class="slide" data-ref="ANIM-BI5-08" data-title="Lire un caryotype" data-sub="Et repérer la trisomie ou l'anomalie de nombre" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="78" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">46,XX  ·  46,XY</text>
+            <text x="235" y="110" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">le nombre total, puis les chromosomes sexuels</text>
+            <text x="235" y="142" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">22 paires d'autosomes + 1 paire sexuelle</text>
+          </g>
+          <g class="step s2"><rect x="46.0" y="196" width="15" height="52" rx="7" fill="#DFD5F7" stroke="#2E1065" stroke-width="2"/><rect x="64.0" y="196" width="15" height="52" rx="7" fill="#DFD5F7" stroke="#2E1065" stroke-width="2"/><text x="62.5" y="268" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">19</text><rect x="104.0" y="196" width="15" height="52" rx="7" fill="#DFD5F7" stroke="#2E1065" stroke-width="2"/><rect x="122.0" y="196" width="15" height="52" rx="7" fill="#DFD5F7" stroke="#2E1065" stroke-width="2"/><text x="120.5" y="268" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">20</text><rect x="220.0" y="196" width="15" height="52" rx="7" fill="#DFD5F7" stroke="#2E1065" stroke-width="2"/><rect x="238.0" y="196" width="15" height="52" rx="7" fill="#DFD5F7" stroke="#2E1065" stroke-width="2"/><text x="236.5" y="268" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">22</text><rect x="278.0" y="196" width="15" height="52" rx="7" fill="#DFD5F7" stroke="#2E1065" stroke-width="2"/><rect x="296.0" y="196" width="15" height="52" rx="7" fill="#DFD5F7" stroke="#2E1065" stroke-width="2"/><text x="294.5" y="268" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">23</text><rect x="336.0" y="196" width="15" height="52" rx="7" fill="#DFD5F7" stroke="#2E1065" stroke-width="2"/><rect x="354.0" y="196" width="15" height="52" rx="7" fill="#DFD5F7" stroke="#2E1065" stroke-width="2"/><text x="352.5" y="268" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">24</text></g>
+          <g class="step s3"><rect x="162.0" y="196" width="15" height="52" rx="7" fill="#FBD8D4" stroke="#B45309" stroke-width="2"/><rect x="180.0" y="196" width="15" height="52" rx="7" fill="#FBD8D4" stroke="#B45309" stroke-width="2"/><rect x="198.0" y="196" width="15" height="52" rx="7" fill="#FBD8D4" stroke="#B45309" stroke-width="2"/><text x="187.5" y="268" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">21</text></g>
+          <g class="step s4">
+            <text x="235" y="326" text-anchor="middle" font-size="30" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">47,XY,+21</text>
+            <text x="235" y="356" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">47 chromosomes · un garçon · un 21 surnuméraire</text>
+          </g>
+          <g class="step s5">
+            <rect x="22" y="382" width="426" height="60" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="406" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">une non-disjonction pendant la méiose</text>
+            <text x="235" y="428" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">un gamète à 24 chromosomes, et un autre à 22</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce qu'est un caryotype</h3>
+          <p style="font-size:17px">La photographie des chromosomes d'une cellule en <b>métaphase</b>, classés par taille et par paires.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'écriture normalisée</h3>
+          <p style="font-size:17px"><b>46,XX</b> pour une femme, <b>46,XY</b> pour un homme. Le nombre total d'abord, les chromosomes sexuels ensuite.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Une anomalie de nombre</h3>
+          <p style="font-size:17px">Elle s'écrit avec un signe : <b>47,XY,+21</b> — quarante-sept chromosomes, un homme, un chromosome 21 surnuméraire. C'est la trisomie 21.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">D'où elle vient</h3>
+          <p style="font-size:17px">D'une <b>non-disjonction</b> pendant la méiose : une paire qui ne se sépare pas. Elle produit un gamète à 24 chromosomes et un à 22.</p>
+          <p style="font-size:17px">Et c'est ce qui montre qu'on a compris le mécanisme : une non-disjonction ne <b>crée</b> pas de chromosome, elle en <b>déplace</b> un. Ce qui est en trop ici est en moins ailleurs.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "L'écriture d'un caryotype : le nombre total, puis les chromosomes sexuels.",
+      "Les paires, rangées par taille. Chacune compte deux chromosomes.",
+      "Sauf celle-ci : trois au lieu de deux.",
+      "On l'écrit <b>47,XY,+21</b> — et chaque partie de la notation se lit.",
+      "<em>L'origine</em> : une paire qui ne s'est pas séparée. L'autre gamète, lui, en manquait un."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule BI5-B — La méiose, les brassages et le caryotype · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

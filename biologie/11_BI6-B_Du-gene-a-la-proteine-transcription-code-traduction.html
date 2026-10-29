@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule BI6B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#5B21B6;          /* bleu SFA */
+  --deep:#2E1065;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#F1ECFB;         /* bleu 8 % */
+  --tint2:#DFD5F7;        /* bleu 18 % */
+  --surface:#F8F6FC;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-BI6-05 ==================== -->
+  <section class="slide" data-ref="ANIM-BI6-05" data-title="La transcription" data-sub="Un brin copié, un seul, et dans un seul sens" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="80" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Un seul brin est copié</text>
+          <g class="step s1"><text x="43.0" y="112" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">brin non transcrit (codant)</text><text x="79.0" y="140" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">ATG</text><text x="157.0" y="140" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">TCT</text><text x="235.0" y="140" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">CAT</text><text x="313.0" y="140" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">GGA</text><text x="391.0" y="140" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">TAA</text><text x="43.0" y="162" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">brin transcrit (modèle)</text><text x="79.0" y="190" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">TAC</text><text x="157.0" y="190" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">AGA</text><text x="235.0" y="190" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">GTA</text><text x="313.0" y="190" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">CCT</text><text x="391.0" y="190" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">ATT</text></g>
+          <g class="step s2">
+            <rect x="54" y="152" width="362" height="42" rx="9" fill="none" stroke="#B45309" stroke-width="3"/>
+            <text x="235" y="214" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">c'est celui-là que l'ARN polymérase lit</text>
+          </g>
+          <g class="step s3"><rect x="43.0" y="240" width="72" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="79.0" y="266" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">AUG</text><text x="79.0" y="300" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Met</text><rect x="121.0" y="240" width="72" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="157.0" y="266" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UCU</text><text x="157.0" y="300" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Ser</text><rect x="199.0" y="240" width="72" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="235.0" y="266" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">CAU</text><text x="235.0" y="300" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">His</text><rect x="277.0" y="240" width="72" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="313.0" y="266" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">GGA</text><text x="313.0" y="300" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Gly</text><rect x="355.0" y="240" width="72" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="391.0" y="266" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UAA</text><text x="391.0" y="300" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">stop</text>
+            <text x="235" y="228" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">l'ARN messager</text>
+          </g>
+          <g class="step s4">
+            <rect x="26" y="330" width="418" height="42" rx="10" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/>
+            <text x="235" y="357" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">le raccourci : le brin non transcrit, avec U au lieu de T</text>
+          </g>
+          <g class="step s5">
+            <rect x="20" y="390" width="430" height="56" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="414" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">toujours identifier le brin avant de transcrire</text>
+            <text x="235" y="436" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">sur le mauvais brin, la protéine est fausse — et l'erreur ne se voit pas</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Où, et pourquoi</h3>
+          <p style="font-size:17px">Dans le <b>noyau</b>, parce que l'ADN n'en sort pas et que les ribosomes sont dehors. L'ARN messager est la <b>copie de travail</b> qu'on envoie à l'atelier.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Un seul des deux brins</h3>
+          <p style="font-size:17px">Celui qu'on appelle <b>brin transcrit</b>, ou brin modèle. L'autre, le <b>non transcrit</b>, est dit codant parce qu'il a la même séquence que l'ARN — au U près.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le mécanisme, et le raccourci</h3>
+          <p style="font-size:17px">L'ARN polymérase assemble les ribonucléotides complémentaires du brin transcrit : A→U, T→A, C→G, G→C.</p>
+          <p style="font-size:17px">D'où le raccourci quand l'énoncé donne le <b>brin codant</b> : on recopie, en remplaçant T par U.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège exploité chaque année</h3>
+          <p style="font-size:17px">L'énoncé ne précise pas toujours quel brin il donne. <b>Toujours identifier le brin avant de transcrire.</b></p>
+          <p style="font-size:17px">Une transcription faite sur le mauvais brin donne une protéine entièrement fausse — et rien, dans le résultat, ne le signale.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Les deux brins d'un gène. Ils portent la même information, écrite en miroir.",
+      "Un seul est lu : le <b>brin transcrit</b>. L'autre ne sert pas de modèle.",
+      "Et voici l'ARN messager — complémentaire du brin lu, donc identique à l'autre.",
+      "D'où le raccourci : on recopie le brin non transcrit, en mettant U à la place de T.",
+      "<em>Mais d'abord, identifier le brin</em> : sur le mauvais, rien n'avertit de l'erreur."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI6-06 ==================== -->
+  <section class="slide" data-ref="ANIM-BI6-06" data-title="Lire la table du code génétique" data-sub="Triplet par triplet, sans se tromper de sens" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="96" text-anchor="middle" font-size="26" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">4³ = 64 codons</text>
+            <text x="235" y="136" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">pour 20 acides aminés</text>
+          </g>
+          <g class="step s2"><rect x="82.0" y="190" width="72" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="118.0" y="216" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UCU</text><text x="118.0" y="250" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Ser</text><rect x="160.0" y="190" width="72" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="196.0" y="216" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UCC</text><text x="196.0" y="250" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Ser</text><rect x="238.0" y="190" width="72" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="274.0" y="216" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UCA</text><text x="274.0" y="250" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Ser</text><rect x="316.0" y="190" width="72" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="352.0" y="216" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UCG</text><text x="352.0" y="250" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Ser</text>
+            <text x="235" y="172" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">quatre codons, un seul acide aminé</text>
+          </g>
+          <g class="step s3">
+            <text x="235" y="300" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">redondant dans un sens, univoque dans l'autre</text>
+            <text x="235" y="326" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">un codon ne désigne jamais deux acides aminés</text>
+          </g>
+          <g class="step s4">
+            <text x="235" y="368" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">UAA · UAG · UGA — aucun acide aminé</text>
+            <text x="235" y="394" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">AUG — initiation, et méthionine</text>
+          </g>
+          <g class="step s5">
+            <rect x="26" y="412" width="418" height="40" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="438" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">le code est universel — bactérie, plante, homme</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Un codon est un triplet</h3>
+          <p style="font-size:17px">4 bases, 3 positions : <b>4³ = 64 codons</b> pour 20 acides aminés. Il y en a donc nécessairement plus que de besoins.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le code est redondant</h3>
+          <p style="font-size:17px">Plusieurs codons donnent le même acide aminé — et c'est le plus souvent la <b>troisième base</b> qui varie sans changer le sens.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Trois codons ne codent rien</h3>
+          <p style="font-size:17px"><b>UAA, UAG, UGA</b> sont les codons <b>stop</b>. Et <b>AUG</b> est à la fois le codon d'initiation et celui de la méthionine.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Comment on lit la table, et le piège</h3>
+          <p style="font-size:17px">Première base en ligne, deuxième en colonne, troisième dans la case. Et <b>toujours dans le sens 5′ → 3′</b> : lire un codon à l'envers donne un acide aminé faux, souvent proposé en distracteur.</p>
+          <p style="font-size:17px">Enfin, le code est le <b>même chez tous les êtres vivants</b>. C'est un argument majeur de l'évolution, qu'on reprendra en BI9.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Quatre bases, trois positions : soixante-quatre codons pour vingt acides aminés.",
+      "D'où la redondance : ces quatre codons désignent tous la sérine.",
+      "Mais l'inverse n'est jamais vrai : un codon ne désigne qu'un seul acide aminé.",
+      "Trois codons ne codent rien du tout : ce sont les <b>stop</b>. Et AUG lance la lecture.",
+      "<em>Et ce dictionnaire est le même</em> chez la bactérie, la plante et l'homme."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI6-07 ==================== -->
+  <section class="slide" data-ref="ANIM-BI6-07" data-title="La traduction" data-sub="Ribosome, tRNA, et la chaîne qui s'allonge" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="72" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Le ribosome avance d'un codon</text>
+          <g class="step s1"><rect x="30" y="250" width="410" height="26" rx="13" fill="#DFD5F7"/>
+            <text x="235" y="306" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">l'ARN messager, lu de gauche à droite</text>
+          </g>
+          <g class="step s2"><ellipse cx="150" cy="240" rx="56" ry="42" fill="#5B21B6" stroke="#2E1065" stroke-width="3"/><text x="150" y="245" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">ribosome</text></g>
+          <g class="step s3"><path d="M 258,248 l -27,-46 h 54 z" fill="#F1ECFB" stroke="#2E1065" stroke-width="2.6"/><text x="258" y="194" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">tRNA</text><circle cx="258" cy="174" r="18" fill="#5B21B6" stroke="#2E1065" stroke-width="2.4"/><text x="258" y="179" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Met</text>
+            <text x="342" y="244" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">anticodon</text>
+          </g>
+          <g class="step s4"><circle cx="86" cy="132" r="19" fill="#5B21B6" stroke="#2E1065" stroke-width="2.4"/><text x="86" y="137" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Met</text><circle cx="132" cy="132" r="19" fill="#5B21B6" stroke="#2E1065" stroke-width="2.4"/><text x="132" y="137" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Ser</text><circle cx="178" cy="132" r="19" fill="#5B21B6" stroke="#2E1065" stroke-width="2.4"/><text x="178" y="137" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">His</text>
+            <text x="300" y="138" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">la chaîne s'allonge</text>
+          </g>
+          <g class="step s5">
+            <rect x="20" y="328" width="430" height="58" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="352" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">le codon stop n'est lu par aucun tRNA</text>
+            <text x="235" y="374" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">c'est précisément pour cela que la machine s'arrête</text>
+            <rect x="20" y="398" width="430" height="42" rx="10" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/>
+            <text x="235" y="425" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">N codons, stop compris → N − 1 acides aminés</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Où, et avec qui</h3>
+          <p style="font-size:17px">Dans le <b>cytoplasme</b>, sur les <b>ribosomes</b>. Trois acteurs : l'ARN <b>messager</b> porte le message, le <b>ribosome</b> le lit, l'ARN de <b>transfert</b> apporte les acides aminés.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le tRNA est la pièce qui traduit</h3>
+          <p style="font-size:17px">Il porte d'un côté un <b>anticodon</b> complémentaire du codon, et de l'autre l'acide aminé correspondant. C'est lui, le dictionnaire matérialisé.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Trois étapes</h3>
+          <p style="font-size:17px"><b>Initiation</b> au codon AUG. <b>Élongation</b> : le ribosome avance d'un codon, la chaîne s'allonge d'un acide aminé. <b>Terminaison</b> à la rencontre d'un codon stop.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le comptage qu'il faut savoir faire</h3>
+          <p style="font-size:17px">Si la partie codante compte <b>N codons stop compris</b>, la protéine a <b>N − 1 acides aminés</b>. Le stop occupe de la place sur l'ARN, aucune dans la protéine.</p>
+          <p style="font-size:17px">L'oubli de ce « moins un » est l'erreur de calcul la plus fréquente du chapitre — et elle figure toujours dans les propositions.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "L'ARN messager, sorti du noyau, et lu de gauche à droite.",
+      "Le ribosome s'installe dessus, au codon d'initiation.",
+      "Un tRNA se présente : son anticodon s'apparie, et il apporte son acide aminé.",
+      "Le ribosome avance d'un codon, et la chaîne s'allonge d'un acide aminé à la fois.",
+      "<em>Jusqu'au codon stop</em>, qu'aucun tRNA ne sait lire. D'où N − 1."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI6-08 ==================== -->
+  <section class="slide" data-ref="ANIM-BI6-08" data-title="Les trois types de mutations" data-sub="Substitution, insertion, délétion : le décalage change tout" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="98" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">la séquence de référence</text>
+            <rect x="53.0" y="118" width="68" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="87.0" y="144" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">AUG</text><text x="87.0" y="178" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Met</text><rect x="127.0" y="118" width="68" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="161.0" y="144" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UCU</text><text x="161.0" y="178" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Ser</text><rect x="201.0" y="118" width="68" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="235.0" y="144" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">CAU</text><text x="235.0" y="178" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">His</text><rect x="275.0" y="118" width="68" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="309.0" y="144" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">GGA</text><text x="309.0" y="178" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Gly</text><rect x="349.0" y="118" width="68" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="383.0" y="144" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UAA</text><text x="383.0" y="178" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">stop</text>
+          </g>
+          <g class="step s2 h3"><rect x="53.0" y="268" width="68" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="87.0" y="294" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">AUG</text><text x="87.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Met</text><rect x="127.0" y="268" width="68" height="38" rx="8" fill="#FBD8D4" stroke="#B45309" stroke-width="2.4"/><text x="161.0" y="294" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UCC</text><text x="161.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">Ser</text><rect x="201.0" y="268" width="68" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="235.0" y="294" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">CAU</text><text x="235.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">His</text><rect x="275.0" y="268" width="68" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="309.0" y="294" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">GGA</text><text x="309.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Gly</text><rect x="349.0" y="268" width="68" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="383.0" y="294" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UAA</text><text x="383.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">stop</text>
+            <text x="235" y="248" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">une base remplacée — même acide aminé</text>
+            <text x="235" y="356" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">mutation silencieuse</text>
+          </g>
+          <g class="step s3 h4"><rect x="53.0" y="268" width="68" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="87.0" y="294" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">AUG</text><text x="87.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Met</text><rect x="127.0" y="268" width="68" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="161.0" y="294" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UCU</text><text x="161.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Ser</text><rect x="201.0" y="268" width="68" height="38" rx="8" fill="#FBD8D4" stroke="#B45309" stroke-width="2.4"/><text x="235.0" y="294" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UAU</text><text x="235.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">Tyr</text><rect x="275.0" y="268" width="68" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="309.0" y="294" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">GGA</text><text x="309.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Gly</text><rect x="349.0" y="268" width="68" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="383.0" y="294" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UAA</text><text x="383.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">stop</text>
+            <text x="235" y="248" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">une base remplacée — acide aminé changé</text>
+            <text x="235" y="356" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">faux-sens</text>
+          </g>
+          <g class="step s4 h5"><rect x="75.0" y="268" width="60" height="38" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/><text x="105.0" y="294" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">AUG</text><text x="105.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46" font-weight="700">Met</text><rect x="140.0" y="268" width="60" height="38" rx="8" fill="#FBD8D4" stroke="#B45309" stroke-width="2.4"/><text x="170.0" y="294" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">GUC</text><text x="170.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">Val</text><rect x="205.0" y="268" width="60" height="38" rx="8" fill="#FBD8D4" stroke="#B45309" stroke-width="2.4"/><text x="235.0" y="294" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UCA</text><text x="235.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">Ser</text><rect x="270.0" y="268" width="60" height="38" rx="8" fill="#FBD8D4" stroke="#B45309" stroke-width="2.4"/><text x="300.0" y="294" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">UGG</text><text x="300.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">Trp</text><rect x="335.0" y="268" width="60" height="38" rx="8" fill="#FBD8D4" stroke="#B45309" stroke-width="2.4"/><text x="365.0" y="294" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">AUA</text><text x="365.0" y="328" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">Ile</text>
+            <text x="235" y="248" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">une base ajoutée — tout est décalé</text>
+            <text x="235" y="356" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">décalage du cadre de lecture</text>
+          </g>
+          <g class="step s5">
+            <rect x="24" y="266" width="422" height="140" rx="12" fill="#DFD5F7"/>
+            <text x="235" y="300" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">silencieuse &lt; faux-sens &lt; non-sens ≤ décalage</text>
+            <text x="235" y="332" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">aucun effet · un acide aminé · protéine tronquée</text>
+            <text x="235" y="356" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">· protéine entièrement fausse</text>
+            <text x="235" y="386" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">une base ajoutée fait plus de dégâts qu'une base remplacée</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La substitution, premier cas</h3>
+          <p style="font-size:17px">UCU devient UCC. Or les deux codent la <b>sérine</b> : l'acide aminé est inchangé. C'est une mutation <b>silencieuse</b> — et elle porte sur la 3ᵉ base, là où la redondance du code joue.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Deuxième cas</h3>
+          <p style="font-size:17px">CAU devient UAU : <b>His</b> devient <b>Tyr</b>. C'est un <b>faux-sens</b>. La protéine garde sa longueur, mais un de ses acides aminés est remplacé.</p>
+          <p style="font-size:17px">Et si le codon devenait un stop, ce serait un <b>non-sens</b> : la protéine serait tronquée.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le troisième cas est d'une autre nature</h3>
+          <p style="font-size:17px">Un G inséré, et <b>tous</b> les codons qui suivent changent. Met-Ser-His-Gly devient Met-Val-Ser-Trp-Ile — et le codon stop a disparu.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège</h3>
+          <p style="font-size:17px">« Une insertion est moins grave qu'une substitution puisqu'elle n'ajoute qu'une base. » <b>C'est l'inverse.</b></p>
+          <p style="font-size:17px">Une substitution touche <b>un</b> codon ; une insertion les touche <b>tous</b>, à partir du point d'insertion. On ne juge pas une mutation à sa taille, mais à son <b>type</b> et à sa <b>position</b>.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "La séquence de référence, et la protéine qu'elle code : Met-Ser-His-Gly.",
+      "Une base remplacée, et l'acide aminé ne change pas : <b>silencieuse</b>.",
+      "Une autre base remplacée, et l'acide aminé change : <b>faux-sens</b>.",
+      "Une base <b>ajoutée</b>, et tout ce qui suit est décalé. Plus rien ne correspond.",
+      "<em>D'où la hiérarchie</em> : une base ajoutée fait plus de dégâts qu'une base remplacée."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule BI6-B — Du gène à la protéine : transcription, code, traduction · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

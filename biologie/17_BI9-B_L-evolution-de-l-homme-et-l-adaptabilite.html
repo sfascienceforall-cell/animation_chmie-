@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule BI9B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#5B21B6;          /* bleu SFA */
+  --deep:#2E1065;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#F1ECFB;         /* bleu 8 % */
+  --tint2:#DFD5F7;        /* bleu 18 % */
+  --surface:#F8F6FC;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-BI9-05 ==================== -->
+  <section class="slide" data-ref="ANIM-BI9-05" data-title="Les étapes de l'évolution de l'homme" data-sub="Un buisson, pas une échelle" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="72" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Sept millions d'années</text>
+          <g class="step s1"><rect x="20.0" y="100.0" width="430.0" height="300.0" rx="10" fill="#FFFFFF" stroke="#5B21B6" stroke-width="2.2"/><path d="M 30.0,100.0 h 410.0 a10,10 0 0 1 10,10 v 40.0 h -430.0 v -40.0 a10,10 0 0 1 10,-10 z" fill="#5B21B6"/><text x="79.0" y="131.5" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Quand</text><text x="294.0" y="131.5" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Quoi</text><text x="79.0" y="182.5" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">≈ 7 Ma</text><text x="294.0" y="182.5" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">séparation d'avec la lignée des chimpanzés</text><line x1="28.0" y1="200.0" x2="442.0" y2="200.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="79.0" y="232.5" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">3 à 4 Ma</text><text x="294.0" y="232.5" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">les australopithèques — Lucy</text><line x1="28.0" y1="250.0" x2="442.0" y2="250.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="79.0" y="282.5" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">2,5 Ma</text><text x="294.0" y="282.5" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">Homo habilis</text><line x1="28.0" y1="300.0" x2="442.0" y2="300.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="79.0" y="332.5" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">1,8 Ma</text><text x="294.0" y="332.5" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">Homo erectus</text><line x1="28.0" y1="350.0" x2="442.0" y2="350.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="79.0" y="382.5" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">300 ka</text><text x="294.0" y="382.5" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">Homo sapiens, et Néandertal</text><line x1="138.0" y1="150.0" x2="138.0" y2="394.0" stroke="#E3E7EE" stroke-width="1.2"/></g>
+          <g class="step s2 h3"><rect x="25.0" y="151.0" width="420.0" height="48.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/></g>
+          <g class="step s3 h4"><rect x="25.0" y="201.0" width="420.0" height="98.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/></g>
+          <g class="step s4"><rect x="25.0" y="301.0" width="420.0" height="98.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/></g>
+          <g class="step s5">
+            <rect x="22" y="412" width="426" height="44" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="440" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">un buisson, avec des branches parallèles</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le point de départ</h3>
+          <p style="font-size:17px">Une séparation d'avec la lignée des chimpanzés, il y a environ sept millions d'années. <b>L'homme ne descend pas du singe</b> : les deux ont un <b>ancêtre commun</b>, ce qui n'est pas la même chose.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le caractère le plus ancien</h3>
+          <p style="font-size:17px">La <b>bipédie</b>. Elle précède tout le reste, et c'est elle qui définit la lignée humaine : les australopithèques étaient déjà bipèdes avec un cerveau de taille proche de celui d'un chimpanzé.</p>
+          <p style="font-size:17px">On s'est d'abord <b>redressé</b>, on a grossi du cerveau ensuite.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce qui évolue ensuite</h3>
+          <p style="font-size:17px">Le volume crânien augmente, la face et les mâchoires se réduisent, l'usage d'outils apparaît. La bipédie avait libéré les mains.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les deux pièges de représentation</h3>
+          <p style="font-size:17px">Ce n'est <b>pas une échelle</b> où chaque espèce remplacerait la précédente : c'est un <b>buisson</b>, avec des branches parallèles et de nombreuses impasses.</p>
+          <p style="font-size:17px">Et <b>Néandertal n'est pas notre ancêtre</b> : c'est une espèce <b>cousine</b>, qui a coexisté avec <i>Homo sapiens</i> pendant des millénaires avant de disparaître.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Cinq jalons, sur sept millions d'années.",
+      "Le premier : une séparation. Pas une descendance — un ancêtre commun.",
+      "Les australopithèques, puis Homo habilis. Déjà bipèdes, et le cerveau suit.",
+      "Homo erectus, puis sapiens — et Néandertal, à côté.",
+      "<em>Un buisson, pas une échelle</em> : Néandertal est un cousin, pas un ancêtre."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI9-06 ==================== -->
+  <section class="slide" data-ref="ANIM-BI9-06" data-title="Homologie ou analogie" data-sub="Même fonction ne veut pas dire même origine" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="76" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Deux mots qui concluent l'inverse</text>
+          <g class="step s1"><rect x="14.0" y="118.0" width="210.0" height="150.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="119.0" y="189.0" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Homologues</text><text x="119.0" y="211.0" text-anchor="middle" font-size="10" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">même structure, fonctions différentes</text></g>
+          <g class="step s2">
+            <text x="119" y="292" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">bras de l'homme<tspan x="119" dy="18">aile de chauve-souris</tspan><tspan x="119" dy="18">nageoire de baleine</tspan></text>
+            <text x="119" y="356" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">→ parenté</text>
+          </g>
+          <g class="step s3"><rect x="246.0" y="118.0" width="210.0" height="150.0" rx="12" fill="#FDF3E7" stroke="#B45309" stroke-width="2.6"/><text x="351.0" y="189.0" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">Analogues</text><text x="351.0" y="211.0" text-anchor="middle" font-size="10" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">même fonction, structures différentes</text></g>
+          <g class="step s4">
+            <text x="351" y="292" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">aile d'oiseau<tspan x="351" dy="18">aile d'insecte</tspan><tspan x="351" dy="18">rien de commun dedans</tspan></text>
+            <text x="351" y="356" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">→ aucune parenté</text>
+          </g>
+          <g class="step s5">
+            <rect x="22" y="378" width="426" height="76" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="404" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">on regarde comment c'est construit</text>
+            <text x="235" y="426" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">jamais ce que l'organe fait</text>
+            <text x="235" y="443" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">la ressemblance extérieure n'est jamais un argument</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Organes homologues</h3>
+          <p style="font-size:17px"><b>Même origine</b>, même plan d'organisation, fonctions éventuellement très différentes. Ils prouvent une <b>parenté</b>.</p>
+          <p style="font-size:17px">Et cela vaut aussi chez les végétaux : l'<b>épine du cactus</b> est une feuille transformée.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Organes analogues</h3>
+          <p style="font-size:17px"><b>Même fonction</b>, origines <b>différentes</b>. Ils ne prouvent aucune parenté — seulement une contrainte commune du milieu.</p>
+          <p style="font-size:17px">Le phénomène porte un nom : la <b>convergence évolutive</b>.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le cas le plus fin</h3>
+          <p style="font-size:17px">La nageoire du <b>dauphin</b> et celle du <b>requin</b> : même fonction, même forme. Mais celle du dauphin contient les <b>os du membre antérieur</b>, celle du requin n'a aucun équivalent osseux.</p>
+          <p style="font-size:17px">Ce sont donc des organes <b>analogues</b>, malgré une ressemblance plus forte que chez bien des homologues.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le test qui ne trompe jamais</h3>
+          <p style="font-size:17px">On ne regarde <b>jamais</b> ce que l'organe fait. On regarde <b>comment il est construit</b>.</p>
+          <p style="font-size:17px">Même structure → homologie → parenté. Même fonction seulement → analogie → aucune conclusion. <b>On dissèque, on ne regarde pas.</b></p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Homologues : même plan d'organisation, sous des fonctions qui n'ont rien à voir.",
+      "Le bras, l'aile, la nageoire : les mêmes os, dans le même ordre. Donc une parenté.",
+      "Analogues : la même fonction, mais deux constructions sans rapport.",
+      "L'aile de l'oiseau et celle de l'insecte : rien de commun à l'intérieur.",
+      "<em>D'où le test</em> : on regarde la construction, jamais la fonction."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI9-07 ==================== -->
+  <section class="slide" data-ref="ANIM-BI9-07" data-title="L'adaptabilité d'une espèce" data-sub="Pourquoi la diversité est une assurance" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="76" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Deux populations, même effectif</text>
+            <text x="50" y="128" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">génétiquement diverse</text>
+            <circle cx="50" cy="162" r="14" fill="#5B21B6"/><circle cx="88" cy="162" r="14" fill="#0F7A4F"/><circle cx="126" cy="162" r="14" fill="#B45309"/><circle cx="164" cy="162" r="14" fill="#5B21B6"/><circle cx="202" cy="162" r="14" fill="#8E63D4"/><circle cx="240" cy="162" r="14" fill="#0F7A4F"/><circle cx="278" cy="162" r="14" fill="#5B21B6"/><circle cx="316" cy="162" r="14" fill="#B45309"/><circle cx="354" cy="162" r="14" fill="#8E63D4"/><circle cx="392" cy="162" r="14" fill="#5B21B6"/>
+          </g>
+          <g class="step s2">
+            <text x="50" y="238" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">génétiquement homogène</text>
+            <circle cx="50" cy="272" r="14" fill="#5B21B6"/><circle cx="88" cy="272" r="14" fill="#5B21B6"/><circle cx="126" cy="272" r="14" fill="#5B21B6"/><circle cx="164" cy="272" r="14" fill="#5B21B6"/><circle cx="202" cy="272" r="14" fill="#5B21B6"/><circle cx="240" cy="272" r="14" fill="#5B21B6"/><circle cx="278" cy="272" r="14" fill="#5B21B6"/><circle cx="316" cy="272" r="14" fill="#5B21B6"/><circle cx="354" cy="272" r="14" fill="#5B21B6"/><circle cx="392" cy="272" r="14" fill="#5B21B6"/>
+          </g>
+          <g class="step s3">
+            <rect x="26" y="306" width="418" height="38" rx="9" fill="#FBD8D4"/>
+            <text x="235" y="331" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#8E1B12" font-weight="700">une maladie nouvelle arrive</text>
+          </g>
+          <g class="step s4"><line x1="41" y1="153" x2="59" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="59" y1="153" x2="41" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="117" y1="153" x2="135" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="135" y1="153" x2="117" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="155" y1="153" x2="173" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="173" y1="153" x2="155" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="193" y1="153" x2="211" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="211" y1="153" x2="193" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="269" y1="153" x2="287" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="287" y1="153" x2="269" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="307" y1="153" x2="325" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="325" y1="153" x2="307" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="345" y1="153" x2="363" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="363" y1="153" x2="345" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="383" y1="153" x2="401" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="401" y1="153" x2="383" y2="171" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="41" y1="263" x2="59" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="59" y1="263" x2="41" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="79" y1="263" x2="97" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="97" y1="263" x2="79" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="117" y1="263" x2="135" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="135" y1="263" x2="117" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="155" y1="263" x2="173" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="173" y1="263" x2="155" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="193" y1="263" x2="211" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="211" y1="263" x2="193" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="231" y1="263" x2="249" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="249" y1="263" x2="231" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="269" y1="263" x2="287" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="287" y1="263" x2="269" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="307" y1="263" x2="325" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="325" y1="263" x2="307" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="345" y1="263" x2="363" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="363" y1="263" x2="345" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="383" y1="263" x2="401" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/><line x1="401" y1="263" x2="383" y2="281" stroke="#8E1B12" stroke-width="3.4" stroke-linecap="round"/></g>
+          <g class="step s5">
+            <rect x="26" y="358" width="418" height="96" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="384" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">la population diverse garde des survivants</text>
+            <text x="235" y="408" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">l'homogène disparaît entièrement</text>
+            <text x="235" y="434" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">un individu ne s'adapte pas — c'est la population qui change</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce qu'est l'adaptabilité</h3>
+          <p style="font-size:17px">La capacité d'une <b>population</b> à survivre à un changement du milieu. Elle ne se mesure jamais sur un individu.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce dont elle dépend</h3>
+          <p style="font-size:17px">La <b>diversité génétique</b>. Plus les allèles sont variés, plus il est probable que certains individus se trouvent avantagés par le changement.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La conséquence directe</h3>
+          <p style="font-size:17px">Une population <b>homogène est fragile</b> : une seule maladie nouvelle peut l'éliminer entièrement, puisque aucun individu n'y résiste.</p>
+          <p style="font-size:17px">Les monocultures de clones — bananiers, certaines pommes de terre — sont régulièrement menacées d'effondrement par un seul parasite.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La formulation à exiger</h3>
+          <p style="font-size:17px">Un individu <b>ne s'adapte pas</b>. Il est adapté ou il ne l'est pas, et il le reste toute sa vie.</p>
+          <p style="font-size:17px">C'est la <b>composition de la population</b> qui change d'une génération à l'autre. Et c'est pourquoi protéger la diversité génétique n'est pas de l'esthétique : on y reviendra en BI10.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une population génétiquement diverse : les individus diffèrent entre eux.",
+      "Une autre, de même effectif, mais homogène : tous identiques.",
+      "Et le milieu change — une maladie nouvelle arrive.",
+      "Dans la première, quelques-uns résistent. Dans la seconde, aucun.",
+      "<em>Voilà l'adaptabilité</em> : elle se mesure sur la population, jamais sur l'individu."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI9-08 ==================== -->
+  <section class="slide" data-ref="ANIM-BI9-08" data-title="La résistance aux antibiotiques" data-sub="La sélection naturelle en quelques jours" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <g class="step s1"><rect x="25.0" y="96.0" width="420.0" height="62.0" rx="12" fill="#FDF3E7" stroke="#B45309" stroke-width="2.6"/><text x="235.0" y="123.0" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">1 · la variation préexiste</text><text x="235.0" y="145.0" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">quelques bactéries sont déjà résistantes</text></g>
+          <g class="step s2"><rect x="25.0" y="172.0" width="420.0" height="62.0" rx="12" fill="#FDF3E7" stroke="#B45309" stroke-width="2.6"/><text x="235.0" y="199.0" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">2 · l'antibiotique sélectionne</text><text x="235.0" y="221.0" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">il tue les sensibles, pas les autres</text></g>
+          <g class="step s3"><rect x="25.0" y="248.0" width="420.0" height="62.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="235.0" y="275.0" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">3 · la survie différentielle</text><text x="235.0" y="297.0" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">seules les résistantes restent</text></g>
+          <g class="step s4"><rect x="25.0" y="324.0" width="420.0" height="62.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="235.0" y="351.0" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">4 · la multiplication</text><text x="235.0" y="373.0" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">en 48 h, la population est reconstituée</text></g>
+          <g class="step s5">
+            <rect x="24" y="400" width="422" height="58" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="424" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">« elles ont muté pour résister » est faux</text>
+            <text x="235" y="448" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">l'antibiotique ne provoque rien : il révèle</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le point de départ</h3>
+          <p style="font-size:17px">Dans une population de bactéries, quelques individus portent <b>déjà</b>, par mutation aléatoire, un allèle de résistance. Ils l'avaient <b>avant</b> tout contact avec l'antibiotique.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'antibiotique est la pression</h3>
+          <p style="font-size:17px">Il tue les bactéries sensibles et laisse vivre les résistantes. Il ne fabrique aucune résistance : il <b>élimine tout le reste</b>.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et la multiplication fait le reste</h3>
+          <p style="font-size:17px">Les survivantes se divisent toutes les vingt minutes. La population reconstituée est <b>entièrement résistante</b>, puisqu'elle ne descend que de survivantes.</p>
+          <p style="font-size:17px">Un mécanisme propre aux bactéries l'accélère : les <b>plasmides</b> porteurs de résistance s'échangent d'une bactérie à l'autre, même entre espèces.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les deux conséquences pratiques</h3>
+          <p style="font-size:17px">Ne pas prendre d'antibiotique sans raison — et <b>aller au bout d'un traitement</b>. S'arrêter trop tôt tue les plus sensibles et sélectionne précisément les plus résistantes.</p>
+          <p style="font-size:17px"><b>La phrase à ne jamais écrire :</b> « les bactéries ont muté pour résister ». La mutation est <b>antérieure</b> et <b>aléatoire</b>. C'est Darwin contre Lamarck, en quarante-huit heures.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Avant tout traitement, quelques bactéries portent déjà l'allèle de résistance.",
+      "L'antibiotique arrive. Il tue les sensibles — il ne crée rien.",
+      "Ne restent que les résistantes. Elles étaient là depuis le début.",
+      "Elles se divisent toutes les vingt minutes : en deux jours, la population est reconstituée.",
+      "<em>Et elle est entièrement résistante</em>. L'antibiotique n'a rien provoqué : il a révélé."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule BI9-B — L'évolution de l'homme et l'adaptabilité · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

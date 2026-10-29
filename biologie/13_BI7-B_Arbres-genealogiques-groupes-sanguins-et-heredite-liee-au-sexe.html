@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule BI7B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#5B21B6;          /* bleu SFA */
+  --deep:#2E1065;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#F1ECFB;         /* bleu 8 % */
+  --tint2:#DFD5F7;        /* bleu 18 % */
+  --surface:#F8F6FC;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-BI7-05 ==================== -->
+  <section class="slide" data-ref="ANIM-BI7-05" data-title="L'hérédité liée au sexe" data-sub="Pourquoi le père ne transmet pas le daltonisme à son fils" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <g class="step s1">
+            <text x="235" y="74" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">mère porteuse saine  ×  père à vision normale</text>
+            <text x="235" y="104" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">le père de la mère était daltonien</text>
+          </g>
+          <g class="step s2"><text x="180" y="170" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">X<tspan font-size="13" dy="-7">D</tspan><tspan dy="7"> </tspan></text><text x="284" y="170" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">Y</text><text x="92" y="243" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">X<tspan font-size="13" dy="-7">D</tspan><tspan dy="7"> </tspan></text><text x="92" y="347" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">X<tspan font-size="13" dy="-7">d</tspan><tspan dy="7"> </tspan></text>
+            <text x="235" y="144" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">leurs gamètes, en lignes et en colonnes</text>
+          </g>
+          <g class="step s3"><rect x="128" y="184" width="104" height="104" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.2"/><text x="180" y="243" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">X<tspan font-size="13" dy="-7">D</tspan><tspan dy="7"> </tspan>X<tspan font-size="13" dy="-7">D</tspan><tspan dy="7"> </tspan></text><rect x="232" y="184" width="104" height="104" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.2"/><text x="284" y="243" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">X<tspan font-size="13" dy="-7">D</tspan><tspan dy="7"> </tspan>Y</text><rect x="128" y="288" width="104" height="104" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.2"/><text x="180" y="347" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">X<tspan font-size="13" dy="-7">d</tspan><tspan dy="7"> </tspan>X<tspan font-size="13" dy="-7">D</tspan><tspan dy="7"> </tspan></text><rect x="232" y="288" width="104" height="104" fill="#FBD8D4" stroke="#B45309" stroke-width="2.2"/><text x="284" y="347" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">X<tspan font-size="13" dy="-7">d</tspan><tspan dy="7"> </tspan>Y</text></g>
+          <g class="step s4">
+            <text x="235" y="420" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">1/4 des enfants  ·  1/2 des garçons</text>
+          </g>
+          <g class="step s5">
+            <rect x="22" y="430" width="426" height="32" rx="9" fill="#DFD5F7"/>
+            <text x="235" y="452" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">et la moitié des filles sont porteuses</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'asymétrie fondamentale</h3>
+          <p style="font-size:17px">Le chromosome X porte des centaines de gènes, le Y très peu. Un homme n'a donc qu'<b>un seul exemplaire</b> de chaque gène porté par l'X.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La conséquence</h3>
+          <p style="font-size:17px">Pour un allèle récessif porté par l'X, un homme l'exprime <b>dès qu'il le possède</b> : il n'a pas de second X pour le masquer. Une femme doit en avoir deux.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Deux réponses, deux ensembles</h3>
+          <p style="font-size:17px">Une case sur quatre est atteinte : <b>1/4 des enfants</b>. Mais parmi les deux garçons, un seul : <b>1/2 des garçons</b>.</p>
+          <p style="font-size:17px">Les deux chiffres figurent au QCM. « Des enfants » et « des garçons » ne désignent pas le même ensemble.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège qui tombe chaque année</h3>
+          <p style="font-size:17px">« Un père daltonien aura des fils daltoniens » — <b>faux, et exactement à l'envers</b>.</p>
+          <p style="font-size:17px">Un père donne son <b>Y</b> à ses fils et son <b>X</b> à ses filles. Aucun de ses fils ne le sera de son fait ; mais <b>toutes</b> ses filles seront porteuses. C'est ainsi que la maladie saute une génération.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Une mère porteuse saine, un père à vision normale. Aucun des deux n'est daltonien.",
+      "Leurs gamètes : deux types pour la mère, deux pour le père.",
+      "Quatre cases. Une seule est atteinte — et c'est un garçon.",
+      "Un quart des enfants, mais la moitié des garçons. Ce ne sont pas les mêmes ensembles.",
+      "<em>Et la moitié des filles sont porteuses</em> : elles transmettront à leur tour."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI7-06 ==================== -->
+  <section class="slide" data-ref="ANIM-BI7-06" data-title="Les groupes sanguins" data-sub="Trois allèles, une codominance, et la compatibilité" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="68" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Un seul gène, mais trois allèles</text>
+          <g class="step s1"><rect x="22.0" y="92.0" width="426.0" height="260.0" rx="10" fill="#FFFFFF" stroke="#5B21B6" stroke-width="2.2"/><path d="M 32.0,92.0 h 406.0 a10,10 0 0 1 10,10 v 42.0 h -426.0 v -42.0 a10,10 0 0 1 10,-10 z" fill="#5B21B6"/><text x="97.0" y="124.8" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Phénotype</text><text x="310.0" y="124.8" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Génotypes possibles</text><text x="97.0" y="177.8" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">[A]</text><text x="310.0" y="177.8" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">A//A ou A//O</text><line x1="30.0" y1="196.0" x2="440.0" y2="196.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="97.0" y="229.8" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">[B]</text><text x="310.0" y="229.8" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">B//B ou B//O</text><line x1="30.0" y1="248.0" x2="440.0" y2="248.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="97.0" y="281.8" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">[AB]</text><text x="310.0" y="281.8" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">A//B — un seul</text><line x1="30.0" y1="300.0" x2="440.0" y2="300.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="97.0" y="333.8" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">[O]</text><text x="310.0" y="333.8" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">O//O — un seul</text><line x1="172.0" y1="144.0" x2="172.0" y2="346.0" stroke="#E3E7EE" stroke-width="1.2"/></g>
+          <g class="step s2"><rect x="27.0" y="249.0" width="416.0" height="102.0" rx="7" fill="none" stroke="#B45309" stroke-width="3.4"/>
+            <text x="235" y="376" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">[AB] et [O] trahissent leur génotype</text>
+          </g>
+          <g class="step s3">
+            <text x="235" y="400" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">A et B codominants  ·  O récessif devant les deux</text>
+          </g>
+          <g class="step s4">
+            <rect x="20" y="412" width="430" height="32" rx="8" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2"/>
+            <text x="235" y="433" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">(A//O) × (B//O) → les quatre groupes, à parts égales</text>
+          </g>
+          <g class="step s5">
+            <text x="235" y="460" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">deux parents [A] et [B] peuvent avoir un enfant [O]</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'allélie multiple</h3>
+          <p style="font-size:17px">Trois allèles — A, B et O — pour un seul gène. C'est le premier cas où Mendel à deux allèles ne suffit plus.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les deux groupes qui se trahissent</h3>
+          <p style="font-size:17px">[AB] et [O] n'ont qu'<b>un seul génotype possible</b>. Dès qu'on les voit sur un arbre, le génotype est certain — ce sont les points d'entrée de tout raisonnement.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La codominance</h3>
+          <p style="font-size:17px">Chez [AB], aucun allèle n'écrase l'autre. Ce n'est ni un mélange ni une dominance : c'est une <b>double expression</b>. C'est le vrai point nouveau du chapitre.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'erreur classique</h3>
+          <p style="font-size:17px">Croire que deux parents [A] et [B] ne peuvent pas avoir un enfant [O]. S'ils sont A//O et B//O, <b>un quart</b> de leurs enfants sera O//O.</p>
+          <p style="font-size:17px">Un parent [A] peut porter un O caché. En revanche, une mère [O] ne peut <b>jamais</b> avoir un enfant [AB] : elle ne transmet que des O.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Quatre phénotypes, et les génotypes qui les produisent.",
+      "Deux d'entre eux n'ont qu'un seul génotype possible : [AB] et [O].",
+      "A et B sont codominants — ils s'expriment tous les deux. O s'efface devant les deux.",
+      "Deux parents hétérozygotes donnent les quatre groupes, à parts égales.",
+      "<em>D'où ce résultat contre-intuitif</em> : un [A] et un [B] peuvent avoir un enfant [O]."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI7-07 ==================== -->
+  <section class="slide" data-ref="ANIM-BI7-07" data-title="Lire un arbre généalogique" data-sub="Quatre tests d'élimination, dans l'ordre" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="66" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">carré = homme · rond = femme · noirci = atteint</text>
+          <g class="step s1"><rect x="172" y="132" width="34" height="34" fill="#FFFFFF" stroke="#2E1065" stroke-width="2.6"/><circle cx="305" cy="149" r="17" fill="#FFFFFF" stroke="#2E1065" stroke-width="2.6"/><line x1="206" y1="149" x2="288" y2="149" stroke="#8A8F98" stroke-width="2.2"/><line x1="247" y1="149" x2="247" y2="192" stroke="#8A8F98" stroke-width="2.2"/><line x1="129" y1="192" x2="381" y2="192" stroke="#8A8F98" stroke-width="2.2"/><line x1="129" y1="192" x2="129" y2="214" stroke="#8A8F98" stroke-width="2.2"/><rect x="112" y="214" width="34" height="34" fill="#FFFFFF" stroke="#2E1065" stroke-width="2.6"/><text x="129" y="266" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">II-1</text><line x1="213" y1="192" x2="213" y2="214" stroke="#8A8F98" stroke-width="2.2"/><circle cx="213" cy="231" r="17" fill="#2E1065" stroke="#2E1065" stroke-width="2.6"/><text x="213" y="266" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">II-2</text><line x1="297" y1="192" x2="297" y2="214" stroke="#8A8F98" stroke-width="2.2"/><rect x="280" y="214" width="34" height="34" fill="#2E1065" stroke="#2E1065" stroke-width="2.6"/><text x="297" y="266" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">II-3</text><line x1="381" y1="192" x2="381" y2="214" stroke="#8A8F98" stroke-width="2.2"/><circle cx="381" cy="231" r="17" fill="#FFFFFF" stroke="#2E1065" stroke-width="2.6"/><text x="381" y="266" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">II-4</text><text x="189" y="122" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">I-1</text><text x="305" y="122" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">I-2</text></g>
+          <g class="step s2"><rect x="24.0" y="300.0" width="422.0" height="150.0" rx="11" fill="#FFFFFF" stroke="#5B21B6" stroke-width="2.4"/><path d="M 35.0,300.0 h 400.0 a11,11 0 0 1 11,11 v 21.0 h -422.0 v -21.0 a11,11 0 0 1 11,-11 z" fill="#5B21B6"/><text x="235.0" y="321.8" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">les quatre tests, dans cet ordre</text><text x="37.0" y="351.4" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">•</text><text x="54.0" y="351.4" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">2 parents sains, 1 enfant atteint → récessif</text><text x="37.0" y="378.4" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">•</text><text x="54.0" y="378.4" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">2 parents atteints, 1 enfant sain → dominant</text><text x="37.0" y="405.4" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">•</text><text x="54.0" y="405.4" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">fille atteinte, père sain → autosomal</text><text x="37.0" y="432.4" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">•</text><text x="54.0" y="432.4" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">surtout des garçons atteints → lié à l'X (indice)</text></g>
+          <g class="step s3">
+            <rect x="24" y="334" width="422" height="28" rx="7" fill="none" stroke="#B45309" stroke-width="2.6"/>
+          </g>
+          <g class="step s4">
+            <rect x="24" y="388" width="422" height="28" rx="7" fill="none" stroke="#B45309" stroke-width="2.6"/>
+          </g>
+          <g class="step s5">
+            <circle cx="213" cy="231" r="26" fill="none" stroke="#B45309" stroke-width="3.4"/>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La compétence exigée</h3>
+          <p style="font-size:17px">« <b>Retrouver le mécanisme de transmission</b> d'un caractère après avoir examiné un arbre généalogique. » C'est un raisonnement, pas une connaissance.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Test 1 — dominant ou récessif</h3>
+          <p style="font-size:17px">Deux parents <b>non atteints</b> ont des enfants atteints : le caractère est <b>récessif</b>. C'est le test le plus puissant, et il suffit souvent à lui seul.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Test 3 — autosomal ou lié à l'X</h3>
+          <p style="font-size:17px">Une <b>fille atteinte dont le père est sain</b> exclut la liaison à l'X : si le gène y était, elle aurait reçu l'X porteur de son père, qui serait donc atteint.</p>
+          <p style="font-size:17px">Conclusion : <b>autosomal récessif</b>, et les deux parents sont hétérozygotes.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'ordre n'est pas négociable</h3>
+          <p style="font-size:17px">On détermine <b>d'abord</b> dominant ou récessif, <b>ensuite</b> autosomal ou lié au sexe. Dans l'autre sens, on tombe sur des contradictions qu'on met dix minutes à démêler.</p>
+          <p style="font-size:17px">Le test 4 — « surtout des garçons atteints » — n'est qu'un <b>indice</b> statistique. On ne conclut jamais sur lui seul.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un couple sain, quatre enfants — et deux d'entre eux sont atteints.",
+      "Quatre tests, et ils se font dans cet ordre.",
+      "Deux parents sains, des enfants atteints : le caractère est <b>récessif</b>. Premier test, conclu.",
+      "Ensuite seulement : autosomal ou lié à l'X ?",
+      "<em>Une fille atteinte dont le père est sain</em> : l'X est exclu. C'est autosomal."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI7-08 ==================== -->
+  <section class="slide" data-ref="ANIM-BI7-08" data-title="Ce que les gènes ne font pas seuls" data-sub="Génotype, milieu, phénotype" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="74" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Génotype + milieu → phénotype</text>
+          <g class="step s1"><rect x="24.0" y="150.0" width="150.0" height="62.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="99.0" y="177.0" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Génotype</text><text x="99.0" y="199.0" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">le potentiel</text></g>
+          <g class="step s2"><rect x="24.0" y="234.0" width="150.0" height="62.0" rx="12" fill="#FDF3E7" stroke="#B45309" stroke-width="2.6"/><text x="99.0" y="261.0" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">Milieu</text><text x="99.0" y="283.0" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">ce qui se réalise</text><line x1="180.0" y1="181.0" x2="278.0" y2="210.0" stroke="#5B21B6" stroke-width="3.0" stroke-linecap="round" marker-end="url(#v4)"/><line x1="180.0" y1="265.0" x2="278.0" y2="236.0" stroke="#B45309" stroke-width="3.0" stroke-linecap="round" marker-end="url(#r4)"/><rect x="284.0" y="192.0" width="150.0" height="62.0" rx="12" fill="#DFD5F7" stroke="#2E1065" stroke-width="2.6"/><text x="359.0" y="219.0" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Phénotype</text><text x="359.0" y="241.0" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">ce qui se voit</text></g>
+          <g class="step s3">
+            <text x="235" y="330" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">taille, poids, couleur de peau : plusieurs gènes ET le milieu</text>
+          </g>
+          <g class="step s4">
+            <rect x="15" y="348" width="440" height="44" rx="10" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.4"/>
+            <text x="235" y="376" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">deux vrais jumeaux : même génotype, phénotypes différents</text>
+          </g>
+          <g class="step s5">
+            <rect x="24" y="404" width="422" height="56" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="428" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">la phénylcétonurie : un régime suffit</text>
+            <text x="235" y="450" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">le génotype n'a pas changé ; le phénotype, si</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La compétence exigée</h3>
+          <p style="font-size:17px">« <b>Reconnaître les caractères</b> d'une personne qui ne sont pas exclusivement déterminés par les gènes. »</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La relation complète</h3>
+          <p style="font-size:17px">Le génotype fixe un <b>potentiel</b> ; le milieu détermine ce qui s'en réalise. Ni l'un ni l'autre ne suffit.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les caractères multifactoriels</h3>
+          <p style="font-size:17px">Taille, poids, couleur de peau : plusieurs gènes <b>et</b> l'environnement — d'où une variation <b>continue</b>, et non deux catégories tranchées.</p>
+          <p style="font-size:17px">Et l'hortensia donne des fleurs roses ou bleues selon le <b>pH du sol</b>, avec exactement le même génotype.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège de formulation</h3>
+          <p style="font-size:17px">« Ce caractère est héréditaire, donc rien ne peut le modifier » — <b>faux</b>. L'hérédité porte sur le <b>génotype</b>, pas sur le phénotype.</p>
+          <p style="font-size:17px">La <b>phénylcétonurie</b> le prouve : une maladie génétique dont les effets sont presque entièrement évités par un simple régime alimentaire. Un caractère n'est jamais « génétique » ou « acquis » — il est déterminé par le génotype <b>dans un milieu donné</b>.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Le génotype : ce que l'individu porte. Un potentiel, pas un résultat.",
+      "Le milieu s'en mêle, et c'est de leur rencontre que naît le phénotype.",
+      "Taille, poids, couleur de peau : plusieurs gènes, et l'environnement par-dessus.",
+      "Deux vrais jumeaux ont le même génotype — et peuvent différer de dix kilos.",
+      "<em>Et la phénylcétonurie</em> : maladie génétique, effets évités par un régime."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule BI7-B — Arbres généalogiques, groupes sanguins et hérédité liée au sexe · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

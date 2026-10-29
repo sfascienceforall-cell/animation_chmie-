@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule BI1A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#5B21B6;          /* bleu SFA */
+  --deep:#2E1065;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#F1ECFB;         /* bleu 8 % */
+  --tint2:#DFD5F7;        /* bleu 18 % */
+  --surface:#F8F6FC;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-BI1-01 ==================== -->
+  <section class="slide" data-ref="ANIM-BI1-01" data-title="Les critères du vivant" data-sub="Et pourquoi le virus les met en échec" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="68" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Cinq critères, et on les applique</text>
+          <g class="step s1 h2"><rect x="62.0" y="112.0" width="346.0" height="52.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="235.0" y="145.7" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Cellulaire</text><rect x="62.0" y="174.0" width="346.0" height="52.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="235.0" y="207.7" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Métabolisme</text><rect x="62.0" y="236.0" width="346.0" height="52.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="235.0" y="269.7" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Se reproduit</text><rect x="62.0" y="298.0" width="346.0" height="52.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="235.0" y="331.7" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Stimulus</text><rect x="62.0" y="360.0" width="346.0" height="52.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="235.0" y="393.7" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Se maintient</text></g>
+          <g class="step s2"><rect x="18.0" y="108.0" width="434.0" height="288.0" rx="10" fill="#FFFFFF" stroke="#5B21B6" stroke-width="2.2"/><path d="M 28.0,108.0 h 414.0 a10,10 0 0 1 10,10 v 38.0 h -434.0 v -38.0 a10,10 0 0 1 10,-10 z" fill="#5B21B6"/><text x="93.5" y="138.2" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700"></text><text x="216.1" y="138.2" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Cristal</text><text x="310.5" y="138.2" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Bactérie</text><text x="404.8" y="138.2" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Virus</text><text x="93.5" y="187.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Cellulaire</text><text x="216.1" y="187.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">non</text><text x="310.5" y="187.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">oui</text><text x="404.8" y="187.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">non</text><line x1="26.0" y1="204.0" x2="444.0" y2="204.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="93.5" y="235.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Métabolisme</text><text x="216.1" y="235.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">non</text><text x="310.5" y="235.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">oui</text><text x="404.8" y="235.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">non</text><line x1="26.0" y1="252.0" x2="444.0" y2="252.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="93.5" y="283.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Se reproduit</text><text x="216.1" y="283.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">non</text><text x="310.5" y="283.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">oui</text><text x="404.8" y="283.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">oui</text><line x1="26.0" y1="300.0" x2="444.0" y2="300.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="93.5" y="331.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Stimulus</text><text x="216.1" y="331.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">non</text><text x="310.5" y="331.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">oui</text><text x="404.8" y="331.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">non</text><line x1="26.0" y1="348.0" x2="444.0" y2="348.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="93.5" y="379.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Se maintient</text><text x="216.1" y="379.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">non</text><text x="310.5" y="379.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">oui</text><text x="404.8" y="379.2" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">non</text><line x1="169.0" y1="156.0" x2="169.0" y2="390.0" stroke="#E3E7EE" stroke-width="1.2"/><line x1="263.3" y1="156.0" x2="263.3" y2="390.0" stroke="#E3E7EE" stroke-width="1.2"/><line x1="357.7" y1="156.0" x2="357.7" y2="390.0" stroke="#E3E7EE" stroke-width="1.2"/></g>
+          <g class="step s3 h4"><rect x="169.0" y="154.0" width="94.3" height="240.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/>
+            <text x="235" y="434" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">aucun critère : non vivant</text>
+          </g>
+          <g class="step s4 h5"><rect x="263.3" y="154.0" width="94.3" height="240.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/>
+            <text x="235" y="434" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">les cinq : vivante</text>
+          </g>
+          <g class="step s5"><rect x="357.7" y="154.0" width="94.3" height="240.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/>
+            <text x="235" y="434" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">un seul sur cinq : à la frontière</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Une distinction, donc un critère</h3>
+          <p style="font-size:17px">Le programme ne demande pas une définition à réciter : il demande de <b>trancher des cas</b>. On pose donc cinq critères, et on les applique.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le cristal</h3>
+          <p style="font-size:17px">Il <b>grossit</b> dans une solution saturée — mais par simple dépôt. Il n'est pas cellulaire, n'échange rien, ne transmet aucune information et ne se répare pas.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La bactérie</h3>
+          <p style="font-size:17px">Une cellule — sans noyau, mais une cellule. Métabolisme propre, division avec transmission de son ADN, réponse aux stimulus. <b>Les cinq critères.</b></p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le virus, et ce qu'il faut cocher</h3>
+          <p style="font-size:17px">Il porte une information héréditaire et il se multiplie : <b>un seul critère sur cinq</b>. Et encore — il ne se multiplie qu'à l'intérieur d'une cellule qu'il détourne.<br><br><b>Au QCM</b>, la bonne réponse n'est presque jamais « vivant » ou « non vivant », mais une formulation du type « il ne possède pas de métabolisme propre ». C'est le <b>critère</b> qu'on coche, pas le verdict.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Cinq critères. Aucun ne suffit seul ; c'est leur ensemble qui définit le vivant.",
+      "On les met en colonnes, et on fait passer trois cas devant eux.",
+      "Le cristal grossit, mais il ne coche <b>rien</b> : il n'est pas vivant.",
+      "La bactérie coche <b>les cinq</b>. Pas de noyau, mais c'est bien une cellule.",
+      "Le virus n'en coche qu'<b>un</b> : il se reproduit — et seulement dans une cellule hôte."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI1-02 ==================== -->
+  <section class="slide" data-ref="ANIM-BI1-02" data-title="Les quatre familles de biomolécules" data-sub="Quatre familles, quatre fonctions, aucune confusion possible" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="62" text-anchor="middle" font-size="24" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Une famille, une fonction</text>
+          <g class="step s1"><rect x="28.0" y="96.0" width="198.0" height="150.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="127.0" y="167.0" text-anchor="middle" font-size="23" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Glucides</text><text x="127.0" y="189.0" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">l'énergie immédiate</text></g>
+          <g class="step s2"><rect x="244.0" y="96.0" width="198.0" height="150.0" rx="12" fill="#F1ECFB" stroke="#B45309" stroke-width="2.6"/><text x="343.0" y="167.0" text-anchor="middle" font-size="23" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Lipides</text><text x="343.0" y="189.0" text-anchor="middle" font-size="12" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">les membranes, les réserves</text></g>
+          <g class="step s3"><rect x="28.0" y="264.0" width="198.0" height="150.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="127.0" y="335.0" text-anchor="middle" font-size="23" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Protéines</text><text x="127.0" y="357.0" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">l'outil : enzymes, transport</text></g>
+          <g class="step s4"><rect x="244.0" y="264.0" width="198.0" height="150.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="343.0" y="335.0" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Acides nucléiques</text><text x="343.0" y="357.0" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">l'information</text></g>
+          <g class="step s5">
+            <rect x="28" y="426" width="414" height="36" rx="9" fill="#DFD5F7"/>
+            <text x="235" y="451" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">le critère du lipide : insoluble dans l'eau</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les glucides</h3>
+          <p style="font-size:17px">L'énergie immédiate, et le matériau de structure des végétaux. Formule générale C<sub>n</sub>(H₂O)<sub>n</sub> — d'où le vieux nom d'hydrate de carbone.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les lipides</h3>
+          <p style="font-size:17px">La réserve dense, et le constituant des membranes. Leur signe distinctif est <b>négatif</b> : ils ne sont pas solubles dans l'eau.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les protéines, puis les acides nucléiques</h3>
+          <p style="font-size:17px">La <b>protéine</b> est l'outil : enzyme, transport, soutien, défense, mouvement — et sa forme fait sa fonction. L'<b>acide nucléique</b> est l'information : ADN et ARN, rien d'autre.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège de vocabulaire</h3>
+          <p style="font-size:17px">« Lipide » n'est pas « graisse ». Le <b>cholestérol</b> et les stéroïdes sont des lipides, et ne ressemblent à aucune huile.<br><br>Le critère est la <b>solubilité</b>, jamais l'aspect — et le concours propose justement un lipide qui n'a pas l'air d'en être un.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Les glucides : l'énergie tout de suite disponible.",
+      "Les lipides : les membranes et les réserves — et ils fuient l'eau.",
+      "Les protéines : l'outil polyvalent de la cellule.",
+      "Les acides nucléiques : l'information, et rien d'autre.",
+      "<em>Le critère du lipide est négatif</em> : insoluble dans l'eau. Pas « gras à l'œil »."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI1-03 ==================== -->
+  <section class="slide" data-ref="ANIM-BI1-03" data-title="Du monomère au polymère" data-sub="La même logique d'assemblage, répétée quatre fois" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <g class="step s1 h5">
+            <text x="235" y="76" text-anchor="middle" font-size="23" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Trois monomères, séparés</text>
+            <circle cx="118" cy="168" r="38" fill="#F1ECFB" stroke="#5B21B6" stroke-width="3"/><text x="118" y="175" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">A</text><circle cx="235" cy="168" r="38" fill="#F1ECFB" stroke="#5B21B6" stroke-width="3"/><text x="235" y="175" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">B</text><circle cx="352" cy="168" r="38" fill="#F1ECFB" stroke="#5B21B6" stroke-width="3"/><text x="352" y="175" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">C</text>
+          </g>
+          <g class="step s2 h5"><line x1="156.0" y1="168" x2="197.0" y2="168" stroke="#2E1065" stroke-width="5" stroke-linecap="round"/><line x1="273.0" y1="168" x2="314.0" y2="168" stroke="#2E1065" stroke-width="5" stroke-linecap="round"/>
+            <text x="176.5" y="128" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">− H₂O</text>
+            <text x="293.5" y="128" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">− H₂O</text>
+            <text x="235" y="268" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">condensation : on perd de l'eau, on construit</text>
+          </g>
+          <g class="step s3 h5">
+            <text x="176.5" y="218" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">+ H₂O</text>
+            <text x="293.5" y="218" text-anchor="middle" font-size="21" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">+ H₂O</text>
+            <text x="235" y="312" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">hydrolyse : on ajoute de l'eau, on détruit</text>
+          </g>
+          <g class="step s4 h5">
+            <rect x="35" y="348" width="400" height="44" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="377" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">c'est exactement ce que fait la digestion</text>
+          </g>
+          <g class="step s5">
+            <text x="235" y="196" text-anchor="middle" font-size="23" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">La même logique, quatre fois</text>
+            <rect x="14.0" y="224.0" width="442.0" height="230.0" rx="10" fill="#FFFFFF" stroke="#5B21B6" stroke-width="2.2"/><path d="M 24.0,224.0 h 422.0 a10,10 0 0 1 10,10 v 36.0 h -442.0 v -36.0 a10,10 0 0 1 10,-10 z" fill="#5B21B6"/><text x="112.2" y="253.0" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Famille</text><text x="271.8" y="253.0" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Monomère</text><text x="394.6" y="253.0" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">Polymère</text><text x="112.2" y="299.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Glucides</text><text x="271.8" y="299.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">glucose</text><text x="394.6" y="299.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">amidon</text><line x1="22.0" y1="316.0" x2="448.0" y2="316.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="112.2" y="345.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Protéines</text><text x="271.8" y="345.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">acide aminé</text><text x="394.6" y="345.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">protéine</text><line x1="22.0" y1="362.0" x2="448.0" y2="362.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="112.2" y="391.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Acides nucléiques</text><text x="271.8" y="391.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">nucléotide</text><text x="394.6" y="391.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">ADN, ARN</text><line x1="22.0" y1="408.0" x2="448.0" y2="408.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="112.2" y="437.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Lipides</text><text x="271.8" y="437.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">acide gras</text><text x="394.6" y="437.9" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">aucun</text><line x1="210.4" y1="270.0" x2="210.4" y2="448.0" stroke="#E3E7EE" stroke-width="1.2"/><line x1="333.2" y1="270.0" x2="333.2" y2="448.0" stroke="#E3E7EE" stroke-width="1.2"/>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Un polymère est une chaîne</h3>
+          <p style="font-size:17px">Des petites molécules identiques, les <b>monomères</b>, assemblées bout à bout. Glucose → amidon. Acide aminé → protéine. Nucléotide → ADN.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Assembler : la condensation</h3>
+          <p style="font-size:17px">On relie deux monomères en <b>retirant une molécule d'eau</b>. Une liaison se forme, l'eau part.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Démolir : l'hydrolyse</h3>
+          <p style="font-size:17px">L'inverse exact : on coupe la liaison en <b>ajoutant une molécule d'eau</b>. <i>Hydro-lyse</i> : couper par l'eau.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce qu'il faut retenir, et l'exception</h3>
+          <p style="font-size:17px">Condensation = on perd de l'eau = on <b>construit</b>. Hydrolyse = on ajoute de l'eau = on <b>détruit</b>. Les deux mots tombent au QCM, et sont inversés une fois sur deux.<br><br><b>L'exception :</b> les lipides ne sont pas de vrais polymères. Un triglycéride est un assemblage <b>fixe</b> de trois acides gras, pas une chaîne qu'on allonge.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Trois monomères, encore séparés.",
+      "On les relie en retirant une molécule d'eau à chaque liaison : c'est la <b>condensation</b>.",
+      "Pour démolir, on fait l'inverse : on <b>ajoute</b> une molécule d'eau. C'est l'hydrolyse.",
+      "Et c'est exactement ce que fait la digestion — rien d'autre.",
+      "La même logique vaut pour les quatre familles. <em>Sauf les lipides</em>, qui ne forment pas de chaîne."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI1-04 ==================== -->
+  <section class="slide" data-ref="ANIM-BI1-04" data-title="L'échelle du vivant" data-sub="Du nanomètre au mètre, en puissances de dix" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="54" text-anchor="middle" font-size="23" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Neuf puissances de dix</text>
+          <g class="step s1">
+            <line x1="36" y1="300" x2="444" y2="300" stroke="#8A8F98" stroke-width="2.4"/>
+            <line x1="50.0" y1="293" x2="50.0" y2="307" stroke="#8A8F98" stroke-width="1.4"/><line x1="92.2" y1="293" x2="92.2" y2="307" stroke="#8A8F98" stroke-width="1.4"/><line x1="134.4" y1="293" x2="134.4" y2="307" stroke="#8A8F98" stroke-width="1.4"/><line x1="176.7" y1="293" x2="176.7" y2="307" stroke="#8A8F98" stroke-width="1.4"/><line x1="218.9" y1="293" x2="218.9" y2="307" stroke="#8A8F98" stroke-width="1.4"/><line x1="261.1" y1="293" x2="261.1" y2="307" stroke="#8A8F98" stroke-width="1.4"/><line x1="303.3" y1="293" x2="303.3" y2="307" stroke="#8A8F98" stroke-width="1.4"/><line x1="345.6" y1="293" x2="345.6" y2="307" stroke="#8A8F98" stroke-width="1.4"/><line x1="387.8" y1="293" x2="387.8" y2="307" stroke="#8A8F98" stroke-width="1.4"/><line x1="430.0" y1="293" x2="430.0" y2="307" stroke="#8A8F98" stroke-width="1.4"/><line x1="50.0" y1="289" x2="50.0" y2="311" stroke="#2E1065" stroke-width="2.6"/><text x="50.0" y="336" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">1 nm</text><line x1="176.7" y1="289" x2="176.7" y2="311" stroke="#2E1065" stroke-width="2.6"/><text x="176.7" y="336" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">1 µm</text><line x1="303.3" y1="289" x2="303.3" y2="311" stroke="#2E1065" stroke-width="2.6"/><text x="303.3" y="336" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">1 mm</text><line x1="430.0" y1="289" x2="430.0" y2="311" stroke="#2E1065" stroke-width="2.6"/><text x="430.0" y="336" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">1 m</text>
+          </g>
+          <g class="step s2"><line x1="50.0" y1="300" x2="50.0" y2="208" stroke="#5B21B6" stroke-width="2.2" stroke-dasharray="5 4"/><circle cx="50.0" cy="300" r="6" fill="#5B21B6"/><text x="68.6" y="176" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">une molécule</text><text x="68.6" y="200" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">1 nm</text><line x1="134.4" y1="300" x2="134.4" y2="364" stroke="#5B21B6" stroke-width="2.2" stroke-dasharray="5 4"/><circle cx="134.4" cy="300" r="6" fill="#5B21B6"/><text x="134.4" y="386" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">un virus</text><text x="134.4" y="407" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">100 nm</text></g>
+          <g class="step s3"><line x1="189.4" y1="300" x2="189.4" y2="208" stroke="#5B21B6" stroke-width="2.2" stroke-dasharray="5 4"/><circle cx="189.4" cy="300" r="6" fill="#5B21B6"/><text x="189.4" y="176" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">une bactérie</text><text x="189.4" y="200" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">2 µm</text></g>
+          <g class="step s4"><line x1="248.4" y1="300" x2="248.4" y2="364" stroke="#5B21B6" stroke-width="2.2" stroke-dasharray="5 4"/><circle cx="248.4" cy="300" r="6" fill="#5B21B6"/><text x="248.4" y="386" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">une cellule animale</text><text x="248.4" y="407" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">50 µm</text></g>
+          <g class="step s5"><line x1="365.7" y1="300" x2="365.7" y2="208" stroke="#5B21B6" stroke-width="2.2" stroke-dasharray="5 4"/><circle cx="365.7" cy="300" r="6" fill="#5B21B6"/><text x="365.7" y="176" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">un œuf de poule</text><text x="365.7" y="200" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">3 cm</text>
+            <rect x="24" y="424" width="422" height="38" rx="9" fill="#DFD5F7"/>
+            <text x="235" y="450" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">×10 en longueur, c'est ×1000 en volume</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Trois crans de mille en mille</h3>
+          <div class="expr" style="font-size:20px;text-align:left;line-height:1.5">1 mm = 10⁻³ m<br>1 µm = 10⁻⁶ m<br>1 nm = 10⁻⁹ m</div></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les ordres de grandeur à connaître</h3>
+          <p style="font-size:17px">Molécule ≈ 1 nm · virus ≈ 100 nm · bactérie ≈ 1 à 10 µm · cellule animale ≈ 10 à 100 µm. Et l'œuf de poule, cellule géante, ≈ 3 cm.</p></div>
+        <div class="card step s5" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le rapport qui explique les organites</h3>
+          <p style="font-size:17px">D'une bactérie à une cellule animale, il y a un facteur 10 en longueur — donc <b>1000 en volume</b>. Au-delà d'une certaine taille, la diffusion seule ne suffit plus : il faut des compartiments.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le calcul, sans calculatrice</h3>
+          <p style="font-size:17px">« Combien de bactéries de 2 µm sur 1 mm ? » On ne divise pas, on <b>soustrait les exposants</b> :<br>10⁻³ ÷ (2 × 10⁻⁶) = 0,5 × 10³ = <b>500</b>.<br><br>C'est la notation scientifique de la capsule A1 des mathématiques, et c'est la seule méthode tenable au concours.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Un axe, neuf puissances de dix : du nanomètre au mètre.",
+      "La molécule au départ, puis le virus — cent fois plus grand.",
+      "La bactérie, autour de deux micromètres.",
+      "La cellule animale : encore vingt fois plus.",
+      "Et l'œuf de poule, une cellule unique de trois centimètres. <em>×10 en longueur, ×1000 en volume.</em>"
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule BI1-A — Le vivant, le non-vivant, et de quoi le vivant est fait · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

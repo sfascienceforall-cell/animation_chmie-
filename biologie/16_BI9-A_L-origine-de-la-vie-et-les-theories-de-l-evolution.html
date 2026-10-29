@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule BI9A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#5B21B6;          /* bleu SFA */
+  --deep:#2E1065;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#F1ECFB;         /* bleu 8 % */
+  --tint2:#DFD5F7;        /* bleu 18 % */
+  --surface:#F8F6FC;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-BI9-01 ==================== -->
+  <section class="slide" data-ref="ANIM-BI9-01" data-title="Les conditions d'émergence de la vie" data-sub="De la soupe primitive à la première cellule" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="70" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Terre : 4,5 Ga  ·  première vie : 3,8 Ga</text>
+          <g class="step s1"><rect x="24.0" y="96.0" width="422.0" height="132.0" rx="11" fill="#FFFFFF" stroke="#5B21B6" stroke-width="2.4"/><path d="M 35.0,96.0 h 400.0 a11,11 0 0 1 11,11 v 21.0 h -422.0 v -21.0 a11,11 0 0 1 11,-11 z" fill="#5B21B6"/><text x="235.0" y="117.8" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">les conditions réunies</text><text x="37.0" y="149.6" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">•</text><text x="54.0" y="149.6" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">de l'eau liquide</text><text x="37.0" y="179.6" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">•</text><text x="54.0" y="179.6" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">une source d'énergie : éclairs, volcanisme, UV</text><text x="37.0" y="209.6" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">•</text><text x="54.0" y="209.6" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">une atmosphère SANS dioxygène</text></g>
+          <g class="step s2"><ellipse cx="128" cy="298" rx="58" ry="46" fill="#F1ECFB" stroke="#5B21B6" stroke-width="3"/><text x="128" y="294" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">CH₄ · NH₃</text><text x="128" y="314" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">H₂ · H₂O</text><path d="M 128,252 l -14,24 h 12 l -10,22 26,-30 h -12 z" fill="#B45309"/></g>
+          <g class="step s3"><line x1="192.0" y1="298.0" x2="246.0" y2="298.0" stroke="#5B21B6" stroke-width="3.4" stroke-linecap="round" marker-end="url(#v1)"/><rect x="252.0" y="270.0" width="196.0" height="56.0" rx="12" fill="#DFD5F7" stroke="#2E1065" stroke-width="2.6"/><text x="350.0" y="294.0" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">acides aminés</text><text x="350.0" y="316.0" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">obtenus en une semaine</text></g>
+          <g class="step s4">
+            <text x="235" y="408" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">des briques, pas un édifice</text>
+          </g>
+          <g class="step s5">
+            <rect x="24" y="420" width="422" height="40" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="446" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">sans O₂ — sinon tout serait détruit à mesure</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le décor</h3>
+          <p style="font-size:17px">Terre formée il y a environ <b>4,5 milliards d'années</b>, premières traces de vie vers <b>3,8</b>. Une atmosphère sans dioxygène, riche en méthane, ammoniac, hydrogène et vapeur d'eau.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'expérience de Miller, 1953</h3>
+          <p style="font-size:17px">On reconstitue cette atmosphère dans un ballon, on y fait passer des décharges électriques — et l'on obtient en quelques jours des <b>acides aminés</b>.</p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce qu'elle démontre</h3>
+          <p style="font-size:17px">Que les <b>briques du vivant</b> peuvent se former spontanément dans des conditions non biologiques. Rien de plus — elle ne fabrique pas de cellule.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le piège, et une boucle qui se referme</h3>
+          <p style="font-size:17px">Dire que Miller « a créé la vie » est faux, et c'est une proposition de QCM fréquente. Entre un acide aminé et une cellule capable de se répliquer, il manque les protéines, l'information héréditaire et une membrane.</p>
+          <p style="font-size:17px">Et l'absence d'O₂ est <b>indispensable</b> : oxydant puissant, il détruirait les molécules organiques à mesure. C'est la vie elle-même, par la photosynthèse, qui l'a introduit — <b>elle ne pourrait plus apparaître aujourd'hui</b>.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Trois conditions, et la troisième est celle qu'on oublie : pas de dioxygène.",
+      "Miller reconstitue cette atmosphère dans un ballon, et y fait passer des éclairs.",
+      "En une semaine : des <b>acides aminés</b>. Formés sans aucun être vivant.",
+      "Mais ce sont des briques, pas un édifice. Il manque tout le reste.",
+      "<em>Et sans O₂</em> : avec, ces molécules seraient détruites à mesure qu'elles se forment."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI9-02 ==================== -->
+  <section class="slide" data-ref="ANIM-BI9-02" data-title="Lamarck, Darwin, néodarwinisme" data-sub="Même girafe, trois mécanismes incompatibles" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="70" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Une même observation, trois mécanismes</text>
+          <text x="235" y="100" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#8A8F98">les girafes ont un long cou — pourquoi ?</text>
+          <g class="step s1"><rect x="25.0" y="116.0" width="420.0" height="66.0" rx="12" fill="#FDF3E7" stroke="#B45309" stroke-width="2.6"/><text x="235.0" y="145.0" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">Lamarck</text><text x="235.0" y="167.0" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">le besoin crée l'organe</text></g>
+          <g class="step s2"><rect x="25.0" y="192.0" width="420.0" height="66.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="235.0" y="221.0" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">Darwin</text><text x="235.0" y="243.0" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">le milieu trie ce qui existe déjà</text></g>
+          <g class="step s3"><rect x="25.0" y="268.0" width="420.0" height="66.0" rx="12" fill="#E4F2EA" stroke="#0F7A4F" stroke-width="2.6"/><text x="235.0" y="297.0" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#0F7A4F" font-weight="700">Néodarwinisme</text><text x="235.0" y="319.0" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">les mutations fournissent la variation</text></g>
+          <g class="step s4">
+            <rect x="24" y="344" width="422" height="52" rx="10" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/>
+            <text x="235" y="366" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">la divergence est chronologique</text>
+            <text x="235" y="386" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">la variation vient-elle avant ou après le besoin ?</text>
+          </g>
+          <g class="step s5">
+            <rect x="24" y="404" width="422" height="58" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="428" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">Lamarck : la variation naît du besoin</text>
+            <text x="235" y="452" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">Darwin : elle existait déjà, indépendamment</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Lamarck, 1809</h3>
+          <p style="font-size:17px">L'usage développe un organe, le non-usage l'atrophie — et ces caractères <b>acquis</b> se transmettent.</p>
+          <p style="font-size:17px">La girafe tend le cou, son cou s'allonge, ses petits naissent avec un cou plus long. <b>Le besoin crée l'organe.</b></p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Darwin, 1859</h3>
+          <p style="font-size:17px">Les individus <b>varient</b> ; ils engendrent plus de descendants que le milieu n'en peut nourrir ; les mieux adaptés survivent et se reproduisent davantage.</p>
+          <p style="font-size:17px">Les cous longs et courts <b>existaient déjà</b>. <b>Le milieu trie, il ne crée pas.</b></p></div>
+        <div class="card step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le néodarwinisme</h3>
+          <p style="font-size:17px">Il ajoute à Darwin ce qui lui manquait : l'<b>origine de la variation</b>. Elle vient des <b>mutations</b> — aléatoires — et des brassages de la méiose. Darwin ignorait la génétique, qui lui était contemporaine mais inconnue.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La question réellement posée au concours</h3>
+          <p style="font-size:17px">Elle tient en une phrase : <b>la variation est-elle antérieure ou postérieure au besoin ?</b></p>
+          <p style="font-size:17px">Chez Lamarck elle apparaît <b>parce qu'elle est utile</b> ; chez Darwin elle existe <b>avant</b> et <b>indépendamment</b> de son utilité. Tout le reste est du décor autour de cette question.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Lamarck : la girafe tend le cou, il s'allonge, et ses petits en héritent.",
+      "Darwin : les cous longs existaient déjà. Ils ont simplement mieux survécu.",
+      "Le néodarwinisme ajoute l'origine de cette variation : les mutations.",
+      "Et la divergence tient en une question de chronologie.",
+      "<em>Avant ou après le besoin ?</em> C'est là, et nulle part ailleurs, que tout se joue."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI9-03 ==================== -->
+  <section class="slide" data-ref="ANIM-BI9-03" data-title="La sélection naturelle en quatre temps" data-sub="Variation, pression, survie différentielle, transmission" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <g class="step s1"><rect x="25.0" y="96.0" width="420.0" height="62.0" rx="12" fill="#FDF3E7" stroke="#B45309" stroke-width="2.6"/><text x="235.0" y="123.0" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">1 · la variation préexiste</text><text x="235.0" y="145.0" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">elle est aléatoire, sans rapport avec le besoin</text></g>
+          <g class="step s2"><rect x="25.0" y="172.0" width="420.0" height="62.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="235.0" y="199.0" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">2 · une pression s'exerce</text><text x="235.0" y="221.0" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">prédateur, climat, maladie, ressource rare</text></g>
+          <g class="step s3"><rect x="25.0" y="248.0" width="420.0" height="62.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="235.0" y="275.0" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">3 · la survie est différentielle</text><text x="235.0" y="297.0" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">les avantagés se reproduisent davantage</text></g>
+          <g class="step s4"><rect x="25.0" y="324.0" width="420.0" height="62.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="235.0" y="351.0" text-anchor="middle" font-size="19" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">4 · la transmission</text><text x="235.0" y="373.0" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">leurs allèles deviennent plus fréquents</text></g>
+          <g class="step s5">
+            <rect x="24" y="400" width="422" height="58" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="424" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">« l'espèce s'est adaptée » est une phrase fausse</text>
+            <text x="235" y="446" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">c'est la composition de la population qui change</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Premier temps, et le plus important</h3>
+          <p style="font-size:17px">La variation <b>préexiste</b>. Dans toute population, les individus diffèrent — par mutation et par brassage. Cette variation est <b>aléatoire</b> et sans rapport avec le besoin.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Deuxième et troisième</h3>
+          <p style="font-size:17px">Une <b>pression de sélection</b> s'exerce : quelque chose fait que tous ne survivent pas également. Les porteurs du caractère avantageux <b>dans ce milieu-là</b> se reproduisent davantage.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">L'exemple de référence</h3>
+          <p style="font-size:17px">La <b>phalène du bouleau</b>. Avant l'industrialisation, les papillons clairs se confondaient avec les troncs ; quand la suie les a noircis, les sombres sont devenus majoritaires — puis l'inverse quand l'air s'est assaini.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les deux formulations à bannir</h3>
+          <p style="font-size:17px">« L'espèce s'est adaptée » et « les individus ont muté pour survivre ».</p>
+          <p style="font-size:17px">Un <b>individu ne s'adapte pas</b> : il est adapté ou il ne l'est pas, et il le reste toute sa vie. C'est la <b>composition de la population</b> qui change d'une génération à l'autre. Et la mutation ne vient <b>jamais</b> après le besoin.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Premier temps : la variation est déjà là. Elle est aléatoire, et elle ne vise rien.",
+      "Deuxième : une pression s'exerce — un prédateur, un climat, une maladie.",
+      "Troisième : tous ne survivent pas également. Les avantagés se reproduisent davantage.",
+      "Quatrième : leurs allèles deviennent plus fréquents à la génération suivante.",
+      "<em>Et la formulation compte</em> : ce n'est pas l'individu qui change, c'est la population."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI9-04 ==================== -->
+  <section class="slide" data-ref="ANIM-BI9-04" data-title="Les cinq familles d'arguments" data-sub="Ce que chacune prouve, et ce qu'elle ne prouve pas" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="76" text-anchor="middle" font-size="20" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Cinq disciplines, une seule conclusion</text>
+          <g class="step s1"><rect x="20.0" y="104.0" width="430.0" height="348.0" rx="10" fill="#FFFFFF" stroke="#5B21B6" stroke-width="2.2"/><path d="M 30.0,104.0 h 410.0 a10,10 0 0 1 10,10 v 48.0 h -430.0 v -48.0 a10,10 0 0 1 10,-10 z" fill="#5B21B6"/><text x="100.0" y="140.5" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">La famille</text><text x="315.0" y="140.5" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">L'exemple de référence</text><text x="100.0" y="199.7" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Paléontologique</text><text x="315.0" y="199.7" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">des formes intermédiaires datées</text><line x1="28.0" y1="220.0" x2="442.0" y2="220.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="100.0" y="257.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Anatomique</text><text x="315.0" y="257.7" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">le membre antérieur des vertébrés</text><line x1="28.0" y1="278.0" x2="442.0" y2="278.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="100.0" y="315.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Embryologique</text><text x="315.0" y="315.7" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">les arcs branchiaux des embryons</text><line x1="28.0" y1="336.0" x2="442.0" y2="336.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="100.0" y="373.7" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Biogéographique</text><text x="315.0" y="373.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">les marsupiaux d'Australie</text><line x1="28.0" y1="394.0" x2="442.0" y2="394.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="100.0" y="431.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Génétique</text><text x="315.0" y="431.7" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">le code génétique est universel</text><line x1="180.0" y1="162.0" x2="180.0" y2="446.0" stroke="#E3E7EE" stroke-width="1.2"/></g>
+          <g class="step s2 h3"><rect x="25.0" y="163.0" width="420.0" height="56.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/></g>
+          <g class="step s3 h4"><rect x="25.0" y="221.0" width="420.0" height="56.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/></g>
+          <g class="step s4 h5"><rect x="25.0" y="279.0" width="420.0" height="114.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/></g>
+          <g class="step s5"><rect x="25.0" y="395.0" width="420.0" height="56.0" rx="7" fill="none" stroke="#B45309" stroke-width="3.4"/></g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Paléontologique</h3>
+          <p style="font-size:17px">Les fossiles montrent une succession de formes dans le temps, et des formes <b>intermédiaires</b>. C'est la seule famille qui donne accès à la <b>chronologie</b>.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Anatomique</h3>
+          <p style="font-size:17px">Les <b>organes homologues</b> : même plan d'organisation sous des fonctions différentes. Le membre antérieur du cheval, de la chauve-souris, de la baleine et de l'homme — os pour os.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Embryologique et biogéographique</h3>
+          <p style="font-size:17px">Les embryons de vertébrés se ressemblent bien plus que les adultes. Et la répartition des espèces s'explique par l'histoire des continents — les <b>marsupiaux d'Australie</b>, isolés par la dérive.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Génétique, et la force de l'ensemble</h3>
+          <p style="font-size:17px">Le code génétique est <b>universel</b>, et les séquences d'ADN sont d'autant plus proches que les espèces le sont. C'est l'argument le plus récent et le plus quantitatif.</p>
+          <p style="font-size:17px">Mais <b>aucune famille ne suffit seule</b>. La force de l'ensemble vient de son <b>indépendance</b> : cinq disciplines sans rapport entre elles, qui concordent.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Cinq familles d'arguments, et un exemple de référence pour chacune.",
+      "Paléontologique : des formes intermédiaires, et datées. La seule à donner le temps.",
+      "Anatomique : les mêmes os, sous quatre fonctions différentes.",
+      "Embryologique et biogéographique : les arcs branchiaux, les marsupiaux d'Australie.",
+      "<em>Génétique</em> : le code est universel. Et c'est leur concordance qui fait preuve."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule BI9-A — L'origine de la vie et les théories de l'évolution · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>

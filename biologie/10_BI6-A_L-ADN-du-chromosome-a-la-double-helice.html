@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SFA — Animations capsule BI6A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* ===================== CHARTE SFA ===================== */
+:root{
+  --sfa:#5B21B6;          /* bleu SFA */
+  --deep:#2E1065;         /* bleu profond */
+  --ink:#111111;          /* noir */
+  --ink2:#3F3F46;         /* gris de lecture */
+  --grey:#8A8F98;         /* gris léger */
+  --bg:#FFFFFF;
+  --tint:#F1ECFB;         /* bleu 8 % */
+  --tint2:#DFD5F7;        /* bleu 18 % */
+  --surface:#F8F6FC;
+  --rule:#E3E7EE;
+  --font:"Be Vietnam Pro","Segoe UI",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body,body *{font-feature-settings:"frac" 0,"afrc" 0,"dlig" 0,"hlig" 0}
+html,body{height:100%;background:#0E1116;overflow:hidden;font-family:var(--font)}
+
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{flex:none;width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;
+  transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.55)}
+
+/* zone réservée au médaillon visage (haut-gauche) */
+#safe{position:absolute;left:0;top:0;width:340px;height:200px;pointer-events:none}
+body.guides #safe{outline:2px dashed rgba(29,78,216,.45);outline-offset:-8px}
+body.guides #safe::after{content:"zone médaillon visage";position:absolute;left:16px;bottom:12px;
+  font-size:12px;font-weight:600;color:var(--sfa);letter-spacing:.1em;text-transform:uppercase}
+body.guides .body{outline:1px dashed rgba(138,143,152,.5)}
+
+/* ===================== LOGO SFA (chaque page) ===================== */
+/* REMPLACER PAR LE VRAI LOGO : <img src="logo-sfa.svg" style="height:44px"> */
+.logo{position:absolute;right:56px;top:44px;display:flex;align-items:center;gap:13px;z-index:5}
+.logo .mark{width:44px;height:44px;border-radius:10px;background:var(--sfa);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;letter-spacing:.03em}
+.logo b{display:block;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.logo span{display:block;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--grey)}
+
+/* ===================== ENTÊTE ===================== */
+.head{position:absolute;left:380px;top:48px;right:300px;height:130px}
+.head .ref{font-size:12px;font-weight:700;letter-spacing:.24em;color:var(--sfa);display:block;margin-bottom:9px}
+.head h1{font-size:38px;line-height:1.08;letter-spacing:-.02em;font-weight:700;color:var(--ink)}
+.head .sub{margin-top:7px;font-size:18px;font-weight:400;color:var(--ink2)}
+
+/* ===================== CORPS ===================== */
+.body{position:absolute;left:88px;right:88px;top:206px;bottom:152px}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.slide.on{opacity:1;pointer-events:auto}
+.mid{height:100%;display:flex;align-items:stretch}
+.split{display:flex;gap:44px;width:100%;align-items:stretch}
+.split>.col{align-self:stretch}
+.split>.col:first-child{align-items:center}
+.split>.col:first-child>svg{width:100%;height:auto;max-height:100%}
+.col{min-width:0}
+
+/* ===================== PIED ===================== */
+.foot{position:absolute;left:88px;right:88px;bottom:52px;height:88px;
+  border-top:1px solid var(--rule);padding-top:20px;display:flex;align-items:flex-start;gap:28px}
+.caption{flex:1;font-size:21px;line-height:1.45;color:var(--ink2);font-weight:400}
+.caption b{color:var(--ink);font-weight:600}
+.caption em{font-style:normal;color:var(--deep);font-weight:700}
+.dots{display:flex;gap:7px;flex:none;padding-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#D5DAE3;transition:.2s}
+.dot.on{background:var(--sfa);transform:scale(1.4)}
+.counter{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--grey);flex:none;padding-top:5px;width:52px;text-align:right}
+
+/* ===================== ANIMATION : apparition / disparition ===================== */
+.step{opacity:0;transition:opacity .28s ease, transform .32s ease}
+.step.on{opacity:1}
+.rise{transform:translateY(12px)} .rise.on{transform:translateY(0)}
+.gone{display:none !important}
+
+/* ===================== BLOCS ===================== */
+.expr{font-size:44px;font-weight:500;color:var(--ink);text-align:center;line-height:1.5;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.expr sup{font-size:.58em;vertical-align:super;line-height:0}
+.expr .hl{background:var(--tint2);border-radius:8px;padding:3px 11px}
+.expr .res{color:var(--sfa);font-weight:700}
+.arr{text-align:center;font-size:22px;color:var(--grey);line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:19px 24px}
+.card h3{font-size:19px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em;color:var(--ink)}
+.card p,.card li{font-size:18px;line-height:1.48;color:var(--ink2)}
+.card.acc{background:var(--tint);border-color:var(--tint2)}
+.card.deep{background:var(--deep);border-color:var(--deep)}
+.card.deep h3{color:#fff}
+.card.deep p,.card.deep li{color:#C9D6F5}
+.card.deep b{color:#fff}
+.ol{list-style:none}
+.ol li{padding:3px 0}
+.ol li b{color:var(--sfa);font-weight:700;margin-right:8px}
+
+.kv{text-align:center}
+.kv .l{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.kv .v{font-size:36px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v sup{font-size:.58em;vertical-align:super;line-height:0}
+.kv.on-deep .l{color:#8FA9E8} .kv.on-deep .v{color:#fff}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* blocs de facteurs */
+.blocks{display:flex;gap:7px;justify-content:center;align-items:center}
+.blk{width:42px;height:42px;border-radius:8px;background:var(--tint);border:2px solid var(--sfa);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--sfa)}
+.blk.d{background:var(--tint2);border-color:var(--deep);color:var(--deep)}
+.blocks .x{font-size:22px;color:var(--grey);margin:0 6px;font-weight:600}
+
+/* ===================== DIVISION EUCLIDIENNE (grille alignée) ===================== */
+.div{display:grid;grid-template-columns:repeat(4,128px) 26px 1fr;
+  align-items:center;font-size:26px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;row-gap:0}
+.div .c{text-align:right;padding:5px 10px}
+.div .c sup{font-size:.58em;vertical-align:super;line-height:0}
+.div .neg{color:var(--sfa)}
+.div .bar{grid-column:6;border-left:2px solid var(--rule);align-self:stretch}
+.div .vl{grid-column:5;border-left:2px solid var(--rule);align-self:stretch;min-height:34px}
+.div .q{grid-column:6;padding-left:22px;color:var(--sfa);font-weight:700;text-align:left}
+.div .rule{height:2px;background:var(--ink);border-radius:2px;margin:3px 8px 6px}
+.div .zero{color:var(--sfa);font-weight:700}
+
+/* ===================== BARRES ===================== */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:54px;height:236px}
+.barwrap{width:132px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar{width:100%;background:var(--sfa);border-radius:10px 10px 0 0;transition:height .55s cubic-bezier(.4,0,.2,1)}
+.bar.d{background:var(--deep)}
+.barwrap .v{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.barlbl{display:flex;justify-content:center;gap:54px;margin-top:14px}
+.barlbl div{width:132px;text-align:center;font-size:16px;color:var(--grey);font-weight:500}
+.opwrap{width:96px;display:flex;align-items:center;justify-content:center;height:100%;padding-bottom:82px}
+.op{font-size:20px;font-weight:700;color:var(--sfa);background:var(--tint);padding:8px 14px;border-radius:9px;
+  font-variant-numeric:tabular-nums}
+
+/* ===================== AIDE / SOMMAIRE ===================== */
+#help{position:absolute;right:56px;bottom:22px;font-size:12px;font-weight:500;color:var(--grey);z-index:6;letter-spacing:.04em}
+#toc{position:fixed;inset:0;background:rgba(10,17,22,.96);color:#fff;display:none;z-index:20;padding:80px 110px;overflow:auto}
+#toc.on{display:block}
+#toc h2{font-size:28px;font-weight:700;margin-bottom:28px}
+#toc li{list-style:none;font-size:19px;padding:13px 0;border-bottom:1px solid #232A36;cursor:pointer;font-weight:500}
+#toc li:hover{color:#8FA9E8}
+#toc code{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.18em;color:#6E93F0;margin-right:18px}
+</style></head>
+<body>
+
+<div id="stage"><div id="frame">
+  <div id="safe"></div>
+
+  <!-- ===== LOGO SFA — présent sur chaque page ===== -->
+  <div class="logo"><div class="mark">SFA</div><div><b>Science For All</b><span>Prépa médecine</span></div></div>
+
+  <div class="head"><span class="ref" id="ref"></span><h1 id="title"></h1><div class="sub" id="sub"></div></div>
+
+  <div class="body">
+
+  <!-- ==================== ANIM-BI6-01 ==================== -->
+  <section class="slide" data-ref="ANIM-BI6-01" data-title="De la molécule au chromosome" data-sub="Deux mètres d'ADN dans un noyau de six microns" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r1" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="68" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Le même objet, quatre échelles</text>
+          <g class="step s1"><rect x="28.0" y="100.0" width="198.0" height="142.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="127.0" y="167.0" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Chromosome</text><text x="127.0" y="189.0" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">condensé, visible</text></g>
+          <g class="step s2"><rect x="244.0" y="100.0" width="198.0" height="142.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="343.0" y="167.0" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Chromatine</text><text x="343.0" y="189.0" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">l'ADN sur ses histones</text></g>
+          <g class="step s3"><rect x="28.0" y="260.0" width="198.0" height="142.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="127.0" y="327.0" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Double hélice</text><text x="127.0" y="349.0" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">deux brins appariés</text></g>
+          <g class="step s4"><rect x="244.0" y="260.0" width="198.0" height="142.0" rx="12" fill="#F1ECFB" stroke="#5B21B6" stroke-width="2.6"/><text x="343.0" y="327.0" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Nucléotide</text><text x="343.0" y="349.0" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">phosphate, sucre, base</text></g>
+          <g class="step s5">
+            <rect x="24" y="414" width="422" height="42" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="441" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">deux mètres d'ADN dans six micromètres</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La compétence exigée</h3>
+          <p style="font-size:17px">« Connaître les <b>substrats</b> du code génétique : chromosome, double hélice et acides nucléiques. » Substrat, c'est-à-dire le support matériel — on part donc de la molécule.</p></div>
+        <div class="card acc step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Chromatine et chromosome</h3>
+          <p style="font-size:17px">Le même ADN, enroulé sur des protéines appelées <b>histones</b>. Déroulé pendant l'interphase, condensé pour la division — c'est la capsule BI5-A.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le nucléotide</h3>
+          <p style="font-size:17px">Le monomère de l'ADN, et il a <b>trois parties</b> : un phosphate, un sucre (le désoxyribose) et une base azotée. Seule la base change de l'un à l'autre.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le chiffre qui frappe</h3>
+          <p style="font-size:17px">Environ <b>deux mètres</b> d'ADN dans un noyau de six micromètres. Le rapport est celui d'un fil de vingt kilomètres rangé dans une balle de tennis.</p>
+          <p style="font-size:17px">D'où la nécessité de l'enroulement sur les histones — et d'où le fait qu'un gène ne soit lisible que là où l'ADN est <b>déroulé</b>.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Le chromosome : l'ADN condensé, tel qu'on le voit au microscope pendant la division.",
+      "La chromatine : le même ADN déroulé, enroulé sur ses histones.",
+      "La double hélice : deux brins appariés, et c'est l'objet du bloc suivant.",
+      "Et le nucléotide : phosphate, sucre, base. Le monomère de la chaîne.",
+      "<em>Deux mètres de fil</em> rangés dans six micromètres. Rien de tout cela n'est optionnel."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI6-02 ==================== -->
+  <section class="slide" data-ref="ANIM-BI6-02" data-title="La double hélice et l'appariement" data-sub="A-T, C-G : pourquoi aucun autre couple ne tient" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r2" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="76" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Deux brins, et un seul appariement possible</text>
+          <g class="step s1"><line x1="148" y1="114" x2="148" y2="352" stroke="#2E1065" stroke-width="5" stroke-linecap="round"/><line x1="322" y1="114" x2="322" y2="352" stroke="#2E1065" stroke-width="5" stroke-linecap="round"/></g>
+          <g class="step s2"><line x1="148" y1="128.0" x2="197" y2="128.0" stroke="#5B21B6" stroke-width="3.4"/><line x1="273" y1="128.0" x2="322" y2="128.0" stroke="#5B21B6" stroke-width="3.4"/><rect x="197" y="112.0" width="76" height="32" rx="8" fill="#FFFFFF"/><text x="235" y="134.0" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">A—T</text><line x1="148" y1="212.0" x2="197" y2="212.0" stroke="#5B21B6" stroke-width="3.4"/><line x1="273" y1="212.0" x2="322" y2="212.0" stroke="#5B21B6" stroke-width="3.4"/><rect x="197" y="196.0" width="76" height="32" rx="8" fill="#FFFFFF"/><text x="235" y="218.0" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">T—A</text><line x1="148" y1="296.0" x2="197" y2="296.0" stroke="#5B21B6" stroke-width="3.4"/><line x1="273" y1="296.0" x2="322" y2="296.0" stroke="#5B21B6" stroke-width="3.4"/><rect x="197" y="280.0" width="76" height="32" rx="8" fill="#FFFFFF"/><text x="235" y="302.0" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">A—T</text></g>
+          <g class="step s3"><line x1="148" y1="170.0" x2="197" y2="170.0" stroke="#B45309" stroke-width="3.4"/><line x1="273" y1="170.0" x2="322" y2="170.0" stroke="#B45309" stroke-width="3.4"/><rect x="197" y="154.0" width="76" height="32" rx="8" fill="#FFFFFF"/><text x="235" y="176.0" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">C—G</text><line x1="148" y1="254.0" x2="197" y2="254.0" stroke="#B45309" stroke-width="3.4"/><line x1="273" y1="254.0" x2="322" y2="254.0" stroke="#B45309" stroke-width="3.4"/><rect x="197" y="238.0" width="76" height="32" rx="8" fill="#FFFFFF"/><text x="235" y="260.0" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">G—C</text><line x1="148" y1="338.0" x2="197" y2="338.0" stroke="#B45309" stroke-width="3.4"/><line x1="273" y1="338.0" x2="322" y2="338.0" stroke="#B45309" stroke-width="3.4"/><rect x="197" y="322.0" width="76" height="32" rx="8" fill="#FFFFFF"/><text x="235" y="344.0" text-anchor="middle" font-size="18" font-family="Be Vietnam Pro,Arial" fill="#B45309" font-weight="700">C—G</text></g>
+          <g class="step s4">
+            <text x="235" y="386" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">A—T : 2 liaisons   ·   C—G : 3 liaisons</text>
+          </g>
+          <g class="step s5">
+            <rect x="24" y="404" width="422" height="56" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="428" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">A 30 %  ·  T 30 %  ·  C 20 %  ·  G 20 %</text>
+            <text x="235" y="450" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">un seul pourcentage suffit à déduire les trois autres</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les deux seuls couples</h3>
+          <p style="font-size:17px"><b>A</b> face à <b>T</b>, <b>C</b> face à <b>G</b>. Jamais autrement.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi ceux-là</h3>
+          <p style="font-size:17px">Une <b>purine</b> (A et G, deux cycles, grosses) s'apparie toujours avec une <b>pyrimidine</b> (T et C, un cycle, petites). Deux grosses ne tiendraient pas dans la largeur de l'hélice ; deux petites laisseraient un vide.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et elles ne tiennent pas pareil</h3>
+          <p style="font-size:17px"><b>2</b> liaisons hydrogène entre A et T, <b>3</b> entre C et G. Un ADN riche en C-G est donc plus difficile à séparer : il faut plus de chaleur.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">La règle de Chargaff en découle</h3>
+          <p style="font-size:17px">Dans un ADN double brin, %A = %T et %C = %G — donc %A + %G = 50 %.</p>
+          <p style="font-size:17px">Avec 30 % d'adénine : 30 % de thymine, et les 40 % restants partagés en <b>20 % de C et 20 % de G</b>.<br><br><b>Piège :</b> la règle ne vaut que pour l'ADN <b>double brin</b>. Sur un simple brin ou sur un ARN, rien n'oblige %A = %U.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Deux brins, parallèles. Ce sont les barreaux entre eux qui portent l'information.",
+      "Premier couple : <b>A face à T</b>. Toujours.",
+      "Second couple : <b>C face à G</b>. Et il n'y en a pas d'autre.",
+      "Mais ils ne tiennent pas pareil : deux liaisons d'un côté, trois de l'autre.",
+      "<em>D'où la règle de Chargaff</em> : un seul pourcentage, et les trois autres suivent."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI6-03 ==================== -->
+  <section class="slide" data-ref="ANIM-BI6-03" data-title="ADN ou ARN" data-sub="Trois différences, et pas une de plus" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r3" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="80" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Trois différences, et une conséquence</text>
+          <g class="step s1"><rect x="20.0" y="118.0" width="430.0" height="290.0" rx="10" fill="#FFFFFF" stroke="#5B21B6" stroke-width="2.2"/><path d="M 30.0,118.0 h 410.0 a10,10 0 0 1 10,10 v 48.0 h -430.0 v -48.0 a10,10 0 0 1 10,-10 z" fill="#5B21B6"/><text x="85.0" y="154.5" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700"></text><text x="225.0" y="154.5" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">ADN</text><text x="375.0" y="154.5" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#FFFFFF" font-weight="700">ARN</text><text x="85.0" y="213.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Le sucre</text><text x="225.0" y="213.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">désoxyribose</text><text x="375.0" y="213.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">ribose</text><line x1="28.0" y1="234.0" x2="442.0" y2="234.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="85.0" y="271.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Une base</text><text x="225.0" y="271.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">thymine T</text><text x="375.0" y="271.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">uracile U</text><line x1="28.0" y1="292.0" x2="442.0" y2="292.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="85.0" y="329.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Les brins</text><text x="225.0" y="329.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">deux</text><text x="375.0" y="329.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">un seul</text><line x1="28.0" y1="350.0" x2="442.0" y2="350.0" stroke="#E3E7EE" stroke-width="1.2"/><text x="85.0" y="387.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Où</text><text x="225.0" y="387.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">dans le noyau</text><text x="375.0" y="387.7" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">il en sort</text><line x1="150.0" y1="176.0" x2="150.0" y2="402.0" stroke="#E3E7EE" stroke-width="1.2"/><line x1="300.0" y1="176.0" x2="300.0" y2="402.0" stroke="#E3E7EE" stroke-width="1.2"/></g>
+          <g class="step s2 h3"><rect x="25.0" y="177.0" width="420.0" height="56.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/></g>
+          <g class="step s3 h4"><rect x="25.0" y="235.0" width="420.0" height="56.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/></g>
+          <g class="step s4 h5"><rect x="25.0" y="293.0" width="420.0" height="56.0" rx="7" fill="none" stroke="#5B21B6" stroke-width="3.4"/></g>
+          <g class="step s5"><rect x="25.0" y="351.0" width="420.0" height="56.0" rx="7" fill="none" stroke="#B45309" stroke-width="3.4"/>
+            <rect x="24" y="420" width="422" height="36" rx="9" fill="#DFD5F7"/>
+            <text x="235" y="445" text-anchor="middle" font-size="17" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">c'est toute la raison d'être de la transcription</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s2" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le sucre</h3>
+          <p style="font-size:17px">Désoxyribose dans l'<b>A</b>DN, ribose dans l'<b>A</b>RN. Le nom le dit — c'est la différence la plus facile à retenir.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Les bases</h3>
+          <p style="font-size:17px">L'ARN remplace la <b>thymine</b> par l'<b>uracile</b>. Les trois autres sont identiques.</p>
+          <p style="font-size:17px"><b>Piège de QCM :</b> « l'ARN ne contient pas de thymine » est vrai ; « l'ARN ne contient pas d'adénine » est faux. <b>Une seule base change</b>, pas toutes.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le nombre de brins</h3>
+          <p style="font-size:17px">L'ADN est <b>double brin</b>, l'ARN est <b>simple brin</b>. C'est aussi pourquoi la règle de Chargaff ne s'applique pas à lui.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Et la conséquence, qui n'est pas une différence</h3>
+          <p style="font-size:17px">L'ADN <b>reste</b> dans le noyau ; l'ARN messager en <b>sort</b> pour rejoindre les ribosomes.</p>
+          <p style="font-size:17px">C'est toute la raison d'être de la transcription : l'information doit quitter le noyau, mais l'original n'en bouge pas. On envoie une copie de travail.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "Quatre lignes, deux colonnes. Et seulement trois vraies différences.",
+      "Le sucre : désoxyribose contre ribose. Le nom de la molécule le porte.",
+      "Les bases : la thymine devient uracile. Une seule base change.",
+      "Les brins : deux contre un. Et cela suffit à tout changer de leur rôle.",
+      "<em>La quatrième ligne n'est pas une différence</em>, c'est une conséquence."
+    ]</script>
+  </section>
+
+  <!-- ==================== ANIM-BI6-04 ==================== -->
+  <section class="slide" data-ref="ANIM-BI6-04" data-title="La réplication semi-conservative" data-sub="Chaque brin sert de modèle à l'autre" data-steps="5">
+    <div class="mid"><div class="split">
+      <div class="col" style="flex:0 0 502px;display:flex;justify-content:center">
+        <svg viewBox="0 0 470 470" width="470" height="470">
+          <defs><marker id="v4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#5B21B6"/></marker><marker id="d4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#2E1065"/></marker><marker id="r4" markerWidth="15" markerHeight="15" refX="13.5" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L15,7.5 L0,15 z" fill="#B45309"/></marker></defs>
+          <text x="235" y="72" text-anchor="middle" font-size="22" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">Un brin ancien, un brin neuf</text>
+          <g class="step s1"><rect x="160" y="110" width="150" height="14" rx="7" fill="#2E1065"/><rect x="160" y="148" width="150" height="14" rx="7" fill="#2E1065"/>
+            <text x="235" y="200" text-anchor="middle" font-size="15" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">la molécule de départ : deux brins anciens</text>
+          </g>
+          <g class="step s2"><line x1="200.0" y1="170.0" x2="127.0" y2="280.0" stroke="#2E1065" stroke-width="2.8" stroke-linecap="round" marker-end="url(#d4)"/><line x1="270.0" y1="170.0" x2="343.0" y2="280.0" stroke="#2E1065" stroke-width="2.8" stroke-linecap="round" marker-end="url(#d4)"/></g>
+          <g class="step s3"><rect x="52" y="290" width="150" height="14" rx="7" fill="#2E1065"/><rect x="52" y="328" width="150" height="14" rx="7" fill="#5B21B6"/><rect x="268" y="290" width="150" height="14" rx="7" fill="#5B21B6"/><rect x="268" y="328" width="150" height="14" rx="7" fill="#2E1065"/></g>
+          <g class="step s4">
+            <text x="235" y="382" text-anchor="middle" font-size="16" font-family="Be Vietnam Pro,Arial" fill="#5B21B6" font-weight="700">chaque fille garde un brin de la mère</text>
+          </g>
+          <g class="step s5">
+            <rect x="22" y="400" width="426" height="56" rx="10" fill="#DFD5F7"/>
+            <text x="235" y="424" text-anchor="middle" font-size="13" font-family="Be Vietnam Pro,Arial" fill="#2E1065" font-weight="700">3 réplications → 8 molécules, toujours 2 brins anciens</text>
+            <text x="235" y="446" text-anchor="middle" font-size="14" font-family="Be Vietnam Pro,Arial" fill="#3F3F46">on ne peut pas fabriquer de brin ancien</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col" style="flex:1;display:flex;flex-direction:column;gap:11px">
+        <div class="card step s1" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Quand, et comment</h3>
+          <p style="font-size:17px">En <b>phase S</b> de l'interphase, avant toute division. Les deux brins se séparent comme une fermeture éclair, et chacun sert de <b>modèle</b> pour reconstruire son complémentaire.</p></div>
+        <div class="card acc step s3" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Pourquoi « semi-conservative »</h3>
+          <p style="font-size:17px">Chaque molécule fille est faite d'un brin <b>ancien</b> et d'un brin <b>neuf</b>. On ne conserve pas la molécule entière, on en conserve la <b>moitié</b>.</p></div>
+        <div class="card step s4" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Ce que cela garantit</h3>
+          <p style="font-size:17px">Les deux molécules filles sont identiques à la mère. C'est cette fidélité qui rend l'hérédité possible — et quand la copie rate, c'est une <b>mutation</b>.</p></div>
+        <div class="card deep step s5 rise" style="padding:14px 22px"><h3 style="margin-bottom:6px;font-size:18px">Le comptage qui tombe au concours</h3>
+          <p style="font-size:17px">Après n réplications, une molécule en donne <b>2ⁿ</b>. Mais il n'y a toujours que <b>deux brins anciens</b> — donc toujours exactement <b>deux</b> molécules hybrides.</p>
+          <p style="font-size:17px">Après trois réplications : 8 molécules, 2 hybrides, 6 entièrement neuves, soit <b>75 %</b>. Le distracteur attendu est « le nombre de molécules marquées double » : c'est faux, <b>on ne fabrique pas de brin ancien</b>.</p></div>
+      </div>
+    </div></div>
+    <script type="application/json" class="caps">[
+      "La molécule de départ : ses deux brins sont anciens.",
+      "Elle s'ouvre, et chaque brin va servir de modèle.",
+      "Deux molécules filles, et chacune garde un brin de la mère.",
+      "D'où le nom : on conserve la moitié de la molécule, pas la molécule.",
+      "<em>Et c'est pour toujours</em> : deux brins anciens au départ, deux brins anciens à la fin."
+    ]</script>
+  </section>
+
+  </div>
+
+  <div class="foot">
+    <div class="caption" id="cap"></div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cnt"></div>
+  </div>
+  <div id="help">← → étapes · ↑ ↓ animations · S sommaire · G repères</div>
+</div></div>
+
+<div id="toc"><h2>Capsule BI6-A — L'ADN : du chromosome à la double hélice · 4 animations</h2><ul id="toclist"></ul></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var caps=slides.map(function(s){try{return JSON.parse(s.querySelector('.caps').textContent);}catch(e){return[];}});
+  var cur=0, step=0;
+  function total(i){return parseInt(slides[i].dataset.steps,10)||1;}
+
+  function applySteps(s, st){
+    [].forEach.call(s.querySelectorAll('.step'),function(el){
+      var app=1, hide=99;
+      (el.getAttribute('class')||'').split(/\s+/).forEach(function(c){
+        var a=/^s(\d+)$/.exec(c); if(a) app=+a[1];
+        var h=/^h(\d+)$/.exec(c); if(h) hide=+h[1];
+      });
+      var k=st+1;
+      el.classList.toggle('on', k>=app);
+      el.classList.toggle('gone', k>=hide);
+    });
+  }
+
+  /* --- mise a l'echelle automatique des colonnes -------------------------
+     On mesure la hauteur reelle de chaque colonne a CHACUNE des etapes de la
+     diapositive (une carte qui disparait ne doit pas compter), on garde le
+     maximum, et si ca deborde de la zone utile on reduit la colonne juste ce
+     qu'il faut. Aucune carte ne peut donc passer sous le filet du pied. */
+  function autofit(){
+    var zone=document.querySelector('.body');
+    var avail=zone.clientHeight;
+    slides.forEach(function(s){
+      /* seules les colonnes de texte sont mises a l'echelle : une figure SVG
+         est deja bornee par max-height et n'a jamais besoin d'etre reduite. */
+      var cols=[].slice.call(s.querySelectorAll('.col')).filter(function(c){
+        return c.querySelector('.card, .expr, .kv, table');
+      });
+      if(!cols.length) cols=[s.querySelector('.mid')].filter(Boolean);
+      cols.forEach(function(c){c.style.zoom='';});
+      var need=cols.map(function(){return 0;});
+      var T=parseInt(s.dataset.steps,10)||1;
+      for(var k=0;k<T;k++){
+        applySteps(s,k);
+        cols.forEach(function(c,i){
+          /* scrollHeight = hauteur du CONTENU. getBoundingClientRect ne donne
+             que la boite attribuee par le flex, qui peut etre plus petite : le
+             contenu deborde alors sans que la mesure le voie. */
+          var h=Math.max(c.scrollHeight, c.getBoundingClientRect().height);
+          if(h>need[i]) need[i]=h;
+        });
+      }
+      cols.forEach(function(c,i){
+        if(!need[i]) return;
+        /* on vise avail-6 : six pixels de garde sous la derniere carte, pour
+           qu'aucun arrondi ne puisse la faire toucher le filet du pied. */
+        var r=(avail-6)/need[i];
+        if(r<0.999) c.style.zoom=Math.max(0.70, r).toFixed(4);
+      });
+      applySteps(s,0);
+    });
+  }
+
+  function render(){
+    slides.forEach(function(s,i){s.classList.toggle('on',i===cur);});
+    var s=slides[cur];
+    document.getElementById('ref').textContent=s.dataset.ref;
+    document.getElementById('title').textContent=s.dataset.title;
+    document.getElementById('sub').textContent=s.dataset.sub||'';
+    applySteps(s, step);
+    document.getElementById('cap').innerHTML=caps[cur][step]||'';
+    var d=document.getElementById('dots'); d.innerHTML='';
+    for(var i=0;i<total(cur);i++){var e=document.createElement('div');e.className='dot'+(i<=step?' on':'');d.appendChild(e);}
+    document.getElementById('cnt').textContent=(cur+1)+'/'+slides.length;
+  }
+  function next(){ if(step<total(cur)-1){step++;} else if(cur<slides.length-1){cur++;step=0;} render(); }
+  function prev(){ if(step>0){step--;} else if(cur>0){cur--;step=total(cur)-1;} render(); }
+  function go(i){cur=i;step=0;render();}
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+    else if(k==='ArrowDown'){e.preventDefault();if(cur<slides.length-1)go(cur+1);}
+    else if(k==='ArrowUp'){e.preventDefault();if(cur>0)go(cur-1);}
+    else if(k==='Home'){go(0);}
+    else if(k.toLowerCase&&k.toLowerCase()==='g'){document.body.classList.toggle('guides');}
+    else if(k.toLowerCase&&k.toLowerCase()==='s'){document.getElementById('toc').classList.toggle('on');}
+    else if(k==='Escape'){document.getElementById('toc').classList.remove('on');}
+    else if(/^[1-9]$/.test(k)){var i=+k-1;if(i<slides.length){go(i);document.getElementById('toc').classList.remove('on');}}
+  });
+  document.getElementById('frame').addEventListener('click',function(e){
+    var r=this.getBoundingClientRect();
+    if(e.clientX < r.left + r.width*0.22){prev();}else{next();}
+  });
+
+  var tl=document.getElementById('toclist');
+  slides.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<code>'+s.dataset.ref+'</code>'+s.dataset.title;
+    li.onclick=function(){go(i);document.getElementById('toc').classList.remove('on');};
+    tl.appendChild(li);
+  });
+
+  function fit(){
+    var k=Math.min(window.innerWidth/1600, window.innerHeight/900);
+    document.getElementById('frame').style.transform='scale('+k+')';
+  }
+  window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){autofit();fit();render();});}
+  fit(); autofit(); render();
+})();
+</script>
+</body></html>
